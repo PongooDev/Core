@@ -27,7 +27,7 @@ private:
 private:
 	using FElementOrFreeListLink = TSparseArrayElementOrFreeListLink<TAlignedBytes<ElementSize, ElementAlign>>;
 
-private:
+public:
 	TArray<FElementOrFreeListLink> Data;
 	FBitArray AllocationFlags;
 	int32 FirstFreeIndex;
@@ -59,12 +59,35 @@ public:
 
 	inline bool IsValid() const { return Data.IsValid() && AllocationFlags.IsValid(); }
 
+	FORCEINLINE bool IsAllocated(int32 Index) const
+	{
+		if (Index < 0 || Index >= NumAllocated())
+			return false;
+
+		return AllocationFlags[Index];
+	}
 public:
 	const FBitArray& GetAllocationFlags() const { return AllocationFlags; }
+public:
+	inline void RemoveAt(int32 Index, int32 Count = 1)
+	{
+		for (; Count; --Count)
+		{
+			if (NumFreeIndices) Data[FirstFreeIndex].PrevFreeIndex = Index;
+			auto& IndexData = Data[Index];
+			IndexData.PrevFreeIndex = -1;
+			IndexData.NextFreeIndex = NumFreeIndices > 0 ? FirstFreeIndex : -1;
+			FirstFreeIndex = Index;
+			++NumFreeIndices;
+			AllocationFlags.Set(Index, false);
+
+			++Index;
+		}
+	}
 
 public:
 	inline       SparseArrayElementType& operator[](int32 Index) { VerifyIndex(Index); return *reinterpret_cast<SparseArrayElementType*>(&Data.GetUnsafe(Index).ElementData); }
-	inline const SparseArrayElementType& operator[](int32 Index) const { VerifyIndex(Index); return *reinterpret_cast<SparseArrayElementType*>(&Data.GetUnsafe(Index).ElementData); }
+	inline const SparseArrayElementType& operator[](int32 Index) const { VerifyIndex(Index); return *reinterpret_cast<const SparseArrayElementType*>(&Data.GetUnsafe(Index).ElementData); }
 
 	inline bool operator==(const TSparseArray<SparseArrayElementType>& Other) const { return Data == Other.Data; }
 	inline bool operator!=(const TSparseArray<SparseArrayElementType>& Other) const { return Data != Other.Data; }

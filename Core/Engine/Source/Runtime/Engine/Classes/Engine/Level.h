@@ -47,5 +47,52 @@ public:
 
 	DefineBitfieldUProperty(bLocked);
 public:
+	bool IsPersistentLevel() const;
 
+	bool HasVisibilityChangeRequestPending() const;
+
+	class ALevelScriptActor* GetLevelScriptActor() const;
+
+	bool HasVisibilityRequestPending() const;
+
+	bool IsCurrentLevel() const;
+
+	bool GetbIsAssociatingLevel() const
+	{
+		if (Version::Engine_Version == 4.16)
+		{
+			static UProperty* Prop = FindPropertyByName("bLocked");
+			if (Prop)
+			{
+				int32 Offset = Prop->Offset_Internal;
+
+				uint8 NextByte = *((uint8*)this + Offset + 1);
+
+				return (NextByte & 0x01) != 0;
+			}
+		}
+
+		return false;
+	}
+
+	void SetbIsAssociatingLevel(bool bInValue)
+	{
+		if (Version::Engine_Version == 4.16)
+		{
+			static UProperty* Prop = FindPropertyByName("bLocked");
+			if (Prop)
+			{
+				int32 Offset = Prop->Offset_Internal;
+				uint8* BytePtr = (uint8*)this + Offset + 1;
+				if (bInValue)
+				{
+					*BytePtr |= 0x01;
+				}
+				else
+				{
+					*BytePtr &= ~0x01;
+				}
+			}
+		}
+	}
 };

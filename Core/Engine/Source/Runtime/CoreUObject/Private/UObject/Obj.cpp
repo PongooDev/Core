@@ -50,6 +50,12 @@ UFunction* UObject::FindFunctionChecked(FName InName) const
 	return FindFunctionCheckedInternal(this, InName);
 }
 
+UObject* UObject::GetArchetypeFromRequiredInfo(UClass* Class, UObject* Outer, FName Name, EObjectFlags ObjectFlags)
+{
+	UObject* (*GetArchetypeFromRequiredInfoInternal)(UClass*, UObject*, FName, EObjectFlags) = decltype(GetArchetypeFromRequiredInfoInternal)(ImageBase + Finder::FindUObject_GetArchetypeFromRequiredInfo());
+	return GetArchetypeFromRequiredInfoInternal(Class, Outer, Name, ObjectFlags);
+}
+
 void UObject::ProcessEvent(UFunction* Function, void* Parms)
 {
 	void (*ProcessEventInternal)(UObject*, UFunction*, void*) = decltype(ProcessEventInternal)(ImageBase + Finder::FindProcessEvent());

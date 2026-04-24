@@ -30,7 +30,7 @@ class TMap
 public:
 	using ElementType = TPair<KeyElementType, ValueElementType>;
 
-private:
+public:
 	TSet<ElementType> Elements;
 
 private:
@@ -48,6 +48,71 @@ public:
 
 public:
 	const FBitArray& GetAllocationFlags() const { return Elements.GetAllocationFlags(); }
+public:
+    ValueElementType* Find(const KeyElementType& Key)
+    {
+        auto& SparseArray = Elements.Elements;
+
+        int32 NumAlloc = SparseArray.NumAllocated();
+
+        for (int32 i = 0; i < NumAlloc; ++i)
+        {
+            if (SparseArray.IsAllocated(i))
+            {
+                auto& SetElement = SparseArray[i];
+
+                ElementType& Pair = SetElement.Value;
+
+                if (Pair.Key() == Key)
+                {
+                    return &Pair.Value();
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    const ValueElementType* Find(const KeyElementType& Key) const
+    {
+        auto& SparseArray = Elements.Elements;
+
+        int32 NumAlloc = SparseArray.NumAllocated();
+
+        for (int32 i = 0; i < NumAlloc; ++i)
+        {
+            if (SparseArray.IsAllocated(i))
+            {
+                auto& SetElement = SparseArray[i];
+                const ElementType& Pair = SetElement.Value;
+
+                if (Pair.Key() == Key)
+                {
+                    return &Pair.Value();
+                }
+            }
+        }
+
+        return nullptr;
+    }
+
+    ValueElementType FindRef(const KeyElementType& Key) const
+    {
+        const ValueElementType* Found = Find(Key);
+        if (!Found)
+        {
+            return ValueElementType{};
+        }
+        return *Found;
+    }
+
+    template <class PT>
+    ValueElementType* Search(PT Predicate) {
+        for (auto& [k, v] : *this) {
+            if (Predicate(k, v)) return &v;
+        }
+        return nullptr;
+    }
 
 public:
 	inline       ElementType& operator[] (int32 Index) { return Elements[Index]; }

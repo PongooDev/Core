@@ -4,20 +4,11 @@
 #include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
 #include "Engine/Source/Runtime/Core/Public/HAL/UnrealMemory.h"
 #include "Engine/Source/Runtime/Core/Public/Misc/AssertionMacros.h"
-#include "ContainerIterator.h"
 
 template<typename ArrayElementType>
 class TArray
 {
-private:
-	template<typename ArrayElementType>
-	friend class TAllocatedArray;
-
-	template<typename SparseArrayElementType>
-	friend class TSparseArray;
-
 protected:
-	static constexpr uint64 ElementAlign = alignof(ArrayElementType);
 	static constexpr uint64 ElementSize = sizeof(ArrayElementType);
 
 public:
@@ -39,13 +30,22 @@ public:
 	TArray& operator=(TArray&&) = default;
 	TArray& operator=(const TArray&) = default;
 
-private:
+public:
 	inline int32 GetSlack() const { return ArrayMax - ArrayNum; }
 
 	inline void VerifyIndex(int32 Index) const { if (!IsValidIndex(Index)) throw std::out_of_range("Index was out of range!"); }
 
 	inline       ArrayElementType& GetUnsafe(int32 Index) { return Data[Index]; }
 	inline const ArrayElementType& GetUnsafe(int32 Index) const { return Data[Index]; }
+
+	inline ArrayElementType& GetWithSize(int32 Index, int32 Size = ElementSize)
+	{
+		return *(ArrayElementType*)((uint8*)Data + Index * Size);
+	}
+	inline const ArrayElementType& GetWithSize(int32 Index, int32 Size = ElementSize) const
+	{
+		return *(ArrayElementType*)((uint8*)Data + Index * Size);
+	}
 
 public:
 	void CheckInvariants() const
@@ -59,7 +59,7 @@ public:
 		{
 			for (int32 i = 0; i < Count; ++i)
 			{
-				Items[i].~ElementType();
+				Items[i].~ArrayElementType();
 			}
 		}
 	}
@@ -108,25 +108,11 @@ public:
 
 		if (Count)
 		{
-			CheckInvariants();
-			checkSlow((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
+			ArrayNum--;
 
-			DestructItems(GetData() + Index, Count);
-
-			int32 NumToMove = ArrayNum - Index - Count;
-			if (NumToMove)
+			for (int i = Index; i < ArrayNum; i++)
 			{
-				std::memmove(
-					GetData() + (Index)* Size,
-					GetData() + (Index + Count)* Size,
-					NumToMove * Size
-				);
-			}
-			ArrayNum -= Count;
-
-			if (bAllowShrinking)
-			{
-				ResizeShrink(Size);
+				Data[i] = Data[i + 1];
 			}
 		}
 	}
@@ -140,6 +126,52 @@ public:
 	void RemoveAt(int32 Index, CountType Count, bool bAllowShrinking = true, int32 Size = ElementSize)
 	{
 		RemoveAtImpl(Index, Count, bAllowShrinking, Size);
+	}
+
+	void Reset(int32 NewSize = 0, int32 Size = ElementSize)
+	{
+		if constexpr (!std::is_trivially_destructible_v<ArrayElementType>)
+		{
+			for (int32 i = 0; i < ArrayNum; ++i)
+			{
+				Data[i].~ArrayElementType();
+			}
+		}
+
+		ArrayNum = 0;
+
+		if (NewSize > 0 && NewSize > ArrayMax)
+		{
+			Reserve(NewSize - ArrayNum, Size);
+		}
+	}
+
+	void Empty(int32 Slack = 0, int32 Size = ElementSize)
+	{
+		DestructItems(GetData(), ArrayNum);
+
+		ArrayNum = 0;
+
+		if (ArrayMax != Slack)
+		{
+			ResizeTo(Slack, Size);
+		}
+	}
+
+	template <typename ComparisonType>
+	bool Contains(const ComparisonType& Item) const
+	{
+		const ArrayElementType* DataPtr = GetData();
+		const ArrayElementType* DataEnd = DataPtr + ArrayNum;
+
+		for (; DataPtr != DataEnd; ++DataPtr)
+		{
+			if (*DataPtr == Item)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 public:
 	inline int32 Num() const { return ArrayNum; }
@@ -169,9 +201,23 @@ public:
 	inline explicit operator bool() const { return IsValid(); };
 
 public:
-	template<typename T> friend ContainerIterators::TArrayIterator<T> begin(const TArray& Array);
-	template<typename T> friend ContainerIterators::TArrayIterator<T> end(const TArray& Array);
-};
+	ArrayElementType* begin()
+	{
+		return Data;
+	}
 
-template<typename T> inline ContainerIterators::TArrayIterator<T> begin(const TArray<T>& Array) { return ContainerIterators::TArrayIterator<T>(Array, 0); }
-template<typename T> inline ContainerIterators::TArrayIterator<T> end(const TArray<T>& Array) { return ContainerIterators::TArrayIterator<T>(Array, Array.Num()); }
+	ArrayElementType* end()
+	{
+		return Data + ArrayNum;
+	}
+
+	const ArrayElementType* begin() const
+	{
+		return Data;
+	}
+
+	const ArrayElementType* end() const
+	{
+		return Data + ArrayNum;
+	}
+};

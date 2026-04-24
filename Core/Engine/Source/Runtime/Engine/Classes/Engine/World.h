@@ -144,6 +144,19 @@ public:
 	AActor* SpawnActor(UClass* Class, FTransform Transform, AActor* Owner = nullptr);
 
 	bool ServerTravel(const FString& InURL, bool bAbsolute = false, bool bShouldSkipGameNotify = false);
+
+	bool Listen(FURL& InURL);
+
+	FLevelCollection* FindCollectionByType(const ELevelCollectionType InType);
+
+	class AWorldSettings* K2_GetWorldSettings();
+	class AWorldSettings* GetWorldSettings(bool bCheckStreamingPersistent = false, bool bChecked = true) const;
+
+	ULevel* GetCurrentLevelPendingVisibility() const { return CurrentLevelPendingVisibility; }
+
+	ULevel* GetCurrentLevelPendingInvisibility() const { return CurrentLevelPendingInvisibility; }
+
+	class ULevel* GetCurrentLevel() const;
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUWorld_InternalGetNetMode()), InternalGetNetMode, nullptr);

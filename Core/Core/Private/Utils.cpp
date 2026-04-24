@@ -4,10 +4,14 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Engine.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/GameInstance.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Engine/Source/Runtime/Engine/Classes/GameFramework/GameSession.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
+
+#include "FortniteGame/Public/FortGameSession/FortGameSession.h"
 
 void Utils::InitConsole(FCoreConfig& Config)
 {
@@ -115,8 +119,11 @@ void Utils::Hook() {
 	UEngine::Hook();
 	UWorld::Hook();
 	AActor::Hook();
+	UNetDriver::Hook();
+	AGameSession::Hook();
 
 	// FortniteGame
+	AFortGameSession::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {

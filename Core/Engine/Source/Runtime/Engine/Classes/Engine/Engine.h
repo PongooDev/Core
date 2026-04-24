@@ -106,8 +106,33 @@ public:
 public:
 	static UEngine* GetEngine();
 
+	static inline bool (*LoadMapOG)(UEngine* This, FWorldContext& WorldContext, FURL& URL, class UPendingNetGame* Pending, FString& Error);
+	static bool LoadMap(UEngine* This, FWorldContext& WorldContext, FURL& URL, class UPendingNetGame* Pending, FString& Error);
+
+	void BroadcastNetworkFailure(UWorld* World, UNetDriver* NetDriver, ENetworkFailure::Type FailureType, const FString& ErrorString = FString()) {
+		void (*BroadcastNetworkFailureInternal)(UEngine*, UWorld*, UNetDriver*, ENetworkFailure::Type, const FString&) = decltype(BroadcastNetworkFailureInternal)(ImageBase + Finder::FindUEngine_BroadcastNetworkFailure());
+		BroadcastNetworkFailureInternal(this, World, NetDriver, FailureType, ErrorString);
+	}
+
+	UNetDriver* CreateNetDriver(UWorld* InWorld, FName NetDriverDefinition);
+
+	bool CreateNamedNetDriver(UWorld* InWorld, FName NetDriverName, FName NetDriverDefinition);
+
+	UNetDriver* FindNamedNetDriver(UWorld* InWorld, FName NetDriverName);
+
+	void DestroyNamedNetDriver(UWorld* InWorld, FName NetDriverName);
+
+	FWorldContext* GetWorldContextFromWorld(UWorld* InWorld);
+
+	FWorldContext& GetWorldContextFromWorldChecked(UWorld* InWorld);
+
+	FWorldContext& CreateNewWorldContext(EWorldType::Type WorldType);
+
+	float GetMaxTickRate(float DeltaTime, bool bAllowFrameRateSmoothing = true) const;
 public:
 	static void Hook() {
+		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUEngine_LoadMap()), LoadMap, (LPVOID*)&LoadMapOG);
+
 		Log("Hooked UEngine");
 	}
 };

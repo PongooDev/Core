@@ -60,6 +60,59 @@ public:
 	static ENetMode InternalGetNetMode(AActor* This);
 
 	void FinishSpawning(const FTransform& Transform, bool bIsDefaultTransform = false, const FComponentInstanceDataCache* InstanceDataCache = nullptr);
+
+	bool IsNetStartupActor() const;
+
+	float GetNetPriority(const FVector& ViewPos, const FVector& ViewDir, class AActor* Viewer, AActor* ViewTarget, UActorChannel* InChannel, float Time, bool bLowBandwidth) {
+		float (*GetNetPriorityInternal)(AActor*, const FVector&, const FVector&, AActor*, AActor*, UActorChannel*, float, bool) = decltype(GetNetPriorityInternal)(ImageBase + Finder::FindAActor_GetNetPriority());
+		return GetNetPriorityInternal(this, ViewPos, ViewDir, Viewer, ViewTarget, InChannel, Time, bLowBandwidth);
+	}
+
+	bool IsRelevancyOwnerFor(const AActor* ReplicatedActor, const AActor* ActorOwner, const AActor* ConnectionActor) const;
+
+	bool GetNetDormancy(const FVector& ViewPos, const FVector& ViewDir, class AActor* Viewer, AActor* ViewTarget, UActorChannel* InChannel, float Time, bool bLowBandwidth);
+
+	bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const;
+
+	UWorld* GetWorld() const;
+
+	inline bool IsPendingKillPending() const
+	{
+		bool (*IsPendingKillPendingInternal)(const AActor*) = decltype(IsPendingKillPendingInternal)(ImageBase + Finder::FindAActor_IsPendingKillPending());
+		return IsPendingKillPendingInternal(this);
+	}
+
+	FVector GetActorForwardVector() const;
+
+	FVector GetActorRightVector() const;
+
+	FVector GetActorUpVector() const;
+
+	ENetRole GetRemoteRole() const;
+
+	ULevel* GetLevel() const { return GetOuter()->Cast<ULevel>(); }
+
+	FName GetNetDriverName() const { return NetDriverName; }
+
+	bool IsActorInitialized() const {
+		if (Version::Engine_Version == 4.16) {
+			static UBoolProperty* Prop = (UBoolProperty*)FindPropertyByName("bAllowReceiveTickEventOnDedicatedServer"); \
+			if (Prop) {
+				int32 Offset = Prop->Offset_Internal;
+				uint8 BitMask = Prop->FieldMask;
+
+				uint8 ActorInitializedBit = BitMask << 1;
+
+				return (*((uint8*)this + Offset) & ActorInitializedBit) != 0;
+			}
+		}
+
+		return true;
+	}
+
+	void CallPreReplication(UNetDriver* NetDriver);
+
+	void ForceNetUpdate();
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAActor_InternalGetNetMode()), InternalGetNetMode, (LPVOID*)&InternalGetNetModeOG);
