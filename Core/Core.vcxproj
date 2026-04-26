@@ -162,6 +162,7 @@
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\NoExportTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\Object.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\ObjectMacros.h" />
+    <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\ScriptInterface.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\SoftObjectPath.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\SoftObjectPtr.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\UnrealType.h" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Misc\AssertionMacros.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Misc\Guid.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Misc\NetworkGuid.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Public\Misc\OutputDevice.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Misc\Parse.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Serialization\Archive.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Public\Serialization\BitWriter.h" />
@@ -242,6 +244,8 @@
     <ClInclude Include="Engine\Source\Runtime\GameplayTasks\Classes\GameplayTasksComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Classes\Net\Serialization\FastArraySerializer.h" />
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Public\Net\Core\Connection\NetEnums.h" />
+    <ClInclude Include="FortniteGame\Public\FortAbility\FortAbilitySet.h" />
+    <ClInclude Include="FortniteGame\Public\FortAbility\FortGameplayAbility.h" />
     <ClInclude Include="FortniteGame\Public\FortCharacter\CustomCharacterPart.h" />
     <ClInclude Include="FortniteGame\Public\FortCharacter\FortCharacter.h" />
     <ClInclude Include="FortniteGame\Public\FortCharacter\FortCharacterType.h" />
@@ -281,6 +285,7 @@
     <ClInclude Include="FortniteGame\Public\FortWorld\AdditionalLevelStreamed.h" />
     <ClInclude Include="FortniteGame\Public\FortWorld\FortAthenaMapInfo.h" />
     <ClInclude Include="FortniteGame\Public\FortWorld\FortWorldManager.h" />
+    <ClInclude Include="FortniteGame\Public\Kismet\FortKismetLibrary.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -345,6 +350,7 @@
     <ClCompile Include="FortniteGame\Private\FortPlayerController\FortPlayerControllerAthena.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPlayerController\FortPlayerControllerZone.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPlayerState\FortPlayerState.cpp" />
+    <ClCompile Include="FortniteGame\Private\Kismet\FortKismetLibrary.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

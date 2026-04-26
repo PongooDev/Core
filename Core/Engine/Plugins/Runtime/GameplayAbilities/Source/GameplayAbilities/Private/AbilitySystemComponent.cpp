@@ -37,6 +37,10 @@ void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemCom
 		This->ConsumeAllReplicatedData(Handle, PredictionKey);
 
 		const UGameplayAbility* AbilityToActivate = Spec->Ability;
+		if (!AbilityToActivate)
+		{
+			return;
+		}
 
 		UGameplayAbility* InstancedAbility = nullptr;
 		Spec->InputPressed = true;
@@ -58,12 +62,7 @@ void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemCom
 
 void UAbilitySystemComponent::ConsumeAllReplicatedData(FGameplayAbilitySpecHandle AbilityHandle, FPredictionKey AbilityOriginalPredictionKey)
 {
-	// This will be hard to do, so do it later
-	/*TSharedPtr<FAbilityReplicatedDataCache> CachedData = AbilityTargetDataMap.Find(FGameplayAbilitySpecHandleAndPredictionKey(AbilityHandle, AbilityOriginalPredictionKey));
-	if (CachedData.IsValid())
-	{
-		CachedData->Reset();
-	}*/
+	// This is not stripped so i can find the offset at some point
 }
 
 bool UAbilitySystemComponent::InternalTryActivateAbility(FGameplayAbilitySpecHandle AbilityToActivate, FPredictionKey InPredictionKey, UGameplayAbility** OutInstancedAbility, void* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)

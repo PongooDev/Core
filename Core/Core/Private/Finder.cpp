@@ -4800,10 +4800,15 @@ uintptr_t Finder::FindUAbilitySystemComponent_ClientActivateAbilityFailed() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::UAbilitySystemComponent_ClientActivateAbilityFailed)
 		return ServerOffsets::UAbilitySystemComponent_ClientActivateAbilityFailed;
-	Addr = Memcury::Scanner::FindPattern("40 53 56 57 48 83 EC ? 41 0F BF F0").Get();
+	
+	if (Version::Engine_Version == 4.16) {
+		Addr = Memcury::Scanner::FindPattern("89 54 24 ? 55 53 57 41 56 48 8B EC").Get();
+	}
+	
 	if (Addr) {
 		ServerOffsets::UAbilitySystemComponent_ClientActivateAbilityFailed = Addr - ImageBase;
 	}
+
 	Log("UAbilitySystemComponent_ClientActivateAbilityFailed found at: 0x" + std::format("{:X}", ServerOffsets::UAbilitySystemComponent_ClientActivateAbilityFailed));
 	return ServerOffsets::UAbilitySystemComponent_ClientActivateAbilityFailed;
 }

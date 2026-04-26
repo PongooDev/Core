@@ -10,8 +10,6 @@ void AFortPlayerControllerAthena::SpawnQuickBars()
 		SpawnQuickBarsInternal(this);
 	}
 	else {
-		UClass* QuickBarsClass = AFortQuickBarsAthena::StaticClass() ? AFortQuickBarsAthena::StaticClass() : AFortQuickBars::StaticClass();
-
 		if (Version::Fortnite_Version <= 1.72) {
 			if (!this->QuickBars)
 			{
@@ -19,7 +17,7 @@ void AFortPlayerControllerAthena::SpawnQuickBars()
 				if (!World) {
 					return;
 				}
-				AActor* NewQuickBars = World->SpawnActor(QuickBarsClass, FVector(), FRotator(), this);
+				AActor* NewQuickBars = World->SpawnActor(AFortQuickBars::StaticClass(), FVector(), FRotator(), this);
 				if (NewQuickBars && NewQuickBars->Cast<AFortQuickBars>()) {
 					QuickBars = NewQuickBars->Cast<AFortQuickBars>();
 				}
@@ -32,7 +30,7 @@ void AFortPlayerControllerAthena::SpawnQuickBars()
 				if (!World) {
 					return;
 				}
-				AActor* NewQuickBars = World->SpawnActor(QuickBarsClass, FVector(), FRotator(), this);
+				AActor* NewQuickBars = World->SpawnActor(AFortQuickBarsAthena::StaticClass(), FVector(), FRotator(), this);
 				if (NewQuickBars && NewQuickBars->Cast<AFortQuickBars>()) {
 					ClientQuickBars = NewQuickBars->Cast<AFortQuickBars>();
 				}

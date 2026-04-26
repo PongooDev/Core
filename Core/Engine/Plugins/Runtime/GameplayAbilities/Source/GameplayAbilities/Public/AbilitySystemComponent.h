@@ -77,7 +77,7 @@ public:
 	FGameplayAbilitySpecHandle K2_GiveAbilityAndActivateOnce(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level = 0, int32 InputID = -1);
 public:
 	static void Hook() {
-		HookVTableIdx(UAbilitySystemComponent::GetDefaultObj(), Finder::FindInternalServerTryActivateAbilityVFT(), InternalServerTryActivateAbility);
+		HookEveryVTableIdx(UAbilitySystemComponent::StaticClass(), Finder::FindInternalServerTryActivateAbilityVFT(), InternalServerTryActivateAbility);
 
 		Log("UAbilitySystemComponent Hooked!");
 	}

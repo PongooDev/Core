@@ -128,4 +128,29 @@ void HookVTableIdx(void* Base, int Idx, void* Detour, void** OG)
 	VirtualProtect(&VTable[Idx], sizeof(void*), oldProtection, NULL);
 }
 
+void HookEveryVTableIdx(UClass* Base, int Idx, void* Detour)
+{
+	if (!Base || !Detour)
+	{
+		Log("Invalid parameters for HookEveryVTableIdx");
+		return;
+	}
+
+	for (int i = 0; i < FUObjectArray::Num(); i++) {
+		FUObjectItem* ObjectItem = FUObjectArray::IndexToObject(i);
+		if (!ObjectItem)
+			continue;
+
+		UObject* Object = (UObject*)ObjectItem->Object;
+		if (!Object)
+			continue;
+
+		if (Object && Object->IsA(Base) && Object->IsDefaultObject())
+		{
+			HookVTableIdx(Object, Idx, Detour, nullptr);
+			Log("Hooked " + Object->GetName().ToString() + " at index " + std::to_string(Idx));
+		}
+	}
+}
+
 // When you are using pre-compiled headers, this source file is necessary for compilation to succeed.
