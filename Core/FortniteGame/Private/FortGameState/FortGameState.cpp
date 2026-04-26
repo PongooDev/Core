@@ -27,6 +27,21 @@ void AFortGameState::OnFinishedStreamingAdditionalPlaylistLevel()
 void AFortGameState::ApplyHomebaseEffectsOnPlayerSetup(AFortGameState* This, FUniqueNetIdRepl* SourceAccountID, UFortMcpProfileCampaign* McpProfile, IAbilitySystemInterface* AbilityObject, UFortHero* Hero, bool bApplyTeamEffect, bool bApplyTeamEffectToOtherPlayers, bool bIgnoreStatClamp)
 {
 	UFortHeroType* ItemDefinition = StaticLoadObject<UFortHeroType>("/Game/Athena/Heroes/HID_Commando_Athena_01.HID_Commando_Athena_01");
+
+	static TArray<UObject*> HeroTypes = FUObjectArray::GetObjectsOfClass(UFortHeroType::StaticClass(), "Athena");
+	if (HeroTypes.Num() > 0)
+	{
+		for (UObject* HeroType : HeroTypes)
+		{
+			if (HeroType)
+			{
+				Log("Found hero type: " + HeroType->GetName().ToString());
+			}
+		}
+
+		ItemDefinition = (UFortHeroType*)HeroTypes[UKismetMathLibrary::RandomIntegerInRange(0, HeroTypes.Num() - 1)];
+	}
+
 	if (ItemDefinition)
 	{
 		Hero->ItemDefinition = ItemDefinition;

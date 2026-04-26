@@ -294,6 +294,8 @@ public:
 	static UObject* FindObjectFast(const std::string& Name);
 
 	static UObject* DefaultObjImpl(const UClass* TargetClass);
+
+	static TArray<UObject*> GetObjectsOfClass(UClass* TargetClass, std::string MustIncludeString = "");
 };
 
 inline FUObjectArray GUObjectArray;

@@ -2,6 +2,8 @@
 #include "pch.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/GameState.h"
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+
 #include "FortniteGame/Public/FortWorld/AdditionalLevelStreamed.h"
 
 class FUniqueNetIdRepl;

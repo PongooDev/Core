@@ -61,3 +61,26 @@ UObject* FUObjectArray::DefaultObjImpl(const UClass* TargetClass)
 	}
 	return nullptr;
 }
+
+TArray<UObject*> FUObjectArray::GetObjectsOfClass(UClass* TargetClass, std::string MustIncludeString)
+{
+	TArray<UObject*> Objects;
+	
+	for (int i = 0; i < Num(); i++)
+	{
+		FUObjectItem* Item = IndexToObject(i);
+		if (!Item)
+			continue;
+
+		UObject* Object = (UObject*)Item->Object;
+		if (!Object)
+			continue;
+
+		if (Object && Object->IsA(TargetClass)
+			&& (MustIncludeString.empty() || Object->GetName().ToString().contains(MustIncludeString))) {
+			Objects.Add(Object);
+		}
+	}
+
+	return Objects;
+}
