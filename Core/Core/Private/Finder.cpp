@@ -2495,6 +2495,23 @@ uintptr_t Finder::FindAGameSession_KickPlayer() {
 	return ServerOffsets::AGameSession_KickPlayer;
 }
 
+uintptr_t Finder::FindAGameSession_KickPlayerVFT() {
+	if (ServerOffsets::AGameSession_KickPlayerVFT)
+		return ServerOffsets::AGameSession_KickPlayerVFT;
+	static uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0xC9;
+	}
+	
+	if (Addr) {
+		ServerOffsets::AGameSession_KickPlayerVFT = Addr;
+	}
+
+	Log("AGameSession_KickPlayerVFT found at: 0x" + std::format("{:X}", ServerOffsets::AGameSession_KickPlayerVFT));
+	return ServerOffsets::AGameSession_KickPlayerVFT;
+}
+
 uintptr_t Finder::FindAGameSession_ReturnToMainMenuHost() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::AGameSession_ReturnToMainMenuHost)
@@ -4818,6 +4835,23 @@ uintptr_t Finder::FindAGameModeBase_FinishRestartPlayer() {
 	return ServerOffsets::AGameModeBase_FinishRestartPlayer;
 }
 
+uintptr_t Finder::FindAGameModeBase_FinishRestartPlayerVFT() {
+	static uintptr_t Addr = 0;
+	if (ServerOffsets::AGameModeBase_FinishRestartPlayerVFT)
+		return ServerOffsets::AGameModeBase_FinishRestartPlayerVFT;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0xF3;
+	}
+	
+	if (Addr) {
+		ServerOffsets::AGameModeBase_FinishRestartPlayerVFT = Addr;
+	}
+
+	Log("AGameModeBase_FinishRestartPlayerVFT found at: 0x" + std::format("{:X}", ServerOffsets::AGameModeBase_FinishRestartPlayerVFT));
+	return ServerOffsets::AGameModeBase_FinishRestartPlayerVFT;
+}
+
 uintptr_t Finder::FindAFortGameMode_FinishRestartPlayer() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::AFortGameMode_FinishRestartPlayer)
@@ -5546,6 +5580,24 @@ uintptr_t Finder::FindAActor_GetNetPriority() {
 	return ServerOffsets::AActor_GetNetPriority;
 }
 
+uintptr_t Finder::FindAActor_GetNetPriorityVFT() {
+	if (ServerOffsets::AActor_GetNetPriorityVFT)
+		return ServerOffsets::AActor_GetNetPriorityVFT;
+
+	uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0x6E;
+	}
+
+	if (Addr) {
+		ServerOffsets::AActor_GetNetPriorityVFT = Addr;
+	}
+
+	Log("AActor_GetNetPriorityVFT found at: 0x" + std::format("{:X}", ServerOffsets::AActor_GetNetPriorityVFT));
+	return ServerOffsets::AActor_GetNetPriorityVFT;
+}
+
 uintptr_t Finder::FindUNetDriver__NetTag() {
 	if (ServerOffsets::UNetDriver__NetTag)
 		return ServerOffsets::UNetDriver__NetTag;
@@ -5640,6 +5692,23 @@ uintptr_t Finder::FindAActor_IsRelevancyOwnerFor() {
 	return ServerOffsets::AActor_IsRelevancyOwnerFor;
 }
 
+uintptr_t Finder::FindAActor_IsRelevancyOwnerForVFT() {
+	if (ServerOffsets::AActor_IsRelevancyOwnerForVFT)
+		return ServerOffsets::AActor_IsRelevancyOwnerForVFT;
+	uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0x86;
+	}
+
+	if (Addr) {
+		ServerOffsets::AActor_IsRelevancyOwnerForVFT = Addr;
+	}
+
+	Log("AActor_IsRelevancyOwnerForVFT found at: 0x" + std::format("{:X}", ServerOffsets::AActor_IsRelevancyOwnerForVFT));
+	return ServerOffsets::AActor_IsRelevancyOwnerForVFT;
+}
+
 uintptr_t Finder::FindUActorChannel__RelevantTime() {
 	if (ServerOffsets::UActorChannel__RelevantTime)
 		return ServerOffsets::UActorChannel__RelevantTime;
@@ -5707,6 +5776,23 @@ uintptr_t Finder::FindAActor_IsNetRelevantFor() {
 
 	Log("AActor_IsNetRelevantFor found at: 0x" + std::format("{:X}", ServerOffsets::AActor_IsNetRelevantFor));
 	return ServerOffsets::AActor_IsNetRelevantFor;
+}
+
+uintptr_t Finder::FindAActor_IsNetRelevantForVFT() {
+	if (ServerOffsets::AActor_IsNetRelevantForVFT)
+		return ServerOffsets::AActor_IsNetRelevantForVFT;
+	uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0x84;
+	}
+
+	if (Addr) {
+		ServerOffsets::AActor_IsNetRelevantForVFT = Addr;
+	}
+
+	Log("AActor_IsNetRelevantForVFT found at: 0x" + std::format("{:X}", ServerOffsets::AActor_IsNetRelevantForVFT));
+	return ServerOffsets::AActor_IsNetRelevantForVFT;
 }
 
 uintptr_t Finder::FindFDebug_AssertFailed() {
@@ -6812,6 +6898,18 @@ uintptr_t Finder::FindUNetDriver_IsLevelInitializedForActorVFT() {
 
 	Log("UNetDriver_IsLevelInitializedForActorVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT));
 	return ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT;
+}
+
+uintptr_t Finder::FindUObject_GetWorldVFT() {
+	if (ServerOffsets::UObject_GetWorldVFT)
+		return ServerOffsets::UObject_GetWorldVFT;
+
+	if (Version::Engine_Version == 4.16) {
+		ServerOffsets::UObject_GetWorldVFT = 0x26;
+	}
+
+	Log("UObject_GetWorldVFT found at: 0x" + std::format("{:X}", ServerOffsets::UObject_GetWorldVFT));
+	return ServerOffsets::UObject_GetWorldVFT;
 }
 
 void Finder::SetupOffsets() {

@@ -23,14 +23,6 @@ public:
 
 	DefineUProperty(TSubclassOf<APawn>, DefaultPawnClass);
 public:
-	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
-
-	void InitGameState();
-
-	bool CanServerTravel(const FString& URL, bool bAbsolute);
-
-	bool MustSpectate(APlayerController* NewPlayerController) const;
-
 	APawn* SpawnDefaultPawnFor(AController* NewPlayer, AActor* StartSpot);
 
 	APawn* SpawnDefaultPawnAtTransform(AController* NewPlayer, const FTransform& SpawnTransform);

@@ -37,89 +37,30 @@ public:
 
 	DefineUProperty(int32, NumTravellingPlayers);
 public:
-	void AddInactivePlayer(APlayerState* PlayerState, APlayerController* PC);
-
-	bool FindInactivePlayer(APlayerController* PC);
-
-	void Broadcast(AActor* Sender, const FString& Msg, FName Type = UKismetStringLibrary::Conv_StringToName(L"None"));
-
-	void BroadcastLocalized(AActor* Sender, TSubclassOf<ULocalMessage> Message, int32 Switch = 0, APlayerState* RelatedPlayerState_1 = NULL, APlayerState* RelatedPlayerState_2 = NULL, UObject* OptionalObject = NULL);
-
-	void StartMatch();
-
-	void EndMatch();
-
-	FString GetNetworkNumber();
-
-	void HandleMatchIsWaitingToStart();
-
-	void HandleMatchHasStarted();
-
-	void HandleMatchHasEnded();
-
-	void HandleSeamlessTravelPlayer(AController*& C);
-
-	void HandleStartingNewPlayer(APlayerController* NewPlayer);
-
-	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
-
-	void InitSeamlessTravelPlayer(AController* NewController);
-
-	bool IsHandlingReplays();
-
-	void OnMatchStateSet();
-
-	bool PlayerCanRestart(APlayerController* Player);
-
-	void PostSeamlessTravel();
-
 	bool ReadyToStartMatch();
-
-	void RestartGame();
 
 	void Say(const FString& Msg);
 
-	void SendPlayer(APlayerController* aPlayer, const FString& URL);
+	FName GetMatchState() const {
+		static UFunction* Func = nullptr;
 
-	void SetMatchState(FName NewState);
+		if (Func == nullptr)
+			Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetMatchState"));
 
-	void SetSeamlessTravelViewTarget(APlayerController* PC);
+		struct GameMode_GetMatchState
+		{
+		public:
+			FName ReturnValue;
+		};
 
-	void StartPlay();
+		GameMode_GetMatchState Parms{};
 
-	FName GetMatchState() const { return MatchState; }
+		const_cast<AGameMode*>(this)->ProcessEvent(Func, &Parms);
+
+		return Parms.ReturnValue;
+	}
 
 	bool IsMatchInProgress() const;
 
 	bool HasMatchEnded() const;
-
-	void AbortMatch();
-
-	bool ReadyToEndMatch();
-
-	void PlayerSwitchedToSpectatorOnly(APlayerController* PC);
-
-	void RemovePlayerControllerFromPlayerCount(APlayerController* PC);
-
-	FString GetDefaultGameClassPath(const FString& MapName, const FString& Options, const FString& Portal) const;
-
-	TSubclassOf<AGameMode> GetGameModeClass(const FString& MapName, const FString& Options, const FString& Portal) const;
-
-	void OverridePlayerState(APlayerController* PC, APlayerState* OldPlayerState);
-
-	void HandleDisconnect(UWorld* InWorld, UNetDriver* NetDriver);
-
-	bool HasMatchStarted() const;
-
-	void PostLogin(APlayerController* NewPlayer);
-
-	void Logout(AController* Exiting);
-
-	int32 GetNumPlayers();
-
-	int32 GetNumSpectators();
-
-	bool CanServerTravel(const FString& URL, bool bAbsolute);
-
-	void StartToLeaveMap();
 };

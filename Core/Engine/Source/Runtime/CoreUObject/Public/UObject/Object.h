@@ -11,6 +11,7 @@ struct FFrame;
 struct FObjectInstancingGraph;
 struct FPropertyChangedChainEvent;
 class UFunction;
+class UWorld;
 
 class UObject : public UObjectBaseUtility {
 public:
@@ -24,4 +25,6 @@ public:
 	}
 
 	void ProcessEvent(UFunction* Function, void* Parms);
+
+	UWorld* GetWorld() const;
 };

@@ -3,60 +3,52 @@
 
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
-void AGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
-{
-	void (*InitGameInternal)(AGameModeBase*, const FString&, const FString&, FString&) = decltype(InitGameInternal)(ImageBase + Finder::FindAGameModeBase_InitGame());
-	InitGameInternal(this, MapName, Options, ErrorMessage);
-}
-
-void AGameModeBase::InitGameState()
-{
-	void (*InitGameStateInternal)(AGameModeBase*) = decltype(InitGameStateInternal)(ImageBase + Finder::FindAGameModeBase_InitGameState());
-	InitGameStateInternal(this);
-}
-
-bool AGameModeBase::CanServerTravel(const FString& FURL, bool bAbsolute)
-{
-	bool (*CanServerTravelInternal)(AGameModeBase*, const FString&, bool) = decltype(CanServerTravelInternal)(ImageBase + Finder::FindAGameModeBase_CanServerTravel());
-	return CanServerTravelInternal(this, FURL, bAbsolute);
-}
-
-bool AGameModeBase::MustSpectate(APlayerController* NewPlayerController) const
-{
-	if (!NewPlayerController || !NewPlayerController->PlayerState)
-	{
-		return false;
-	}
-
-	return NewPlayerController->PlayerState->IsOnlyASpectator();
-}
-
 APawn* AGameModeBase::SpawnDefaultPawnFor(AController* NewPlayer, AActor* StartSpot)
 {
-	APawn* (*SpawnDefaultPawnForInternal)(AGameModeBase*, AController*, AActor*) = decltype(SpawnDefaultPawnForInternal)(ImageBase + Finder::FindAGameModeBase_SpawnDefaultPawnFor());
-	return SpawnDefaultPawnForInternal(this, NewPlayer, StartSpot);
+	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"SpawnDefaultPawnFor"));
+	if (Function) {
+		static uintptr_t VTableIdx = GetVTableIndex(Function);
+
+		void (*&SpawnDefaultPawnForInternal)(AGameModeBase*, AController*, AActor*) = decltype(SpawnDefaultPawnForInternal)(VTable[VTableIdx]);
+		SpawnDefaultPawnForInternal(this, NewPlayer, StartSpot);
+	}
 }
 
 APawn* AGameModeBase::SpawnDefaultPawnAtTransform(AController* NewPlayer, const FTransform& SpawnTransform)
 {
-	APawn* (*SpawnDefaultPawnAtTransformInternal)(AGameModeBase*, AController*, const FTransform&) = decltype(SpawnDefaultPawnAtTransformInternal)(ImageBase + Finder::FindAGameModeBase_SpawnDefaultPawnAtTransform());
-	return SpawnDefaultPawnAtTransformInternal(this, NewPlayer, SpawnTransform);
+	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"SpawnDefaultPawnAtTransform"));
+	if (Function) {
+		static uintptr_t VTableIdx = GetVTableIndex(Function);
+
+		void (*&SpawnDefaultPawnAtTransformInternal)(AGameModeBase*, AController*, const FTransform&) = decltype(SpawnDefaultPawnAtTransformInternal)(VTable[VTableIdx]);
+		SpawnDefaultPawnAtTransformInternal(this, NewPlayer, SpawnTransform);
+	}
 }
 
 void AGameModeBase::RestartPlayer(AController* NewPlayer)
 {
-	void (*RestartPlayerInternal)(AGameModeBase*, AController*) = decltype(RestartPlayerInternal)(ImageBase + Finder::FindAGameModeBase_RestartPlayer());
-	RestartPlayerInternal(this, NewPlayer);
+	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"RestartPlayer"));
+	if (Function) {
+		static uintptr_t VTableIdx = GetVTableIndex(Function);
+
+		void (*&RestartPlayerInternal)(AGameModeBase*, AController*) = decltype(RestartPlayerInternal)(VTable[VTableIdx]);
+		RestartPlayerInternal(this, NewPlayer);
+	}
 }
 
 void AGameModeBase::FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation)
 {
-	void (*FinishRestartPlayerInternal)(AGameModeBase*, AController*, const FRotator&) = decltype(FinishRestartPlayerInternal)(ImageBase + Finder::FindAGameModeBase_FinishRestartPlayer());
+	void (*&FinishRestartPlayerInternal)(AGameModeBase*, AController*, const FRotator&) = decltype(FinishRestartPlayerInternal)(VTable[Finder::FindAGameModeBase_FinishRestartPlayerVFT()]);
 	FinishRestartPlayerInternal(this, NewPlayer, StartRotation);
 }
 
 void AGameModeBase::HandleStartingNewPlayer(APlayerController* NewPlayer)
 {
-	void (*HandleStartingNewPlayerInternal)(AGameModeBase*, APlayerController*) = decltype(HandleStartingNewPlayerInternal)(ImageBase + Finder::FindAGameModeBase_HandleStartingNewPlayer());
-	HandleStartingNewPlayerInternal(this, NewPlayer);
+	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"HandleStartingNewPlayer"));
+	if (Function) {
+		static uintptr_t VTableIdx = GetVTableIndex(Function);
+
+		void (*&HandleStartingNewPlayerInternal)(AGameModeBase*, APlayerController*) = decltype(HandleStartingNewPlayerInternal)(VTable[VTableIdx]);
+		HandleStartingNewPlayerInternal(this, NewPlayer);
+	}
 }

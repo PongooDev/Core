@@ -83,6 +83,7 @@ namespace ServerOffsets {
 	inline uintptr_t UObject_PostInitProperties = 0;
 	inline uintptr_t UObject_PostLoad = 0;
 	inline uintptr_t UObject_FindFunctionChecked = 0;
+	inline uintptr_t UObject_GetWorldVFT = 0;
 
 	inline uintptr_t UField_GetOwnerClass = 0;
 	inline uintptr_t UField_GetOwnerStruct = 0;
@@ -202,6 +203,7 @@ namespace ServerOffsets {
 	inline uintptr_t AGameSession_AtCapacity = 0;
 	inline uintptr_t AGameSession_GetSessionJoinability = 0;
 	inline uintptr_t AGameSession_KickPlayer = 0;
+	inline uintptr_t AGameSession_KickPlayerVFT = 0;
 	inline uintptr_t AGameSession_ReturnToMainMenuHost = 0;
 	inline uintptr_t AGameSession_UnregisterPlayer = 0;
 	inline uintptr_t AGameSession_UpdateSessionJoinability = 0;
@@ -221,6 +223,7 @@ namespace ServerOffsets {
 	inline uintptr_t AGameModeBase_SpawnDefaultPawnAtTransform = 0;
 	inline uintptr_t AGameModeBase_RestartPlayer = 0;
 	inline uintptr_t AGameModeBase_FinishRestartPlayer = 0;
+	inline uintptr_t AGameModeBase_FinishRestartPlayerVFT = 0;
 	inline uintptr_t AGameModeBase_HandleStartingNewPlayer = 0;
 
 	inline uintptr_t UKismetStringLibrary_Conv_StringToName = 0;
@@ -493,8 +496,11 @@ namespace ServerOffsets {
 	inline uintptr_t FNetViewer_Constructor = 0;
 
 	inline uintptr_t AActor_GetNetPriority = 0;
+	inline uintptr_t AActor_GetNetPriorityVFT = 0;
 	inline uintptr_t AActor_IsRelevancyOwnerFor = 0;
+	inline uintptr_t AActor_IsRelevancyOwnerForVFT = 0;
 	inline uintptr_t AActor_IsNetRelevantFor = 0;
+	inline uintptr_t AActor_IsNetRelevantForVFT = 0;
 	inline uintptr_t AActor_GetWorld = 0;
 	inline uintptr_t AActor__CreationTime = 0;
 

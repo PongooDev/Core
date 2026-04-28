@@ -282,6 +282,8 @@ public:
 	static uintptr_t FindAGameSession_GetSessionJoinability();
 
 	static uintptr_t FindAGameSession_KickPlayer();
+	
+	static uintptr_t FindAGameSession_KickPlayerVFT();
 
 	static uintptr_t FindAGameSession_ReturnToMainMenuHost();
 
@@ -605,6 +607,8 @@ public:
 
 	static uintptr_t FindAGameModeBase_FinishRestartPlayer();
 
+	static uintptr_t FindAGameModeBase_FinishRestartPlayerVFT();
+
 	static uintptr_t FindAFortGameMode_FinishRestartPlayer();
 
 	static uintptr_t FindAPlayerController_ServerAcknowledgePossession();
@@ -715,6 +719,8 @@ public:
 
 	static uintptr_t FindAActor_GetNetPriority();
 
+	static uintptr_t FindAActor_GetNetPriorityVFT();
+
 	static uintptr_t FindUNetDriver__NetTag();
 
 	static uintptr_t FindUNetDriver__DebugRelevantActors();
@@ -727,6 +733,8 @@ public:
 
 	static uintptr_t FindAActor_IsRelevancyOwnerFor();
 
+	static uintptr_t FindAActor_IsRelevancyOwnerForVFT();
+
 	static uintptr_t FindUActorChannel__RelevantTime();
 
 	static uintptr_t FindUActorChannel_Close();
@@ -736,6 +744,8 @@ public:
 	static uintptr_t FindUNetDriver_IsLevelInitializedForActor();
 
 	static uintptr_t FindAActor_IsNetRelevantFor();
+
+	static uintptr_t FindAActor_IsNetRelevantForVFT();
 
 	static uintptr_t FindFDebug_AssertFailed();
 
@@ -878,6 +888,8 @@ public:
 	static uintptr_t FindUNetDriver_IsServerVFT();
 
 	static uintptr_t FindUNetDriver_IsLevelInitializedForActorVFT();
+
+	static uintptr_t FindUObject_GetWorldVFT();
 public:
 	static void SetupOffsets();
 

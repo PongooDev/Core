@@ -22,7 +22,7 @@ bool AActor::IsNetStartupActor() const
 
 bool AActor::IsRelevancyOwnerFor(const AActor* ReplicatedActor, const AActor* ActorOwner, const AActor* ConnectionActor) const
 {
-	bool (*IsRelevancyOwnerForInternal)(const AActor*, const AActor*, const AActor*, const AActor*) = decltype(IsRelevancyOwnerForInternal)(ImageBase + Finder::FindAActor_IsRelevancyOwnerFor());
+	bool (*&IsRelevancyOwnerForInternal)(const AActor*, const AActor*, const AActor*, const AActor*) = decltype(IsRelevancyOwnerForInternal)(VTable[Finder::FindAActor_IsRelevancyOwnerForVFT()]);
 	return IsRelevancyOwnerForInternal(this, ReplicatedActor, ActorOwner, ConnectionActor);
 }
 
@@ -34,14 +34,8 @@ bool AActor::GetNetDormancy(const FVector& ViewPos, const FVector& ViewDir, AAct
 
 bool AActor::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const
 {
-	bool (*IsNetRelevantForInternal)(const AActor*, const AActor*, const AActor*, const FVector&) = decltype(IsNetRelevantForInternal)(ImageBase + Finder::FindAActor_IsNetRelevantFor());
+	bool (*&IsNetRelevantForInternal)(const AActor*, const AActor*, const AActor*, const FVector&) = decltype(IsNetRelevantForInternal)(VTable[Finder::FindAActor_IsNetRelevantForVFT()]);
 	return IsNetRelevantForInternal(this, RealViewer, ViewTarget, SrcLocation);
-}
-
-UWorld* AActor::GetWorld() const
-{
-	UWorld* (*GetWorldInternal)(const AActor*) = decltype(GetWorldInternal)(ImageBase + Finder::FindAActor_GetWorld());
-	return GetWorldInternal(this);
 }
 
 FVector AActor::GetActorForwardVector() const
@@ -141,10 +135,11 @@ void AActor::CallPreReplication(UNetDriver* NetDriver)
 
 void AActor::ForceNetUpdate()
 {
-	static UFunction* Func = nullptr;
+	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"ForceNetUpdate"));
+	if (Function) {
+		static uintptr_t VTableIdx = GetVTableIndex(Function);
 
-	if (Func == nullptr)
-		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"ForceNetUpdate"));
-
-	ProcessEvent(Func, nullptr);
+		void (*&ForceNetUpdateInternal)(AActor*) = decltype(ForceNetUpdateInternal)(VTable[VTableIdx]);
+		ForceNetUpdateInternal(this);
+	}
 }

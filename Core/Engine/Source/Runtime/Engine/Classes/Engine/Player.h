@@ -19,6 +19,4 @@ public:
 	DefineUProperty(int32, ConfiguredLanSpeed);
 public:
 	APlayerController* GetPlayerController(UWorld* InWorld) const;
-
-	void SwitchController(class APlayerController* PC);
 };

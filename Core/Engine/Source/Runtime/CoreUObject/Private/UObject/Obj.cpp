@@ -19,3 +19,9 @@ void UObject::ProcessEvent(UFunction* Function, void* Parms)
 	void (*&ProcessEventInternal)(UObject*, UFunction*, void*) = decltype(ProcessEventInternal)(VTable[Finder::FindProcessEventVFT()]);
 	ProcessEventInternal(this, Function, Parms);
 }
+
+UWorld* UObject::GetWorld() const
+{
+	UWorld* (*&GetWorldInternal)(const UObject*) = decltype(GetWorldInternal)(VTable[Finder::FindUObject_GetWorldVFT()]);
+	return GetWorldInternal(this);
+}

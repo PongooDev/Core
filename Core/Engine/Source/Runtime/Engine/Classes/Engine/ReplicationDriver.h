@@ -18,8 +18,4 @@ class UReplicationDriver : public UObject {
 public:
 	DefineUnrealClass(UReplicationDriver);
 public:
-	int32 ServerReplicateActors(float DeltaSeconds) {
-		int32(*ServerReplicateActorsInternal)(UReplicationDriver * This, float DeltaSeconds) = decltype(ServerReplicateActorsInternal)(ImageBase + Finder::FindUReplicationDriver_ServerReplicateActors());
-		return ServerReplicateActorsInternal(this, DeltaSeconds);
-	}
 };

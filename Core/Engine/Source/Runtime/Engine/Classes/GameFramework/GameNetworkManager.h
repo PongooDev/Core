@@ -15,6 +15,7 @@ class AGameNetworkManager : public AInfo {
 public:
 	DefineUnrealClass(AGameNetworkManager);
 public:
+	// impl vtable calls for these
 	bool IsInLowBandwidthMode();
 
 	void StandbyCheatDetected(EStandbyType StandbyType);

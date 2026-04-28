@@ -25,37 +25,11 @@ public:
 
 	DefineUProperty(FName, SessionName);
 public:
-	void InitOptions(const FString& Options);
-
 	int32 GetNextPlayerID();
 
-	bool ProcessAutoLogin();
+	bool KickPlayer(APlayerController* KickedPlayer, const FText& KickReason);
 
-	void OnAutoLoginComplete(int32 LocalUserNum, bool bWasSuccessful, const FString& Error);
-
-	FString ApproveLogin(const FString& Options);
-
-	void RegisterPlayer(APlayerController* NewPlayer, const FUniqueNetId& UniqueId, bool bWasFromInvite);
-
-	bool AtCapacity(bool bSpectator);
-
-	bool GetSessionJoinability(FName InSessionName, FJoinabilitySettings& OutSettings);
-
-	void UpdateSessionJoinability(FName InSessionName, bool bPublicSearchable, bool bAllowInvites, bool bJoinViaPresence, bool bJoinViaPresenceFriendsOnly);
-
-	static inline bool (*KickPlayerOG)(AGameSession* This, APlayerController* KickedPlayer, const FText& KickReason);
-	static bool KickPlayer(AGameSession* This, APlayerController* KickedPlayer, const FText& KickReason);
-
-	void ReturnToMainMenuHost();
-
-	void UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& UniqueId);
-	void UnregisterPlayers(FName InSessionName, const TArray<const FUniqueNetId>& Players);
-
-	void UnregisterPlayer(const APlayerController* ExitingPlayer);
-public:
 	static void Hook() {
-		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAGameSession_KickPlayer()), KickPlayer, (LPVOID*)&KickPlayerOG);
-
 		Log("Hooked AGameSession");
 	}
 };
