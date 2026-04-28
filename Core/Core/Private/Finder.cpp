@@ -5345,6 +5345,23 @@ uintptr_t Finder::FindUNetConnection_IsNetReady() {
 	return ServerOffsets::UNetConnection_IsNetReady;
 }
 
+uintptr_t Finder::FindUNetConnection_IsNetReadyVFT() {
+	if (ServerOffsets::UNetConnection_IsNetReadyVFT)
+		return ServerOffsets::UNetConnection_IsNetReadyVFT;
+	uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0x51;
+	}
+
+	if (Addr) {
+		ServerOffsets::UNetConnection_IsNetReadyVFT = Addr;
+	}
+
+	Log("UNetConnection_IsNetReadyVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetConnection_IsNetReadyVFT));
+	return ServerOffsets::UNetConnection_IsNetReadyVFT;
+}
+
 uintptr_t Finder::FindUNetDriver__ReplicationFrame() {
 	if (ServerOffsets::UNetDriver__ReplicationFrame)
 		return ServerOffsets::UNetDriver__ReplicationFrame;
@@ -6732,6 +6749,18 @@ uintptr_t Finder::FindUChannel_StartBecomingDormantVFT() {
 
 	Log("UChannel_StartBecomingDormantVFT found at: 0x" + std::format("{:X}", ServerOffsets::UChannel_StartBecomingDormantVFT));
 	return ServerOffsets::UChannel_StartBecomingDormantVFT;
+}
+
+uintptr_t Finder::FindUNetConnection_GetUChildConnectionVFT() {
+	if (ServerOffsets::UNetConnection_GetUChildConnectionVFT)
+		return ServerOffsets::UNetConnection_GetUChildConnectionVFT;
+
+	if (Version::Engine_Version == 4.16) {
+		ServerOffsets::UNetConnection_GetUChildConnectionVFT = 0x46;
+	}
+
+	Log("UNetConnection_GetUChildConnectionVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetConnection_GetUChildConnectionVFT));
+	return ServerOffsets::UNetConnection_GetUChildConnectionVFT;
 }
 
 void Finder::SetupOffsets() {

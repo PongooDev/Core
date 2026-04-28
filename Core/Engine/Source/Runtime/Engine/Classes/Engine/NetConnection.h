@@ -71,7 +71,8 @@ public:
 
 	UChildConnection* GetUChildConnection()
 	{
-		return NULL;
+		UChildConnection* (*&GetUChildConnectionInternal)(UNetConnection * This) = decltype(GetUChildConnectionInternal)(VTable[Finder::FindUNetConnection_GetUChildConnectionVFT()]);
+		return GetUChildConnectionInternal(this);
 	}
 
 	UChannel* CreateChannel(EChannelType Type, bool bOpenedLocally, int32 ChannelIndex = INDEX_NONE);

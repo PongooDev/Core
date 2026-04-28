@@ -5,7 +5,7 @@
 
 int32 UNetConnection::IsNetReady(bool Saturate)
 {
-	int32(*IsNetReadyInternal)(UNetConnection*, bool) = decltype(IsNetReadyInternal)(ImageBase + Finder::FindUNetConnection_IsNetReady());
+	int32(*&IsNetReadyInternal)(UNetConnection*, bool) = decltype(IsNetReadyInternal)(VTable[Finder::FindUNetConnection_IsNetReadyVFT()]);
 	return IsNetReadyInternal(this, Saturate);
 }
 

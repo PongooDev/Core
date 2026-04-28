@@ -430,6 +430,8 @@ namespace ServerOffsets {
 	inline uintptr_t UPlayer_SwitchController = 0;
 
 	inline uintptr_t UNetConnection_IsNetReady = 0;
+	inline uintptr_t UNetConnection_IsNetReadyVFT = 0;
+	inline uintptr_t UNetConnection_GetUChildConnectionVFT = 0;
 
 	inline uintptr_t UNetDriver__ReplicationFrame = 0;
 	inline uintptr_t UNetDriver_GetNetMode = 0;

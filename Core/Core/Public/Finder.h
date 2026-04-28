@@ -687,6 +687,8 @@ public:
 
 	static uintptr_t FindUNetConnection_IsNetReady();
 
+	static uintptr_t FindUNetConnection_IsNetReadyVFT();
+
 	static uintptr_t FindUNetDriver__ReplicationFrame();
 
 	static uintptr_t FindUNetDriver_GetNetMode();
@@ -866,6 +868,8 @@ public:
 	static uintptr_t FindUChannel_CloseVFT();
 
 	static uintptr_t FindUChannel_StartBecomingDormantVFT();
+
+	static uintptr_t FindUNetConnection_GetUChildConnectionVFT();
 public:
 	static void SetupOffsets();
 
