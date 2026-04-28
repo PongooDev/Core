@@ -137,7 +137,8 @@ void UNetDriver::PrintDebugRelevantActors()
 
 bool UNetDriver::IsServer() const
 {
-	return ServerConnection == NULL;
+	bool (*&IsServerInternal)(const UNetDriver*) = decltype(IsServerInternal)(VTable[Finder::FindUNetDriver_IsServerVFT()]);
+	return IsServerInternal(this);
 }
 
 ENetMode UNetDriver::GetNetMode()
@@ -223,7 +224,7 @@ static FORCEINLINE bool ShouldActorGoDormant(AActor* Actor, const TArray<FNetVie
 
 bool UNetDriver::IsLevelInitializedForActor(const AActor* InActor, const UNetConnection* InConnection) const
 {
-	bool (*IsLevelInitializedForActorInternal)(const UNetDriver*, const AActor*, const UNetConnection*) = decltype(IsLevelInitializedForActorInternal)(ImageBase + Finder::FindUNetDriver_IsLevelInitializedForActor());
+	bool (*&IsLevelInitializedForActorInternal)(const UNetDriver*, const AActor*, const UNetConnection*) = decltype(IsLevelInitializedForActorInternal)(VTable[Finder::FindUNetDriver_IsLevelInitializedForActorVFT()]);
 	return IsLevelInitializedForActorInternal(this, InActor, InConnection);
 }
 

@@ -17,36 +17,6 @@ UChannel* UNetConnection::CreateChannel(EChannelType ChType, bool bOpenedLocally
 
 void UNetConnection::CleanUp()
 {
-	void (*CleanUpInternal)(UNetConnection*) = decltype(CleanUpInternal)(ImageBase + Finder::FindUNetConnection_CleanUp());
+	void (*&CleanUpInternal)(UNetConnection*) = decltype(CleanUpInternal)(VTable[Finder::FindUNetConnection_CleanUpVFT()]);
 	CleanUpInternal(this);
-}
-
-UActorChannel* UNetConnection::FindActorChannelRef(const TWeakObjectPtr<AActor>& Actor)
-{
-	if (!this)
-		return nullptr;
-
-	if (Version::Engine_Version <= 4.19) {
-		if (!OpenChannels.IsValid()) {
-			return nullptr;
-		}
-
-		for (int i = 0; i < OpenChannels.Num(); i++)
-		{
-			if (!OpenChannels.IsValidIndex(i))
-				continue;
-
-			UActorChannel* Channel = OpenChannels[i]->Cast<UActorChannel>();
-			if (!Channel)
-				continue;
-
-			if (Channel->Actor == Actor.Get())
-				return Channel;
-		}
-
-		return nullptr;
-	}
-	else {
-		return nullptr;
-	}
 }

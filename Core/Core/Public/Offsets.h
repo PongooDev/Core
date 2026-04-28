@@ -309,8 +309,11 @@ namespace ServerOffsets {
 	inline uintptr_t FWorldContext__ThisCurrentWorld = 0;
 
 	inline uintptr_t UNetDriver_InitListen = 0;
+	inline uintptr_t UNetDriver_InitListenVFT = 0;
 	inline uintptr_t UNetDriver_SetWorld = 0;
 	inline uintptr_t UNetDriver_TickFlush = 0;
+	inline uintptr_t UNetDriver_IsServerVFT = 0;
+	inline uintptr_t UNetDriver_IsLevelInitializedForActorVFT = 0;
 
 	inline uintptr_t FParse_Param = 0;
 
@@ -476,6 +479,7 @@ namespace ServerOffsets {
 	inline uintptr_t UNetConnection__ClientVisibleLevelNames = 0;
 	inline uintptr_t UNetConnection_CreateChannel = 0;
 	inline uintptr_t UNetConnection_CleanUp = 0;
+	inline uintptr_t UNetConnection_CleanUpVFT = 0;
 	inline uintptr_t UNetConnection__LastRecvAckTime = 0;
 
 	inline uintptr_t UActorChannel__LastUpdateTime = 0;

@@ -27,6 +27,8 @@ public:
 
 	static uintptr_t FindUNetDriver_InitListen();
 
+	static uintptr_t FindUNetDriver_InitListenVFT();
+
 	static uintptr_t FindChangeGameSessionId();
 
 	static uintptr_t FindInternalServerTryActivateAbilityVFT();
@@ -785,6 +787,8 @@ public:
 
 	static uintptr_t FindUNetConnection_CleanUp();
 
+	static uintptr_t FindUNetConnection_CleanUpVFT();
+
 	static uintptr_t FindUNetDriver__bIsStandbyCheckingEnabled();
 
 	static uintptr_t FindUNetDriver__bHasStandbyCheatTriggered();
@@ -870,6 +874,10 @@ public:
 	static uintptr_t FindUChannel_StartBecomingDormantVFT();
 
 	static uintptr_t FindUNetConnection_GetUChildConnectionVFT();
+
+	static uintptr_t FindUNetDriver_IsServerVFT();
+
+	static uintptr_t FindUNetDriver_IsLevelInitializedForActorVFT();
 public:
 	static void SetupOffsets();
 

@@ -178,7 +178,7 @@ public:
 	 * @return true if successful, false otherwise (check Error parameter)
 	 */
 	bool InitListen(UWorld* InWorld, FURL& ListenURL, bool bReuseAddressAndPort, FString& Error) {
-		bool (*InitListenInternal)(UNetDriver*, UWorld*, FURL&, bool, FString&) = decltype(InitListenInternal)(ImageBase + Finder::FindUNetDriver_InitListen());
+		bool (*&InitListenInternal)(UNetDriver*, UWorld*, FURL&, bool, FString&) = decltype(InitListenInternal)(VTable[Finder::FindUNetDriver_InitListenVFT()]);
 		return InitListenInternal(this, InWorld, ListenURL, bReuseAddressAndPort, Error);
 	}
 

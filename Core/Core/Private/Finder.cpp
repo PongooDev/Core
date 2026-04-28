@@ -390,7 +390,6 @@ uintptr_t Finder::FindUNetDriver_SetWorld() {
 	return ServerOffsets::UNetDriver_SetWorld;
 }
 
-// Thx Erbium
 uintptr_t Finder::FindUNetDriver_InitListen() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::UNetDriver_InitListen)
@@ -404,6 +403,17 @@ uintptr_t Finder::FindUNetDriver_InitListen() {
 
 	Log("UNetDriver::InitListen found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_InitListen));
 	return ServerOffsets::UNetDriver_InitListen;
+}
+
+uintptr_t Finder::FindUNetDriver_InitListenVFT() {
+	if (ServerOffsets::UNetDriver_InitListenVFT)
+		return ServerOffsets::UNetDriver_InitListenVFT;
+
+	if (Version::Engine_Version == 4.16)
+		ServerOffsets::UNetDriver_InitListenVFT = 0x48;
+
+	Log("UNetDriver::InitListen VFT Index found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_InitListenVFT));
+	return ServerOffsets::UNetDriver_InitListenVFT;
 }
 
 uintptr_t Finder::FindChangeGameSessionId() {
@@ -6108,6 +6118,23 @@ uintptr_t Finder::FindUNetConnection_CleanUp() {
 	return ServerOffsets::UNetConnection_CleanUp;
 }
 
+uintptr_t Finder::FindUNetConnection_CleanUpVFT() {
+	if (ServerOffsets::UNetConnection_CleanUpVFT)
+		return ServerOffsets::UNetConnection_CleanUpVFT;
+	uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = 0x55;
+	}
+
+	if (Addr) {
+		ServerOffsets::UNetConnection_CleanUpVFT = Addr;
+	}
+
+	Log("UNetConnection_CleanUpVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetConnection_CleanUpVFT));
+	return ServerOffsets::UNetConnection_CleanUpVFT;
+}
+
 uintptr_t Finder::FindUNetDriver__bIsStandbyCheckingEnabled() {
 	if (ServerOffsets::UNetDriver__bIsStandbyCheckingEnabled)
 		return ServerOffsets::UNetDriver__bIsStandbyCheckingEnabled;
@@ -6761,6 +6788,30 @@ uintptr_t Finder::FindUNetConnection_GetUChildConnectionVFT() {
 
 	Log("UNetConnection_GetUChildConnectionVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetConnection_GetUChildConnectionVFT));
 	return ServerOffsets::UNetConnection_GetUChildConnectionVFT;
+}
+
+uintptr_t Finder::FindUNetDriver_IsServerVFT() {
+	if (ServerOffsets::UNetDriver_IsServerVFT)
+		return ServerOffsets::UNetDriver_IsServerVFT;
+
+	if (Version::Engine_Version == 4.16) {
+		ServerOffsets::UNetDriver_IsServerVFT = 0x5E;
+	}
+
+	Log("UNetDriver_IsServerVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_IsServerVFT));
+	return ServerOffsets::UNetDriver_IsServerVFT;
+}
+
+uintptr_t Finder::FindUNetDriver_IsLevelInitializedForActorVFT() {
+	if (ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT)
+		return ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT;
+	
+	if (Version::Engine_Version == 4.16) {
+		ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT = 0x69;
+	}
+
+	Log("UNetDriver_IsLevelInitializedForActorVFT found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT));
+	return ServerOffsets::UNetDriver_IsLevelInitializedForActorVFT;
 }
 
 void Finder::SetupOffsets() {
