@@ -77,9 +77,12 @@ public:
 public:
     FORCEINLINE SetElementType* Find(const SetElementType& Item)
     {
-        for (int32 i = 0; i < Elements.Max(); ++i)
+        for (int32 i = 0; i < Elements.Num(); ++i)
         {
-            if (Elements.IsAllocated(i) && Elements[i].Value == Item)
+            if (!Elements.IsValidIndex(i))
+                continue;
+
+            if (Elements[i].Value == Item)
             {
                 return &Elements[i].Value;
             }
@@ -89,12 +92,12 @@ public:
 
     FORCEINLINE const SetElementType* Find(const SetElementType& Item) const
     {
-        for (int32 i = 0; i < Elements.Max(); ++i)
+        for (int32 i = 0; i < Elements.Num(); ++i)
         {
             if (!Elements.IsValidIndex(i))
                 continue;
 
-            if (Elements.IsAllocated(i) && Elements[i].Value == Item)
+            if (Elements[i].Value == Item)
             {
                 return &Elements[i].Value;
             }
@@ -124,9 +127,12 @@ public:
         if (!IsValid())
             return false;
 
-        for (int32 i = 0; i < Elements.Max(); ++i)
+        for (int32 i = 0; i < Elements.Num(); ++i)
         {
-            if (Elements.IsAllocated(i) && Elements[i].Value == Item)
+            if (!Elements.IsValidIndex(i))
+				continue;
+
+            if (Elements[i].Value == Item)
             {
                 Elements.RemoveAt(i);
                 return true;
@@ -137,7 +143,7 @@ public:
 
     FORCEINLINE void RemoveAt(int32 Index)
     {
-        if (Elements.IsAllocated(Index))
+        if (Elements.IsValidIndex(Index))
         {
             Elements.RemoveAt(Index);
         }
