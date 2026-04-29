@@ -97,5 +97,4 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 	{
 		This->ClientMessage("=== Available Commands ===");
 	}
-	
 }
