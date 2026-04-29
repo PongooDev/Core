@@ -13,4 +13,8 @@ public:
 	void AddBuildingScore(int32 Amount);
 
 	void AddCombatScore(int32 Amount);
+
+	void AddUtilityScore(int32 Amount);
+
+	void AddKillFeedMessage();
 };

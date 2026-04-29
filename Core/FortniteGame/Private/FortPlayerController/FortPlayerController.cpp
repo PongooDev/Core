@@ -96,29 +96,6 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 	if (Parser.IsCommand("Help"))
 	{
 		This->ClientMessage("=== Available Commands ===");
-		This->ClientMessage("AddAllScores <amount>");
-		This->ClientMessage("AddBuildingScore <amount>");
-		This->ClientMessage("AddCombatScore <amount>");
 	}
-	else if (Parser.IsCommand("AddAllScores")) {
-		int32 Amount = Parser.GetArgInt(0, 1000);
-
-		CheatManager->AddAllScores(Amount);
-		This->ClientMessage("Added " + std::to_string(Amount) + " scores to all score types!");
-	}
-	else if (Parser.IsCommand("AddBuildingScore")) {
-		int32 Amount = Parser.GetArgInt(0, 1000);
-
-		CheatManager->AddBuildingScore(Amount);
-		This->ClientMessage("Added " + std::to_string(Amount) + " building score!");
-	} else if (Parser.IsCommand("AddCombatScore")) {
-		int32 Amount = Parser.GetArgInt(0, 1000);
-
-		CheatManager->AddCombatScore(Amount);
-		This->ClientMessage("Added " + std::to_string(Amount) + " combat score!");
-	}
-	else
-	{
-		This->ClientMessage("Unknown command: " + Parser.GetCommand());
-	}
+	
 }
