@@ -5298,10 +5298,15 @@ uintptr_t Finder::FindAFortInventory_InitializeExistingItem() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::AFortInventory_InitializeExistingItem)
 		return ServerOffsets::AFortInventory_InitializeExistingItem;
-	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 80 B9 ? ? ? ? ? 48 8B FA 48 8B D9 0F 84 ? ? ? ? 48 8B 02").Get();
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 83 EC ? ? ? ? 4C 8B F2 48 8B F9").Get();
+	}
+
 	if (Addr) {
 		ServerOffsets::AFortInventory_InitializeExistingItem = Addr - ImageBase;
 	}
+
 	Log("AFortInventory_InitializeExistingItem found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_InitializeExistingItem));
 	return ServerOffsets::AFortInventory_InitializeExistingItem;
 }
@@ -7049,6 +7054,18 @@ uintptr_t Finder::FindUObject_NeedsLoadForClientVFT() {
 
 	Log("UObject_NeedsLoadForClientVFT found at: 0x" + std::format("{:X}", ServerOffsets::UObject_NeedsLoadForClientVFT));
 	return ServerOffsets::UObject_NeedsLoadForClientVFT;
+}
+
+uintptr_t Finder::FindUFortWorldItemDefinition_ServerExecuteVFT() {
+	if (ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT)
+		return ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT;
+
+	if (Version::Engine_Version == 4.16) {
+		ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT = 0x74;
+	}
+
+	Log("UFortWorldItemDefinition_ServerExecuteVFT found at: 0x" + std::format("{:X}", ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT));
+	return ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT;
 }
 
 void Finder::SetupOffsets() {

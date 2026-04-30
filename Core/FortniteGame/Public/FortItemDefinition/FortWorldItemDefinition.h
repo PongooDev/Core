@@ -6,6 +6,8 @@
 class UFortWorldItemDefinition : public UFortItemDefinition {
 public:
 	DefineUnrealClass(UFortWorldItemDefinition);
+public:
+	bool ServerExecute(UFortItem* Item, AFortPlayerController* Instigator);
 };
 
 class UFortAmmoItemDefinition : public UFortWorldItemDefinition {

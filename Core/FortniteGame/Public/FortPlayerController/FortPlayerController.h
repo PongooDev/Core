@@ -13,6 +13,8 @@ class UFortMontageItemDefinitionBase;
 class AFortQuickBars;
 class AFortInventory;
 class FFortItemEntry;
+class UFortWorldItem;
+class UFortItemDefinition;
 
 class AFortPlayerController : public APlayerController {
 public:
@@ -48,6 +50,10 @@ public:
 	static void ServerExecuteInventoryItem(AFortPlayerController* This, FGuid& ItemGuid);
 
 	FFortItemEntry* FindItemEntry(FGuid Guid);
+	FFortItemEntry* FindItemEntry(UFortItemDefinition* ItemDefinition);
+
+	UFortWorldItem* FindItemInstance(FGuid Guid);
+	UFortWorldItem* FindItemInstance(UFortItemDefinition* ItemDefinition);
 
 	static void Hook() {
 		/*HookVTableIdx(

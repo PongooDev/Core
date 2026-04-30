@@ -37,4 +37,6 @@ public:
 	FFortItemEntry* AddItem(UFortItemDefinition* Def, int32 Count = 1);
 
 	bool Update(FFortItemEntry* ItemEntry = nullptr);
+
+	void InitializeExistingItem(UFortWorldItem* ExistingItem);
 };

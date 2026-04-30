@@ -90,20 +90,13 @@ FFortItemEntry* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count)
 
 	Item->SetOwningControllerForTemporaryItem(PC);
 
-	Inventory.ReplicatedEntries.Add(Item->ItemEntry, FFortItemEntry::GetSize());
-	Inventory.ItemInstances.Add(Item);
+	InitializeExistingItem(Item);
 
 	if (Version::Fortnite_Version <= 1.8) {
-		PC->QuickBars->ServerAddItemInternal(Item->ItemEntry.ItemGuid, PC->QuickBars->GetQuickBarForItem(Item), -3);
+		PC->QuickBars->ServerAddItemInternal(Item->ItemEntry.ItemGuid, EFortQuickBars::Max_None, -3);
 	}
 
-	if (Update(&Item->ItemEntry))
-	{
-		return &Item->ItemEntry;
-	}
-
-	Log("Failed to update inventory after giving item.");
-	return nullptr;
+	return &Item->ItemEntry;
 }
 
 bool AFortInventory::Update(FFortItemEntry* ItemEntry)
@@ -125,4 +118,9 @@ bool AFortInventory::Update(FFortItemEntry* ItemEntry)
 	
 	ForceNetUpdate();
 	return true;
+}
+
+void AFortInventory::InitializeExistingItem(UFortWorldItem* ExistingItem) {
+	void (*InitializeExistingItemInternal)(AFortInventory * This, UFortWorldItem * ExistingItem) = decltype(InitializeExistingItemInternal)(ImageBase + Finder::FindAFortInventory_InitializeExistingItem());
+	return InitializeExistingItemInternal(this, ExistingItem);
 }

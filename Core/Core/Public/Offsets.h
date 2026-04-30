@@ -562,4 +562,6 @@ namespace ServerOffsets {
 	inline uintptr_t AFortGameStateZone_ApplyHomebaseEffectsOnPlayerSetup = 0;
 
 	inline uintptr_t AActor_GetNetOwnerVFT = 0;
+
+	inline uintptr_t UFortWorldItemDefinition_ServerExecuteVFT = 0;
 }

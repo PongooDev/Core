@@ -9,6 +9,7 @@
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
 #include "FortniteGame/Public/FortPawn/FortPlayerPawnAthena.h"
 #include "FortniteGame/Public/FortWeapon/FortWeapon.h"
+#include "FortniteGame/Public/FortItem/FortWorldItem.h"
 
 void AFortPlayerController::ClientForceProfileQuery()
 {
@@ -105,53 +106,19 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 }
 
 void AFortPlayerController::ServerExecuteInventoryItem(AFortPlayerController* This, FGuid& ItemGuid) {
-	if (!This->MyFortPawn) {
-		Log("AFortPlayerController::ServerExecuteInventoryItem: MyFortPawn is null!");
+	UFortWorldItem* ItemInstance = This->FindItemInstance(ItemGuid);
+	if (!ItemInstance) {
+		Log("AFortPlayerController::ServerExecuteInventoryItem: ItemInstance not found for GUID: " + ItemGuid.FormatGuid());
 		return;
 	}
 
-	FFortItemEntry* ItemEntry = This->FindItemEntry(ItemGuid);
-	if (!ItemEntry) {
-		Log("AFortPlayerController::ServerExecuteInventoryItem: ItemEntry not found for GUID: " + ItemGuid.FormatGuid());
+	UFortWorldItemDefinition* ItemDef = ItemInstance->ItemEntry.ItemDefinition->Cast<UFortWorldItemDefinition>();
+	if (!ItemDef) {
+		Log("AFortPlayerController::ServerExecuteInventoryItem: ItemDefinition is not a UFortWorldItemDefinition for GUID: " + ItemGuid.FormatGuid());
 		return;
 	}
 
-	if (!ItemEntry->ItemDefinition) {
-		Log("AFortPlayerController::ServerExecuteInventoryItem: ItemDefinition is null for GUID: " + ItemGuid.FormatGuid());
-		return;
-	}
-
-	UFortWeaponItemDefinition* WeaponDef = ItemEntry->ItemDefinition->Cast<UFortWeaponItemDefinition>();
-	if (!WeaponDef)
-	{
-		Log("AFortPlayerController::ServerExecuteInventoryItem: ItemDefinition is not a weapon: " + ItemEntry->ItemDefinition->GetName().ToString());
-		return;
-	}
-
-	AFortWeapon* OldWeapon = This->MyFortPawn->CurrentWeapon;
-	AFortWeapon* Weapon = This->MyFortPawn->EquipWeaponDefinition(WeaponDef, ItemGuid);
-	if (!Weapon) {
-		Log("AFortPlayerController::ServerExecuteInventoryItem: Failed to equip weapon: " + WeaponDef->GetName().ToString());
-		return;
-	}
-
-	if (AFortWeap_BuildingTool* BuildingTool = Weapon->Cast<AFortWeap_BuildingTool>()) {
-		if (UFortBuildingItemDefinition* BuildingItemDef = ItemEntry->ItemDefinition->Cast<UFortBuildingItemDefinition>()) {
-			UBuildingEditModeMetadata* NewMetadata = BuildingItemDef->BuildingMetaData.Get();
-			if (NewMetadata)
-			{
-				UBuildingEditModeMetadata* OldMetadata = BuildingTool->DefaultMetadata;
-				BuildingTool->DefaultMetadata = NewMetadata;
-				BuildingTool->OnRep_DefaultMetadata(OldMetadata);
-			}
-			else
-			{
-				Log("AFortPlayerController::ServerExecuteInventoryItem: BuildingMetaData is null for " + BuildingItemDef->GetName().ToString());
-			}
-		}
-	}
-
-	This->MyFortPawn->OnRep_CurrentWeapon(OldWeapon);
+	ItemDef->ServerExecute(ItemInstance, This);
 }
 
 FFortItemEntry* AFortPlayerController::FindItemEntry(FGuid Guid) {
@@ -161,4 +128,42 @@ FFortItemEntry* AFortPlayerController::FindItemEntry(FGuid Guid) {
 	}
 
 	return WorldInventory->FindItemEntry(Guid);
+}
+
+FFortItemEntry* AFortPlayerController::FindItemEntry(UFortItemDefinition* ItemDefinition)
+{
+	if (!ItemDefinition) {
+		Log("AFortPlayerController::FindItemEntry: ItemDefinition is null!");
+		return nullptr;
+	}
+	if (!WorldInventory) {
+		Log("AFortPlayerController::FindItemEntry: WorldInventory is null!");
+		return nullptr;
+	}
+
+	return WorldInventory->FindItemEntry(ItemDefinition);
+}
+
+UFortWorldItem* AFortPlayerController::FindItemInstance(FGuid Guid)
+{
+	if (!WorldInventory) {
+		Log("AFortPlayerController::FindItemInstance: WorldInventory is null!");
+		return nullptr;
+	}
+
+	return WorldInventory->FindItemInstance(Guid);
+}
+
+UFortWorldItem* AFortPlayerController::FindItemInstance(UFortItemDefinition* ItemDefinition)
+{
+	if (!ItemDefinition) {
+		Log("AFortPlayerController::FindItemInstance: ItemDefinition is null!");
+		return nullptr;
+	}
+	if (!WorldInventory) {
+		Log("AFortPlayerController::FindItemInstance: WorldInventory is null!");
+		return nullptr;
+	}
+
+	return WorldInventory->FindItemInstance(ItemDefinition);
 }

@@ -363,6 +363,7 @@
     <ClCompile Include="FortniteGame\Private\FortInventory\FortInventory.cpp" />
     <ClCompile Include="FortniteGame\Private\FortInventory\FortQuickBars.cpp" />
     <ClCompile Include="FortniteGame\Private\FortItemDefinition\FortItemDefinition.cpp" />
+    <ClCompile Include="FortniteGame\Private\FortItemDefinition\FortWorldItemDefinition.cpp" />
     <ClCompile Include="FortniteGame\Private\FortItem\FortItem.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPawn\FortPawn.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPawn\FortPlayerPawn.cpp" />
