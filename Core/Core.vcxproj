@@ -158,6 +158,7 @@
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\Templates\SubclassOf.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\CoreNet.h" />
+    <ClInclude Include="Engine\Source\Runtime\GameplayTags\Classes\GameplayTagContainer.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\Interface.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\NoExportTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\Object.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\EngineTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\GameInstance.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\GameViewportClient.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\HitResult.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Level.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\LocalPlayer.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\NetConnection.h" />
@@ -248,6 +250,7 @@
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Public\Net\Core\Connection\NetEnums.h" />
     <ClInclude Include="FortniteGame\Public\AI\FortAIDirector.h" />
     <ClInclude Include="FortniteGame\Public\AI\FortAIGoalManager.h" />
+    <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingActor.h" />
     <ClInclude Include="FortniteGame\Public\Cheat\FortCheatManager.h" />
     <ClInclude Include="FortniteGame\Public\FortAbility\FortAbilitySet.h" />
     <ClInclude Include="FortniteGame\Public\FortAbility\FortGameplayAbility.h" />
@@ -351,6 +354,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\UnrealEngine.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\URL.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\World.cpp" />
+    <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingActor.cpp" />
     <ClCompile Include="FortniteGame\Private\Cheat\FortCheatManager.cpp" />
     <ClCompile Include="FortniteGame\Private\FortGameMode\FortGameMode.cpp" />
     <ClCompile Include="FortniteGame\Private\FortGameMode\FortGameModeAthena.cpp" />
