@@ -419,14 +419,17 @@ uintptr_t Finder::FindUNetDriver_SetWorld() {
 }
 
 uintptr_t Finder::FindUNetDriver_InitListen() {
-	static uintptr_t Addr = 0;
 	if (ServerOffsets::UNetDriver_InitListen)
 		return ServerOffsets::UNetDriver_InitListen;
 
-	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B BC 24 ? ? ? ? 49 8B F0").Get();
+	auto str_addr = Memcury::Scanner::FindStringRef(L"%s IpNetDriver listening on port %i").Get();
 
-	if (Addr) {
-		ServerOffsets::UNetDriver_InitListen = Addr - ImageBase;
+	for (int i = 0; i < 300; i++)
+	{
+		if (*(uint8*)(str_addr - i + 0) == 0x48 && *(uint8*)(str_addr - i + 1) == 0x89 && *(uint8*)(str_addr - i + 2) == 0x5C)
+		{
+			ServerOffsets::UNetDriver_InitListen = (str_addr - i) - ImageBase;
+		}
 	}
 
 	Log("UNetDriver::InitListen found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_InitListen));
@@ -437,8 +440,16 @@ uintptr_t Finder::FindUNetDriver_InitListenVFT() {
 	if (ServerOffsets::UNetDriver_InitListenVFT)
 		return ServerOffsets::UNetDriver_InitListenVFT;
 
-	if (Version::Engine_Version == 4.16)
-		ServerOffsets::UNetDriver_InitListenVFT = 0x48;
+	static void** NetDriverVFT = ((UClass*)FUObjectArray::FindObject("Class /Script/OnlineSubsystemUtils.IpNetDriver"))->GetDefaultObject()->VTable;
+
+	for (int i = 0; i < 400; i++)
+	{
+		if ((uintptr_t)NetDriverVFT[i] == FindUNetDriver_InitListen())
+		{
+			ServerOffsets::UNetDriver_InitListenVFT = i;
+			break;
+		}
+	}
 
 	Log("UNetDriver::InitListen VFT Index found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_InitListenVFT));
 	return ServerOffsets::UNetDriver_InitListenVFT;
@@ -750,13 +761,23 @@ uintptr_t Finder::FindStepExplicitProperty() {
 uintptr_t Finder::FindFMemory_Free() {
 	if (ServerOffsets::FMemory_Free)
 		return ServerOffsets::FMemory_Free;
-	static uintptr_t Addr = 0;
 
-	// 12.41 sig
-	Addr = Memcury::Scanner::FindPattern("48 85 C9 74 ? 53 48 83 EC ? 48 8B D9 48 8B 0D").Get();
+	int skipped = 0;
 
-	if (Addr) {
-		ServerOffsets::FMemory_Free = Addr - ImageBase;
+	auto straddr = Memcury::Scanner::FindStringRef(L"%s IpNetDriver listening on port %i").Get();
+
+	for (int i = 0; i < 100; i++)
+	{
+		uintptr_t Addy = straddr + i;
+		if (*(uint8*)(Addy) == 0xE8)
+		{
+			if (skipped == 1)
+			{
+				ServerOffsets::FMemory_Free = Utils::GetCallDestination(Addy) - ImageBase;
+				break;
+			}
+			skipped++;
+		}
 	}
 
 	Log("FMemory::Free found at: 0x" + std::format("{:X}", ServerOffsets::FMemory_Free));
@@ -5338,14 +5359,13 @@ uintptr_t Finder::FindAFortInventory_GetOverflowFromAddingItemInNewStack() {
 }
 
 uintptr_t Finder::FindAFortInventory_GetInventoryUsed() {
-	static uintptr_t Addr = 0;
 	if (ServerOffsets::AFortInventory_GetInventoryUsed)
 		return ServerOffsets::AFortInventory_GetInventoryUsed;
-	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 83 EC ? 33 F6 8B EA").Get();
-	if (Addr) {
-		ServerOffsets::AFortInventory_GetInventoryUsed = Addr - ImageBase;
-	}
-	Log("AFortInventory_GetInventoryUsed found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryUsed));
+
+	static uintptr_t ExecFunc = (uintptr_t)StaticLoadObject<UFunction>("Function /Script/FortniteUI.FortInventoryContext.GetBackpackItemCounts")->Func;
+
+
+
 	return ServerOffsets::AFortInventory_GetInventoryUsed;
 }
 
