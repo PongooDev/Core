@@ -106,6 +106,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		This->ClientMessage("=== Available Commands ===");
 		This->ClientMessage("GiveItem <ItemDefinitionName> [Count] [bStack] - Gives an item to the player's inventory.");
 		This->ClientMessage("SetLoadedAmmo <LoadedAmmo> - Sets the loaded ammo of the currently equipped weapon.");
+		This->ClientMessage("GiveAmmo [Amount] - Gives ammo for the currently equipped weapon.");
 	}
 	else if (Parser.IsCommand("GiveItem")) {
 		if (Parser.GetArgCount() < 1)
@@ -195,10 +196,6 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 				This->ClientMessage("Failed to add item: " + ItemDefName);
 			}
 		}
-
-		if (ExistingEntry) {
-			ExistingEntry->SetStateValue(EFortItemEntryState::ShouldShowItemToast, 1);
-		}
 	}
 	else if (Parser.IsCommand("SetLoadedAmmo")) {
 		if (Parser.GetArgCount() < 1)
@@ -275,10 +272,22 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 				This->ClientMessage("Failed to add ammo item: " + AmmoItemDef->GetName().ToString());
 			}
 		}
-
-		if (AmmoEntry) {
-			AmmoEntry->SetStateValue(EFortItemEntryState::ShouldShowItemToast, 1);
+	} else if (Parser.IsCommand("DumpInventory")) {
+		if (!This->WorldInventory) {
+			This->ClientMessage("WorldInventory is null!");
+			return;
 		}
+		This->ClientMessage("=== Inventory Dump ===");
+		
+		for (UFortWorldItem* ItemEntry : This->WorldInventory->Inventory.ItemInstances) {
+			std::string ItemName = ItemEntry->ItemEntry.ItemDefinition ? ItemEntry->ItemEntry.ItemDefinition->GetName().ToString() : "Unknown";
+			int32 Count = ItemEntry->ItemEntry.Count;
+			std::string FormattedGuid = ItemEntry->ItemEntry.ItemGuid.FormatGuid();
+
+			This->ClientMessage("Item: " + ItemName + ", Count: " + std::to_string(Count) + ", GUID: " + FormattedGuid);
+		}
+
+		This->ClientMessage("=== End of Inventory Dump ===");
 	}
 }
 
@@ -387,9 +396,10 @@ void AFortPlayerController::ServerAttemptInventoryDrop(AFortPlayerController* Th
 
 	FVector PawnLocation = This->MyFortPawn->K2_GetActorLocation();
 
+	Log("AFortPlayerController::ServerAttemptInventoryDrop: Attempting to drop item with GUID: " + ItemGuid.FormatGuid() + ", Count: " + std::to_string(Count) + ", bTrash: " + std::to_string(bTrash));
 	FFortItemEntry* ItemEntry = This->FindItemEntry(ItemGuid);
 	if (ItemEntry) {
-		if (ItemEntry->ItemDefinition && This->WorldInventory->RemoveItem(ItemEntry->ItemDefinition, Count)) {
+		if (ItemEntry->ItemDefinition) {
 			if (!bTrash) {
 				AFortPickup* Pickup = UFortKismetLibrary::K2_SpawnPickupInWorld(
 					World,
@@ -408,6 +418,7 @@ void AFortPlayerController::ServerAttemptInventoryDrop(AFortPlayerController* Th
 					false
 				);
 			}
+			This->WorldInventory->RemoveItem(ItemEntry->ItemDefinition, Count);
 		}
 	}
 }
