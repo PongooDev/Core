@@ -5301,18 +5301,6 @@ uintptr_t Finder::FindAFortInventory_DumpInventoryToLog() {
 	return ServerOffsets::AFortInventory_DumpInventoryToLog;
 }
 
-uintptr_t Finder::FindAFortInventory_GetInventoryCapacity() {
-	static uintptr_t Addr = 0;
-	if (ServerOffsets::AFortInventory_GetInventoryCapacity)
-		return ServerOffsets::AFortInventory_GetInventoryCapacity;
-	Addr = Memcury::Scanner::FindPattern("40 55 53 56 57 41 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? 33 F6 44 8B FA").Get();
-	if (Addr) {
-		ServerOffsets::AFortInventory_GetInventoryCapacity = Addr - ImageBase;
-	}
-	Log("AFortInventory_GetInventoryCapacity found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryCapacity));
-	return ServerOffsets::AFortInventory_GetInventoryCapacity;
-}
-
 uintptr_t Finder::FindAFortInventory_GetOverflowFromAddingItem() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::AFortInventory_GetOverflowFromAddingItem)
@@ -7133,6 +7121,67 @@ uintptr_t Finder::FindUFortWorldItemDefinition_ServerExecuteVFT() {
 
 	Log("UFortWorldItemDefinition_ServerExecuteVFT found at: 0x" + std::format("{:X}", ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT));
 	return ServerOffsets::UFortWorldItemDefinition_ServerExecuteVFT;
+}
+
+uintptr_t Finder::FindAFortInventory_GetInventoryCapacity()
+{
+	if (ServerOffsets::AFortInventory_GetInventoryCapacity)
+		return ServerOffsets::AFortInventory_GetInventoryCapacity;
+
+	//GetInventoryCapacityInternal is returning an overridden value of %i
+	//GetInventoryCapacity is returning an overridden value of %i (NEW ONE!!)
+
+	bool bOld = false;
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"GetInventoryCapacity is returning an overridden value of %i").Get();
+	if (!StringAddr)
+	{
+		bOld = true;
+		StringAddr = Memcury::Scanner::FindStringRef(L"GetInventoryCapacityInternal is returning an overridden value of %i").Get();
+	}
+
+	if (bOld)
+	{
+		uintptr_t InternalFunctionAddr = 0;
+
+		for (int i = 0; i < 300; i++)
+		{
+			if (*(uint8*)(StringAddr - i + 0) == 0x48 && *(uint8*)(StringAddr - i + 1) == 0x89 && *(uint8*)(StringAddr - i + 2) == 0x5C)
+			{
+				InternalFunctionAddr = StringAddr - i;
+				break;
+			}
+		}
+
+		auto textSection = Memcury::PE::Section::GetSection(".text");
+		const auto scanBytes = reinterpret_cast<std::uint8_t*>(textSection.GetSectionStart().Get());
+		uintptr_t FunctionAddr = 0;
+		uintptr_t InternalFunctionRefAddr = 0;
+		for (DWORD i = 0x0; i < textSection.GetSectionSize(); i++)
+		{
+			if (scanBytes[i] == 0xE9)
+			{
+				if (Utils::GetCallDestination(textSection.GetSectionStart().Get() + i) == InternalFunctionAddr)
+				{
+					InternalFunctionRefAddr = Memcury::PE::Address(&scanBytes[i]).Get();
+					break;
+				}
+			}
+		}
+
+		for (int i = 0; i < 130; i++)
+		{
+			if (*(uint8*)(InternalFunctionRefAddr - i + 0) == 0x48 && *(uint8*)(InternalFunctionRefAddr - i + 1) == 0x89)
+			{
+				FunctionAddr = InternalFunctionRefAddr - i;
+				break;
+			}
+		}
+		ServerOffsets::AFortInventory_GetInventoryCapacity = FunctionAddr - ImageBase;
+	}
+
+	Log("AFortInventory_GetInventoryCapacity found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryCapacity));
+
+	return ServerOffsets::AFortInventory_GetInventoryCapacity;
 }
 
 void Finder::SetupOffsets() {
