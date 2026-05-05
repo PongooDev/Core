@@ -272,6 +272,7 @@ int32 AFortInventory::GetInventoryCapacity() {
 }
 
 int32 AFortInventory::GetInventoryUsed() {
+	// This should be a vtable too
 	if (Finder::FindAFortInventory_GetInventoryUsed() != 0) {
 		if (Version::Fortnite_Version >= 1.8) {
 			IFortInventoryOwnerInterface* InventoryOwner = (IFortInventoryOwnerInterface*)Owner->GetInterfaceAddress(IFortInventoryOwnerInterface::StaticClass());
