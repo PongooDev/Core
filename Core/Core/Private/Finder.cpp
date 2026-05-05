@@ -5257,7 +5257,7 @@ static uintptr_t FindABuildingContainer_SpawnLootVFT() {
 		{
 			if (*(uint8*)(StringAddr - i + 0) == 0x41 && *(uint8*)(StringAddr - i + 1) == 0xff)
 			{
-				ServerOffsets::ABuildingContainer_SpawnLootVFT = *(uint32_t*)(StringAddr - i + 2);
+				ServerOffsets::ABuildingContainer_SpawnLootVFT = *(uint32_t*)(StringAddr - i + 2) / 8;
 			}
 		}
 	}
@@ -5269,7 +5269,7 @@ static uintptr_t FindABuildingContainer_SpawnLootVFT() {
 		{
 			if (*(uint8*)(ServerOnAttemptInteract_Addr + i + 0) == 0x41 && *(uint8*)(ServerOnAttemptInteract_Addr + i + 1) == 0xff)
 			{
-				ServerOffsets::ABuildingContainer_SpawnLootVFT = *(uint32_t*)(ServerOnAttemptInteract_Addr + i + 2);
+				ServerOffsets::ABuildingContainer_SpawnLootVFT = *(uint32_t*)(ServerOnAttemptInteract_Addr + i + 2) / 8;
 			}
 		}
 	}
