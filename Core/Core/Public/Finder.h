@@ -661,7 +661,7 @@ public:
 
 	static uintptr_t FindAFortQuickBars_GetFocusedQuickBar();
 
-	static uintptr_t FindABuildingContainer_SpawnLoot();
+	static uintptr_t FindABuildingContainer_SpawnLootVFT();
 
 	static uintptr_t FindAFortPickup_SetupForMovementCompToss();
 
@@ -920,7 +920,6 @@ public:
 	static uintptr_t FindUObject_NeedsLoadForClientVFT();
 
 	static uintptr_t FindUFortWorldItemDefinition_ServerExecuteVFT();
-
 public:
 	static void SetupOffsets();
 

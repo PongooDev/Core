@@ -425,7 +425,7 @@ namespace ServerOffsets {
 
 	inline uintptr_t AFortQuickBars_GetFocusedQuickBar = 0;
 
-	inline uintptr_t ABuildingContainer_SpawnLoot = 0;
+	inline uintptr_t ABuildingContainer_SpawnLootVFT = 0;
 
 	inline uintptr_t AFortInventory_Destroyed = 0;
 	inline uintptr_t AFortInventory_DumpInventoryToLog = 0;

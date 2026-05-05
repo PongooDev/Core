@@ -5245,16 +5245,37 @@ uintptr_t Finder::FindAFortQuickBars_GetFocusedQuickBar() {
 	return ServerOffsets::AFortQuickBars_GetFocusedQuickBar;
 }
 
-uintptr_t Finder::FindABuildingContainer_SpawnLoot() {
-	static uintptr_t Addr = 0;
-	if (ServerOffsets::ABuildingContainer_SpawnLoot)
-		return ServerOffsets::ABuildingContainer_SpawnLoot;
-	Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 80 3D ? ? ? ? ? 48 8B D9 0F 82 ? ? ? ? 48 89 74 24 ? 48 8D 54 24 ? 45 33 C0").Get();
-	if (Addr) {
-		ServerOffsets::ABuildingContainer_SpawnLoot = Addr - ImageBase;
+static uintptr_t FindABuildingContainer_SpawnLootVFT() {
+	if (ServerOffsets::ABuildingContainer_SpawnLootVFT)
+		return ServerOffsets::ABuildingContainer_SpawnLootVFT;
+
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"ABuildingContainer::ServerOnAttemptInteract %s failed for %s").Get();
+
+	if (StringAddr)
+	{
+		for (int i = 0; i < 300; i++)
+		{
+			if (*(uint8*)(StringAddr - i + 0) == 0x41 && *(uint8*)(StringAddr - i + 1) == 0xff)
+			{
+				ServerOffsets::ABuildingContainer_SpawnLootVFT = *(uint32_t*)(StringAddr - i + 2);
+			}
+		}
 	}
-	Log("ABuildingContainer_SpawnLoot found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingContainer_SpawnLoot));
-	return ServerOffsets::ABuildingContainer_SpawnLoot;
+	else
+	{
+		uintptr_t ServerOnAttemptInteract_Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 0F B6 02 48 8B D9 FE C8").Get();
+
+		for (int i = 0; i < 150; i++)
+		{
+			if (*(uint8*)(ServerOnAttemptInteract_Addr + i + 0) == 0x41 && *(uint8*)(ServerOnAttemptInteract_Addr + i + 1) == 0xff)
+			{
+				ServerOffsets::ABuildingContainer_SpawnLootVFT = *(uint32_t*)(ServerOnAttemptInteract_Addr + i + 2);
+			}
+		}
+	}
+
+	Log("ABuildingContainer_SpawnLoot found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingContainer_SpawnLootVFT));
+	return ServerOffsets::ABuildingContainer_SpawnLootVFT;
 }
 
 uintptr_t Finder::FindAFortPickup_SetupForMovementCompToss() {
