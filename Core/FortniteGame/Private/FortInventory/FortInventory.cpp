@@ -266,6 +266,7 @@ bool AFortInventory::RemoveItem(UFortItemDefinition* Def, int32 Count) {
 }
 
 int32 AFortInventory::GetInventoryCapacity() {
+	// This should be a vtable, atleast on some versions if not all
 	int32(*GetInventoryCapacityInternal)(AFortInventory * This) = decltype(GetInventoryCapacityInternal)(ImageBase + Finder::FindAFortInventory_GetInventoryCapacity());
 	return GetInventoryCapacityInternal(this);
 }
