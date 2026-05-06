@@ -20,9 +20,4 @@ public:
 			&& IntValue == Other.IntValue
 			&& NameValue.IsEqual(Other.NameValue);
 	}
-
-	FFortItemEntryStateValue(EFortItemEntryState InStateType) {
-		StateType = InStateType;
-		IntValue = 0;
-	}
 };

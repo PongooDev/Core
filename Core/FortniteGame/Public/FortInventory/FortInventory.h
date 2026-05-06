@@ -34,7 +34,10 @@ public:
 	UFortWorldItem* FindItemInstance(FGuid Guid);
 	UFortWorldItem* FindItemInstance(UFortItemDefinition* ItemDefinition);
 
-	FFortItemEntry* AddItem(UFortItemDefinition* Def, int32 Count = 1);
+	UFortWorldItem* AddItem(UFortWorldItem* Item);
+	UFortWorldItem* AddItem(UFortItemDefinition* Def, int32 Count = 1, int32 Level = 0);
+	UFortWorldItem* AddItem(FFortItemEntry& ItemEntry);
+
 	int32 GetOverflowFromAddingItem(UFortItemDefinition* Def, int32 Count = 1);
 
 	bool Update(FFortItemEntry* ItemEntry = nullptr);

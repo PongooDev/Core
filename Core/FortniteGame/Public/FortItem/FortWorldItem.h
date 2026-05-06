@@ -16,4 +16,13 @@ public:
 	DefineUnrealClass(UFortWorldItem);
 
 	DefineUProperty(FFortItemEntry, ItemEntry);
+
+public:
+	operator FFortItemEntry& () {
+		return ItemEntry;
+	}
+
+	operator FFortItemEntry* () {
+		return &ItemEntry;
+	}
 };

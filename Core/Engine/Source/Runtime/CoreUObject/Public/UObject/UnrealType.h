@@ -210,7 +210,6 @@ public: \
                 Name##_Offset = Struct->GetPropertyOffset(#Name); \
             } \
             if (Name##_Offset == -1) { \
-                Log("Failed to find struct property: " #Name); \
                 Name##_Offset = 0; \
             } \
         } \
@@ -227,7 +226,6 @@ public: \
                 Name##_Offset = Struct->GetPropertyOffset(#Name); \
             } \
             if (Name##_Offset == -1) { \
-                Log("Failed to find struct property: " #Name); \
                 Name##_Offset = 0; \
             } \
         } \
@@ -244,7 +242,6 @@ public: \
                 Name##_Offset = Struct->GetPropertyOffset(#Name); \
             } \
             if (Name##_Offset == -1) { \
-                Log("Failed to find struct property: " #Name); \
                 return; \
             } \
         } \

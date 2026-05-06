@@ -189,7 +189,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		}
 		else
 		{
-			ExistingEntry = This->WorldInventory->AddItem(ItemDef, Count);
+			ExistingEntry = &This->WorldInventory->AddItem(ItemDef, Count)->ItemEntry;
 			if (ExistingEntry) {
 				ExistingEntry->LoadedAmmo = ItemDef->GetClipSize();
 				This->ClientMessage("Added new item entry: " + ItemDefName + " x" + std::to_string(Count));
@@ -266,7 +266,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 			This->ClientMessage("Added " + AmmoItemDef->GetName().ToString() + " " + std::to_string(AmmoAmount) + " ammo to existing stack.");
 		}
 		else {
-			AmmoEntry = This->WorldInventory->AddItem(AmmoItemDef, AmmoAmount);
+			AmmoEntry = &This->WorldInventory->AddItem(AmmoItemDef, AmmoAmount)->ItemEntry;
 			if (AmmoEntry) {
 				This->ClientMessage("Added new ammo entry: " + AmmoItemDef->GetName().ToString() + " x" + std::to_string(AmmoAmount));
 			}

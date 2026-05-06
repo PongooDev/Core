@@ -105,18 +105,20 @@ UFortWorldItem* AFortInventory::FindItemInstance(UFortItemDefinition* ItemDefini
 	return nullptr;
 }
 
-FFortItemEntry* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count)
+UFortWorldItem* AFortInventory::AddItem(UFortWorldItem* Item)
 {
-	if (!Def || !Owner) return nullptr;
-	AFortPlayerController* PC = Owner->Cast<AFortPlayerController>();
-	if (!PC) return nullptr;
+	if (!Item || !Owner)
+		return nullptr;
 
-	UFortWorldItem* Item = (UFortWorldItem*)Def->CreateTemporaryItemInstanceBP(Count, 0);
-	if (!Item) {
-		Log("Failed to create temporary item instance for item definition: " + Def->GetName().ToString());
+	AFortPlayerController* PC = Owner->Cast<AFortPlayerController>();
+	if (!PC)
+		return nullptr;
+
+	if (!PC->QuickBars) {
+		Log("AFortInventory::AddItem: PC->QuickBars is null!");
 		return nullptr;
 	}
-
+	
 	Item->SetOwningControllerForTemporaryItem(PC);
 
 	InitializeExistingItem(Item);
@@ -125,7 +127,73 @@ FFortItemEntry* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count)
 		PC->QuickBars->ServerAddItemInternal(Item->ItemEntry.ItemGuid, EFortQuickBars::Max_None, -3);
 	}
 
-	return FindItemEntry(Item->ItemEntry.ItemGuid);
+	return Item;
+}
+
+UFortWorldItem* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count, int32 Level)
+{
+	if (!Def)
+	{
+		Log("AFortInventory::AddItem: Def is null!");
+		return nullptr;
+	}
+
+	if (Count <= 0)
+	{
+		Log("AFortInventory::AddItem: Count must be > 0");
+		return nullptr;
+	}
+
+	UFortWorldItem* Item = (UFortWorldItem*)Def->CreateTemporaryItemInstanceBP(Count, Level);
+	if (!Item)
+	{
+		Log("AFortInventory::AddItem: Failed to create temp item for " + Def->GetName().ToString());
+		return nullptr;
+	}
+
+	return AddItem(Item);
+}
+
+UFortWorldItem* AFortInventory::AddItem(FFortItemEntry& ItemEntry)
+{
+	if (!Owner)
+		return nullptr;
+
+	AFortPlayerController* PC = Owner->Cast<AFortPlayerController>();
+	if (!PC)
+		return nullptr;
+
+	UFortItemDefinition* Def = ItemEntry.ItemDefinition;
+	if (!Def)
+	{
+		Log("AFortInventory::AddItem: ItemEntry.ItemDefinition is null!");
+		return nullptr;
+	}
+
+	UFortWorldItem* Item = AddItem(Def, ItemEntry.Count, ItemEntry.Level);
+	if (!Item)
+		return nullptr;
+
+	if (FFortItemEntry* RepEntry = FindItemEntry(Item->ItemEntry.ItemGuid))
+	{
+		RepEntry->AlterationDefinitions = ItemEntry.AlterationDefinitions;
+		RepEntry->AlterationInstances = ItemEntry.AlterationInstances;
+		RepEntry->bUpdateStatsOnCollection = ItemEntry.bUpdateStatsOnCollection;
+		RepEntry->ControlOverride = ItemEntry.ControlOverride;
+		RepEntry->Durability = ItemEntry.Durability;
+		RepEntry->GiftingInfo = ItemEntry.GiftingInfo;
+		RepEntry->ItemSource = ItemEntry.ItemSource;
+		RepEntry->LoadedAmmo = ItemEntry.LoadedAmmo;
+		RepEntry->StateValues = ItemEntry.StateValues;
+
+		Update(RepEntry);
+	}
+	else
+	{
+		Log("AFortInventory::AddItem(FFortItemEntry&): Could not find RepEntry for GUID " + Item->ItemEntry.ItemGuid.FormatGuid());
+	}
+
+	return Item;
 }
 
 int32 AFortInventory::GetOverflowFromAddingItem(UFortItemDefinition* Def, int32 Count) {
