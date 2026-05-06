@@ -7177,7 +7177,7 @@ uintptr_t Finder::FindAFortInventory_GetInventoryCapacity()
 	//GetInventoryCapacityInternal is returning an overridden value of %i
 	//GetInventoryCapacity is returning an overridden value of %i (NEW ONE!!)
 
-	bool bOld = false;
+	/*bool bOld = false;
 	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"GetInventoryCapacity is returning an overridden value of %i").Get();
 	if (!StringAddr)
 	{
@@ -7234,10 +7234,17 @@ uintptr_t Finder::FindAFortInventory_GetInventoryCapacity()
 			break;
 		}
 	}
-	ServerOffsets::AFortInventory_GetInventoryCapacity = FunctionAddr - ImageBase;
+	ServerOffsets::AFortInventory_GetInventoryCapacity = FunctionAddr - ImageBase;*/
+
+	uintptr_t Addr = 0;
+
+	Addr = Memcury::Scanner::FindPattern("40 57 48 83 EC ? 48 8B F9 48 85 C9 0F 84 ? ? ? ? 48 89 5C 24").Get();
+
+	if (Addr) {
+		ServerOffsets::AFortInventory_GetInventoryCapacity = Addr - ImageBase;
+	}
 
 	Log("AFortInventory_GetInventoryCapacity found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryCapacity));
-
 	return ServerOffsets::AFortInventory_GetInventoryCapacity;
 }
 
