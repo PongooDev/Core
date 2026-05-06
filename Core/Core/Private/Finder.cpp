@@ -7174,74 +7174,50 @@ uintptr_t Finder::FindAFortInventory_GetInventoryCapacity()
 	if (ServerOffsets::AFortInventory_GetInventoryCapacity)
 		return ServerOffsets::AFortInventory_GetInventoryCapacity;
 
-	//GetInventoryCapacityInternal is returning an overridden value of %i
-	//GetInventoryCapacity is returning an overridden value of %i (NEW ONE!!)
+	uintptr_t execGetBackpackItemCounts_ADDR = (uintptr_t)(((UFunction*)FUObjectArray::FindObject("Function /Script/FortniteUI.FortInventoryContext.GetBackpackItemCounts"))->Func);
+	uintptr_t GetBackpackItemCounts_Impl_ADDR = 0x0;
 
-	/*bool bOld = false;
-	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"GetInventoryCapacity is returning an overridden value of %i").Get();
-	if (!StringAddr)
+	uintptr_t C3_Point = 0x0; //bro if this exec function didnt have 0xC3 at the end i would fucking die
+
+	for (int i = 0; i < 1000; i++)
 	{
-		bOld = true;
-		StringAddr = Memcury::Scanner::FindStringRef(L"GetInventoryCapacityInternal is returning an overridden value of %i").Get();
-	}
+		uintptr_t CurrentAddr = execGetBackpackItemCounts_ADDR + i;
 
-	uintptr_t InternalFunctionAddr = 0;
-
-	if (bOld)
-	{
-		for (int i = 0; i < 300; i++)
+		if (*(uint8*)(CurrentAddr) == 0xC3)
 		{
-			if (*(uint8*)(StringAddr - i + 0) == 0x48 && *(uint8*)(StringAddr - i + 1) == 0x89 && *(uint8*)(StringAddr - i + 2) == 0x5C)
-			{
-				InternalFunctionAddr = StringAddr - i;
-				break;
-			}
-		}
-	}
-	else
-	{
-		for (int i = 0; i < 300; i++)
-		{
-			if (*(uint8*)(StringAddr - i + 0) == 0x40 && *(uint8*)(StringAddr - i + 1) == 0x55)
-			{
-				InternalFunctionAddr = StringAddr - i;
-				break;
-			}
-		}
-	}
-
-	auto textSection = Memcury::PE::Section::GetSection(".text");
-	const auto scanBytes = reinterpret_cast<std::uint8_t*>(textSection.GetSectionStart().Get());
-	uintptr_t FunctionAddr = 0;
-	uintptr_t InternalFunctionRefAddr = 0;
-	for (DWORD i = 0x0; i < textSection.GetSectionSize(); i++)
-	{
-		if (scanBytes[i] == 0xE9)
-		{
-			if (Utils::GetCallDestination(textSection.GetSectionStart().Get() + i) == InternalFunctionAddr)
-			{
-				InternalFunctionRefAddr = Memcury::PE::Address(&scanBytes[i]).Get();
-				break;
-			}
-		}
-	}
-
-	for (int i = 0; i < 130; i++)
-	{
-		if (*(uint8*)(InternalFunctionRefAddr - i + 0) == 0x48 && *(uint8*)(InternalFunctionRefAddr - i + 1) == 0x89)
-		{
-			FunctionAddr = InternalFunctionRefAddr - i;
+			C3_Point = CurrentAddr;
 			break;
 		}
 	}
-	ServerOffsets::AFortInventory_GetInventoryCapacity = FunctionAddr - ImageBase;*/
 
-	uintptr_t Addr = 0;
+	for (int i = 0; i < 40; i++)
+	{
+		uintptr_t CurrentAddr2 = C3_Point - i;
 
-	Addr = Memcury::Scanner::FindPattern("40 57 48 83 EC ? 48 8B F9 48 85 C9 0F 84 ? ? ? ? 48 89 5C 24").Get();
+		if (*(uint8*)(CurrentAddr2) == 0xE8) { //look for call
+			GetBackpackItemCounts_Impl_ADDR = Utils::GetCallDestination(CurrentAddr2);
+			break;
+		}
+	}
 
-	if (Addr) {
-		ServerOffsets::AFortInventory_GetInventoryCapacity = Addr - ImageBase;
+	uint8 Skipped = 0x0;
+
+	for (int i = 0; i < 70; i++)
+	{
+		//we looking for the third call instruction
+
+		uintptr_t CurrentAddress3 = GetBackpackItemCounts_Impl_ADDR + i;
+
+		if (*(uint8*)(CurrentAddress3) == 0xe8)
+		{
+			if (Skipped == 2)
+			{
+				ServerOffsets::AFortInventory_GetInventoryCapacity = Utils::GetCallDestination(CurrentAddress3) - ImageBase;
+				break;
+			}
+			Skipped++;
+		}
+		
 	}
 
 	Log("AFortInventory_GetInventoryCapacity found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryCapacity));
