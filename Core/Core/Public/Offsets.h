@@ -418,6 +418,7 @@ namespace ServerOffsets {
 	inline uintptr_t AFortPickup_SetPickupTarget = 0;
 	inline uintptr_t AFortPickup_UpdateSpecialActorStat = 0;
 	inline uintptr_t AFortPickup_GivePickupTo = 0;
+	inline uintptr_t AFortPickup_GivePickupToVFT = 0;
 	inline uintptr_t AFortPickup_SetupForMovementCompToss = 0;
 	inline uintptr_t AFortPickup_SetPickupItems = 0;
 	inline uintptr_t AFortPickup_SetPickupItemsVFT = 0;

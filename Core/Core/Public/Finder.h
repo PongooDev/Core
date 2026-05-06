@@ -659,6 +659,8 @@ public:
 
 	static uintptr_t FindAFortPickup_GivePickupTo();
 
+	static uintptr_t FindAFortPickup_GivePickupToVFT();
+
 	static uintptr_t FindAFortQuickBars_GetFocusedQuickBar();
 
 	static uintptr_t FindABuildingContainer_SpawnLootVFT();

@@ -121,3 +121,13 @@ void AFortPickup::SetPickupItems(FFortItemEntry* PrimaryEntry, TArray<FFortItemE
 		SetPickupItemsInternal(this, PrimaryEntry, AdditionalEntries, bInSplitOnPickup);
 	}
 }
+
+void AFortPickup::GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup) {
+	Log("AFortPickup::GivePickupTo called!");
+
+	GivePickupToOG(This, InventoryOwner, DestroyAfterPickup);
+
+	if (InventoryOwner) {
+
+	}
+}

@@ -67,4 +67,18 @@ public:
 		bool bInSplitOnPickup,
 		EFortPickupSpawnSource SpawnSource
 	);
+
+	static inline void (*GivePickupToOG)(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup);
+	static void GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup);
+
+	static void Hook() {
+		HookEveryVTableIdx(
+			AFortPickup::StaticClass(),
+			Finder::FindAFortPickup_GivePickupToVFT(),
+			GivePickupTo,
+			(LPVOID*)&GivePickupToOG
+		);
+
+		Log("AFortPickup Hooked");
+	}
 };

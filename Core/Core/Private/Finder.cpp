@@ -5143,10 +5143,15 @@ uintptr_t Finder::FindAFortPickup_FinishedTargetSpline() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::AFortPickup_FinishedTargetSpline)
 		return ServerOffsets::AFortPickup_FinishedTargetSpline;
-	Addr = Memcury::Scanner::FindPattern("40 53 56 48 83 EC ? 4C 89 6C 24 ? 48 8B F1 4C 8B A9").Get();
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = Memcury::Scanner::FindPattern("4C 8B DC 53 55 56 48 83 EC 60 48 8B F1 48 8B 89 ? ? ? ? 48 85 C9").Get();
+	}
+	
 	if (Addr) {
 		ServerOffsets::AFortPickup_FinishedTargetSpline = Addr - ImageBase;
 	}
+
 	Log("AFortPickup_FinishedTargetSpline found at: 0x" + std::format("{:X}", ServerOffsets::AFortPickup_FinishedTargetSpline));
 	return ServerOffsets::AFortPickup_FinishedTargetSpline;
 }
@@ -5231,6 +5236,32 @@ uintptr_t Finder::FindAFortPickup_GivePickupTo() {
 	}
 	Log("AFortPickup_GivePickupTo found at: 0x" + std::format("{:X}", ServerOffsets::AFortPickup_GivePickupTo));
 	return ServerOffsets::AFortPickup_GivePickupTo;
+}
+
+uintptr_t Finder::FindAFortPickup_GivePickupToVFT() {
+	static uintptr_t Addr = 0;
+	if (ServerOffsets::AFortPickup_GivePickupToVFT)
+		return ServerOffsets::AFortPickup_GivePickupToVFT;
+	
+	if (Version::Engine_Version == 4.16) {
+		// fmgnio, when u make the finder you find this in AFortPickup::FinishedTargetSpline,
+		// the call is a vtable call, in the dump it might look like this
+		/*
+			v16 = (*(__int64 (__fastcall **)(_QWORD))(**(_QWORD **)this->PickupLocationData + 2480LL))(*(_QWORD *)this->PickupLocationData);
+			if ( v16 )
+			{
+				(*(void (__fastcall **)(AFortPickup *, __int64))(*(_QWORD *)this->pad_0 + 1504LL))(this, v16); // this should be it i think
+			}
+		*/
+		Addr = 0xBC;
+	}
+
+	if (Addr) {
+		ServerOffsets::AFortPickup_GivePickupToVFT = Addr;
+	}
+
+	Log("AFortPickup_GivePickupToVFT found at: 0x" + std::format("{:X}", ServerOffsets::AFortPickup_GivePickupToVFT));
+	return ServerOffsets::AFortPickup_GivePickupToVFT;
 }
 
 uintptr_t Finder::FindAFortQuickBars_GetFocusedQuickBar() {

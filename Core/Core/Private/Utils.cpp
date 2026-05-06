@@ -20,6 +20,7 @@
 #include "FortniteGame/Public/BuildingActor/BuildingActor.h"
 #include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
+#include "FortniteGame/Public/FortPickup/FortPickup.h"
 
 void Utils::InitConsole(FCoreConfig& Config)
 {
@@ -148,6 +149,7 @@ void Utils::Hook() {
 	ABuildingActor::Hook();
 	UFortKismetLibrary::Hook();
 	ABuildingContainer::Hook();
+	AFortPickup::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {
