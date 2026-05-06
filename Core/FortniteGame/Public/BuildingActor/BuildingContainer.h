@@ -29,11 +29,21 @@ public:
 
 	void BounceContainer();
 
+	static inline void (*PostUpdateOG)(ABuildingContainer* This);
+	static void PostUpdate(ABuildingContainer* This);
+
 	static void Hook() {
 		HookEveryVTableIdx(
 			ABuildingContainer::StaticClass(),
 			Finder::FindABuildingContainer_SpawnLootVFT(),
 			SpawnLoot
+		);
+
+		HookEveryVTableIdx(
+			ABuildingContainer::StaticClass(),
+			Finder::FindABuildingActor_PostUpdateVFT(),
+			PostUpdate,
+			(LPVOID*)&PostUpdateOG
 		);
 
 		Log("ABuildingContainer Hooked!");

@@ -27,6 +27,8 @@ public:
 
 	DefineUProperty(uint8, Team);
 	DefineUProperty(uint8, TeamIndex);
+
+	DefineUProperty(bool, bAllowInteract);
 public:
 	void InitializeKismetSpawnedBuildingActor(ABuildingActor* BuildingOwner, AFortPlayerController* SpawningController, bool bUsePlayerBuildAnimations, ABuildingActor* ReplacedBuilding);
 
