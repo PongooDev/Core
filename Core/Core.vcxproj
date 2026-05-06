@@ -257,6 +257,7 @@
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingContainer.h" />
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingSMActor.h" />
     <ClInclude Include="FortniteGame\Public\Cheat\FortCheatManager.h" />
+    <ClInclude Include="FortniteGame\Public\Data\FortSearchBounceData.h" />
     <ClInclude Include="FortniteGame\Public\FortAbility\FortAbilitySet.h" />
     <ClInclude Include="FortniteGame\Public\FortAbility\FortGameplayAbility.h" />
     <ClInclude Include="FortniteGame\Public\FortCharacter\CustomCharacterPart.h" />
@@ -288,6 +289,8 @@
     <ClInclude Include="FortniteGame\Public\FortItem\FortItemList.h" />
     <ClInclude Include="FortniteGame\Public\FortItem\FortWorldItem.h" />
     <ClInclude Include="FortniteGame\Public\FortItem\ItemAndCount.h" />
+    <ClInclude Include="FortniteGame\Public\FortLoot\FortLootPackageData.h" />
+    <ClInclude Include="FortniteGame\Public\FortLoot\FortLootTierData.h" />
     <ClInclude Include="FortniteGame\Public\FortPawn\FortPawn.h" />
     <ClInclude Include="FortniteGame\Public\FortPawn\FortPlayerPawn.h" />
     <ClInclude Include="FortniteGame\Public\FortPawn\FortPlayerPawnAthena.h" />
@@ -300,6 +303,8 @@
     <ClInclude Include="FortniteGame\Public\FortPlayerState\FortPlayerState.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerState\FortPlayerStateAthena.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerState\FortPlayerStateZone.h" />
+    <ClInclude Include="FortniteGame\Public\FortPlaylist\FortPlaylist.h" />
+    <ClInclude Include="FortniteGame\Public\FortPlaylist\FortPlaylistAthena.h" />
     <ClInclude Include="FortniteGame\Public\FortPlaylist\PlaylistPropertyArray.h" />
     <ClInclude Include="FortniteGame\Public\FortInventory\FortQuickBars.h" />
     <ClInclude Include="FortniteGame\Public\FortInventory\FortQuickBarsAthena.h" />
@@ -314,7 +319,7 @@
     <ClInclude Include="FortniteGame\Public\Interface\FortInventoryOwnerInterface.h" />
     <ClInclude Include="FortniteGame\Public\Kismet\FortKismetLibrary.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\McpProfileGroup.h" />
-    <ClInclude Include="FortniteGame\Public\Metadata\BuildingEditModeMetadata.h" />
+    <ClInclude Include="FortniteGame\Public\Data\BuildingEditModeMetadata.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -383,6 +388,8 @@
     <ClCompile Include="FortniteGame\Private\FortItem\FortItem.cpp" />
     <ClCompile Include="FortniteGame\Private\FortItem\FortItemEntry.cpp" />
     <ClCompile Include="FortniteGame\Private\FortItem\FortWorldItem.cpp" />
+    <ClCompile Include="FortniteGame\Private\FortLoot\FortLootPackageData.cpp" />
+    <ClCompile Include="FortniteGame\Private\FortLoot\FortLootTierData.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPawn\FortPawn.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPawn\FortPlayerPawn.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPickup\FortPickup.cpp" />

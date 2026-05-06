@@ -1,7 +1,12 @@
 #pragma once
 #include "pch.h"
 
+#include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+
 #include "BuildingAutoNav.h"
+#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/Data/FortSearchBounceData.h"
 
 class AFortPlayerPawn;
 
@@ -9,8 +14,20 @@ class ABuildingContainer : public ABuildingAutoNav {
 public:
 	DefineUnrealClass(ABuildingContainer);
 
+	DefineUProperty(FVector, LootSpawnLocation);
+	DefineBitfieldUProperty(bAlreadySearched);
+	DefineUProperty(FName, SearchLootTierGroup);
+	DefineUProperty(FVector, LootFinalLocation);
+	DefineBitfieldUProperty(bDestroyContainerOnSearch);
+	DefineUProperty(FFortSearchBounceData, SearchBounceData);
+	DefineUProperty(int32, ReplicatedLootTier);
+
 public:
-	static bool SpawnLoot(ABuildingContainer* This, UObject* Object);
+	static bool SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, EFortPickupSourceTypeFlag InSourceTypeFlag, EFortPickupSpawnSource InSpawnSource);
+
+	void OnRep_bAlreadySearched();
+
+	void BounceContainer();
 
 	static void Hook() {
 		HookEveryVTableIdx(

@@ -11,6 +11,7 @@
 
 #include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/FortAbility/FortAbilitySet.h"
+#include "FortniteGame/Public/FortItem/FortItemEntry.h"
 
 class ABuildingActor;
 class ABuildingSMActor;
@@ -79,9 +80,19 @@ public:
 	);
 	static void execGiveItemToInventoryOwner(UObject* Object, FFrame& Stack, UFortWorldItem** Result);
 
+	static bool PickLootDrops(
+		UObject* WorldContextObject,
+		TArray<FFortItemEntry>& OutLootToDrop,
+		FName TierGroupName,
+		int32 WorldLevel,
+		int32 ForcedLootTier
+	);
+	static void execPickLootDrops(UObject* Object, FFrame& Stack, bool* Result);
+
 	static void Hook() {
 		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld", execK2_SpawnPickupInWorld);
 		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GiveItemToInventoryOwner", execGiveItemToInventoryOwner);
+		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.PickLootDrops", execPickLootDrops);
 
 		Log("Hooked UFortKismetLibrary");
 	}

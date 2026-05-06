@@ -217,9 +217,6 @@ public:
         { \
             bInitialized = true; \
             CachedStaticClass = (UClass*)FUObjectArray::FindObjectFast(#__Class + 1); \
-            if (!CachedStaticClass) { \
-                Log("Failed to find class: " #__Class); \
-            } \
         } \
         return CachedStaticClass; \
     } \
@@ -263,9 +260,6 @@ public:
         { \
             bInitialized = true; \
             CachedStaticStruct = (UStruct*)FUObjectArray::FindObjectFast(#__Class + 1);  \
-			if (!CachedStaticStruct) { \
-				Log("Failed to find struct: " #__Class); \
-			} \
         } \
         return CachedStaticStruct; \
     } \

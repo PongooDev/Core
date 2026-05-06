@@ -29,8 +29,8 @@ UProperty* UStruct::FindPropertyByName(std::string InName) const
 		FName PropertyName = UKismetStringLibrary::Conv_StringToName(PropertyNameString);
 		UProperty* Prop = FindPropertyByName(PropertyName);
 		if (!Prop) {
-			Log("Failed to find property for object: " + GetFName().ToString().ToString() + " with name: " + InName);
-			return 0;
+			//Log("Failed to find property for object: " + GetFName().ToString().ToString() + " with name: " + InName);
+			return nullptr;
 		}
 		return Prop;
 	}
@@ -59,7 +59,6 @@ uintptr_t UStruct::GetPropertyOffset(std::string InName) const
 	FName PropertyName = UKismetStringLibrary::Conv_StringToName(PropertyNameString);
 	UProperty* Prop = FindPropertyByName(PropertyName);
 	if (!Prop) {
-		Log("Failed to find property for object: " + GetFName().ToString().ToString() + " with name: " + InName);
 		return 0;
 	}
 	return Prop->Offset_Internal;

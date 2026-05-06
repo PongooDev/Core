@@ -161,9 +161,6 @@ public: \
     Type& _Get##Name() { \
         if (Name##_Offset == -1) { \
             Name##_Offset = StaticClass()->GetPropertyOffset(#Name); \
-            if (Name##_Offset == -1) { \
-                Log("Failed to find property: " #Name); \
-            } \
         } \
         if (Name##_Offset <= 0) { \
             static Type dummy; \
@@ -174,9 +171,6 @@ public: \
     Type _Get##Name() const { \
         if (Name##_Offset == -1) { \
             Name##_Offset = StaticClass()->GetPropertyOffset(#Name); \
-            if (Name##_Offset == -1) { \
-                Log("Failed to find property: " #Name); \
-            } \
         } \
         if (Name##_Offset <= 0) { \
             static Type dummy; \
@@ -187,10 +181,6 @@ public: \
     void _Set##Name(Type Value) { \
         if (Name##_Offset == -1) { \
             Name##_Offset = StaticClass()->GetPropertyOffset(#Name); \
-            if (Name##_Offset == -1) { \
-                Log("Failed to find property: " #Name); \
-                return; \
-            } \
         } \
         if (Name##_Offset <= 0) { \
             return; \

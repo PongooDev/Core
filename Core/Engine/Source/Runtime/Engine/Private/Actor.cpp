@@ -163,3 +163,13 @@ void AActor::ForceNetUpdate()
 		ForceNetUpdateInternal(this);
 	}
 }
+
+void AActor::K2_DestroyActor()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"K2_DestroyActor"));
+
+	ProcessEvent(Func, nullptr);
+}

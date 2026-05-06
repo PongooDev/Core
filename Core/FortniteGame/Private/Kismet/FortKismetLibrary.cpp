@@ -9,6 +9,10 @@
 #include "FortniteGame/Public/FortItemDefinition/FortWeaponItemDefinition.h"
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
+#include "FortniteGame/Public/FortPlaylist/PlaylistPropertyArray.h"
+#include "FortniteGame/Public/FortPlaylist/FortPlaylistAthena.h"
+#include "FortniteGame/Public/FortLoot/FortLootTierData.h"
+#include "FortniteGame/Public/FortLoot/FortLootPackageData.h"
 
 class UFortResourceItemDefinition* UFortKismetLibrary::K2_GetResourceItemDefinition(const uint8 ResourceType)
 {
@@ -371,4 +375,150 @@ void UFortKismetLibrary::execGiveItemToInventoryOwner(UObject* Object, FFrame& S
 	Stack.IncrementCode();
 
 	*Result = GiveItemToInventoryOwner(InventoryOwner, ItemDefinition, ItemVariantGuid, NumberToGive);
+}
+
+bool UFortKismetLibrary::PickLootDrops(
+	UObject* WorldContextObject,
+	TArray<FFortItemEntry>& OutLootToDrop,
+	FName TierGroupName,
+	int32 WorldLevel,
+	int32 ForcedLootTier)
+{
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("UFortKismetLibrary::PickLootDrops: Failed to get world!");
+		return false;
+	}
+	AFortGameModeAthena* GameMode = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
+	if (!GameMode) {
+		Log("UFortKismetLibrary::PickLootDrops: Failed to cast AuthorityGameMode to AFortGameModeAthena, AuthorityGameMode: " + World->AuthorityGameMode->GetFullName());
+		return false;
+	}
+	AFortGameStateAthena* GameState = World->GameState->Cast<AFortGameStateAthena>();
+	if (!GameState) {
+		Log("UFortKismetLibrary::PickLootDrops: Failed to cast GameState to AFortGameStateAthena, GameState: " + World->GameState->GetFullName());
+		return false;
+	}
+
+	Log(
+		"UFortKismetLibrary::PickLootDrops: Picking loot drops for TierGroup: "
+		+ TierGroupName.ToString().ToString() +
+		" WorldLevel: " + std::to_string(WorldLevel) +
+		" ForcedLootTier: " + std::to_string(ForcedLootTier) +
+		" In World: " + World->GetName().ToString()
+	);
+
+	TArray<UDataTable*> LootTierDataTables;
+	TArray<UDataTable*> LootPackagesDataTables;
+	if (LootTierDataTables.Num() == 0 || LootPackagesDataTables.Num() == 0) {
+		if (GameState->CurrentPlaylistInfo.BasePlaylist) {
+			UDataTable* MainLTD = StaticLoadObject<UDataTable>(
+				GameState->CurrentPlaylistInfo.BasePlaylist->LootTierData.ObjectID.AssetPathName.ToString().ToString()
+			);
+
+			UDataTable* MainLP = StaticLoadObject<UDataTable>(
+				GameState->CurrentPlaylistInfo.BasePlaylist->LootPackages.ObjectID.AssetPathName.ToString().ToString()
+			);
+
+			if (MainLTD) {
+				LootTierDataTables.Add(MainLTD);
+			}
+			else {
+				Log("UFortKismetLibrary::PickLootDrops: Failed to load main loot tier data table from playlist!");
+			}
+
+			if (MainLP) {
+				LootPackagesDataTables.Add(MainLP);
+			}
+			else {
+				Log("UFortKismetLibrary::PickLootDrops: Failed to load main loot packages data table from playlist!");
+			}
+		}
+		if (LootTierDataTables.Num() == 0) {
+			UDataTable* DefaultLTD = StaticLoadObject<UDataTable>(
+				"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client"
+			);
+			if (DefaultLTD) {
+				LootTierDataTables.Add(DefaultLTD);
+			}
+			else {
+				Log("UFortKismetLibrary::PickLootDrops: Failed to load default loot tier data table!");
+			}
+		}
+		if (LootPackagesDataTables.Num() == 0) {
+			UDataTable* DefaultLP = StaticLoadObject<UDataTable>(
+				"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client"
+			);
+
+			if (DefaultLP) {
+				LootPackagesDataTables.Add(DefaultLP);
+			}
+			else {
+				Log("UFortKismetLibrary::PickLootDrops: Failed to load default loot packages data table!");
+			}
+		}
+	}
+
+	FFortLootTierData* LootTierData = FFortLootTierData::PickLootTierData(
+		LootTierDataTables,
+		TierGroupName
+	);
+
+	TArray<FFortItemEntry> LootItems = FFortLootPackageData::GetLootItems(
+		LootPackagesDataTables,
+		LootTierData
+	);
+
+	for (int i = 0; i < LootItems.Num(); i++) {
+		FFortItemEntry& LootItem = LootItems.GetWithSize(i, FFortItemEntry::GetSize());
+		OutLootToDrop.Add(LootItem, FFortItemEntry::GetSize());
+	}
+
+	if (OutLootToDrop.Num() > 0) {
+		Log("UFortKismetLibrary::PickLootDrops: Successfully picked " + std::to_string(OutLootToDrop.Num()) + " loot items to drop!");
+		return true;
+	}
+
+	Log("UFortKismetLibrary::PickLootDrops: No loot items were picked to drop!");
+	return false;
+}
+
+void UFortKismetLibrary::execPickLootDrops(UObject* Object, FFrame& Stack, bool* Result)
+{
+	static UFunction* PickLootDropsFn = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.PickLootDrops");
+	if (!PickLootDropsFn) {
+		Log("UFortKismetLibrary::execPickLootDrops: Failed to find function!");
+		return;
+	}
+	UObject* WorldContextObject = nullptr;
+	TArray<FFortItemEntry> OutLootToDrop;
+	FName TierGroupName = FName();
+	int32 WorldLevel = 0;
+	int32 ForcedLootTier = -1;
+	for (auto& Param : PickLootDropsFn->GetParams().NameOffsetMap)
+	{
+		std::string Name = Param.Name.ToString();
+		if (Name == "WorldContextObject") {
+			Stack.StepCompiledIn(&WorldContextObject);
+		}
+		else if (Name == "OutLootToDrop") {
+			OutLootToDrop = Stack.StepCompiledInRef<TArray<FFortItemEntry>>();
+		}
+		else if (Name == "TierGroupName") {
+			Stack.StepCompiledIn(&TierGroupName);
+		}
+		else if (Name == "WorldLevel") {
+			Stack.StepCompiledIn(&WorldLevel);
+		}
+		else if (Name == "ForcedLootTier") {
+			Stack.StepCompiledIn(&ForcedLootTier);
+		}
+		else if (Name == "ReturnValue") {}
+		else {
+			Log("UFortKismetLibrary::execPickLootDrops: Unhandled parameter: " + Name);
+		}
+	}
+	Stack.IncrementCode();
+
+	*Result = PickLootDrops(WorldContextObject, OutLootToDrop, TierGroupName, WorldLevel, ForcedLootTier);
 }

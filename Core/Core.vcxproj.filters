@@ -504,7 +504,7 @@
     <ClInclude Include="FortniteGame\Public\FortWeapon\FortWeapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FortniteGame\Public\Metadata\BuildingEditModeMetadata.h">
+    <ClInclude Include="FortniteGame\Public\Data\BuildingEditModeMetadata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingActor.h">
@@ -544,6 +544,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingAutoNav.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Data\FortSearchBounceData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortPlaylist\FortPlaylist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortPlaylist\FortPlaylistAthena.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortLoot\FortLootTierData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortLoot\FortLootPackageData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -771,6 +786,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\FortLoot\FortLootTierData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\FortLoot\FortLootPackageData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

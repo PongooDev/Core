@@ -115,6 +115,8 @@ public:
 	void ForceNetUpdate();
 
 	const AActor* GetNetOwner() const;
+
+	void K2_DestroyActor();
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAActor_InternalGetNetMode()), InternalGetNetMode, (LPVOID*)&InternalGetNetModeOG);
