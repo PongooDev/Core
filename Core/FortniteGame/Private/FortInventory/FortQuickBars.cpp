@@ -109,3 +109,26 @@ void AFortQuickBars::ServerActivateSlotInternal(uint8 InQuickBar, int32 Slot, fl
 
 	ProcessEvent(Func, &Parms);
 }
+
+void AFortQuickBars::EnableSlot(uint8 InQuickBar, int32 SlotIndex)
+{
+	static class UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("EnableSlot");
+
+	struct FortQuickBars_EnableSlot final
+	{
+	public:
+		uint8 InQuickBar;
+		uint8 Pad_1[0x3];
+		int32 SlotIndex;
+	};
+
+	FortQuickBars_EnableSlot Parms{};
+
+	Parms.InQuickBar = InQuickBar;
+	Parms.SlotIndex = SlotIndex;
+
+	ProcessEvent(Func, &Parms);
+}

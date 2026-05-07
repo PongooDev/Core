@@ -58,4 +58,6 @@ public:
 	void EmptySlot(uint8 InQuickBar, int32 SlotIndex);
 
 	void ServerActivateSlotInternal(uint8 InQuickBar, int32 Slot, float ActivateDelay, bool bUpdatePreviousFocusedSlot);
+
+	void EnableSlot(uint8 InQuickBar, int32 SlotIndex);
 };
