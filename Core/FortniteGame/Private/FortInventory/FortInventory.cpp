@@ -244,10 +244,6 @@ UFortWorldItem* AFortInventory::AddItem(UFortWorldItem* Item)
 		PC->QuickBars->AddItemToQuickBar(Item->ItemEntry.ItemGuid, Item->ItemEntry.ItemDefinition->GetQuickBarForItem());
 	}
 
-	if (!Update(&Item->ItemEntry)) {
-		return nullptr;
-	}
-
 	return Item;
 }
 

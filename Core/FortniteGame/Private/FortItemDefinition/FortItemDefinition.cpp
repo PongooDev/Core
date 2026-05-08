@@ -117,11 +117,15 @@ int32 UFortItemDefinition::GetClipSize() {
 }
 
 uint8 UFortItemDefinition::GetQuickBarForItem() {
-	if (IsA(UFortEditToolItemDefinition::StaticClass())
-		|| IsA(UFortBuildingItemDefinition::StaticClass())
-		|| IsA(UFortAmmoItemDefinition::StaticClass())
-		|| IsA(UFortResourceItemDefinition::StaticClass())
-		|| IsA(UFortTrapItemDefinition::StaticClass()))
+	if (ItemType == EFortItemType::GetWeaponHarvest())
+		return EFortQuickBars::GetMax_None();
+
+	if (ItemType == EFortItemType::GetWorldResource() 
+		|| ItemType == EFortItemType::GetAmmo()
+		|| ItemType == EFortItemType::GetTrap()
+		|| ItemType == EFortItemType::GetBuildingPiece()
+		|| ItemType == EFortItemType::GetEditTool()
+		|| ItemType == EFortItemType::GetIngredient())
 		return EFortQuickBars::GetSecondary();
 
 	return EFortQuickBars::GetPrimary();

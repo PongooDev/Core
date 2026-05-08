@@ -2,6 +2,7 @@
 #include "pch.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Engine/Source/Runtime/Core/Public/Containers/Set.h"
 
 #include "FortniteGame/Public/FortEnums.h"
 
@@ -14,8 +15,8 @@ struct FQuickBarSlot {
 public:
 	DefineUnrealStruct(FQuickBarSlot);
 
-	DefineStructProperty(TArray<FGuid>, Items);
-	DefineStructProperty(bool, bEnabled);
+	TArray<FGuid> Items;
+	uint8 bEnabled : 1; // Even tho this is a bool on the older versions, we can still use the bitfield and it will give us the correct value
 };
 
 struct FQuickBarSlotData
@@ -30,19 +31,21 @@ struct FQuickBarData {
 public:
 	DefineUnrealStruct(FQuickBarData);
 
-	DefineStructProperty(TArray<FQuickBarSlotData>, QuickbarSlots);
+	TArray<FQuickBarSlotData> QuickbarSlots;
 };
 
 struct FQuickBar {
 public:
 	DefineUnrealStruct(FQuickBar);
 
-	DefineStructProperty(TArray<FQuickBarSlot>, Slots);
-	DefineStructProperty(int32, CurrentFocusedSlot);
-	DefineStructProperty(int32, PreviousFocusedSlot);
-	DefineStructProperty(int32, SecondaryFocusedSlot);
-	DefineStructProperty(TArray<int32>, SharedVisibleSlotIndicesWhenUsingGamepad);
-	DefineStructProperty(FQuickBarData, DataDefinition);
+	int32 CurrentFocusedSlot;
+	int32 PreviousFocusedSlot;
+	int32 SecondaryFocusedSlot;
+	uint8 Pad_C[0x4];
+	TArray<FQuickBarSlot> Slots;
+	FQuickBarData DataDefinition;
+	TSet<UFortItemDefinition*> EquippedItemDefinitions;
+	TArray<int32> SharedVisibleSlotIndicesWhenUsingGamepad;
 };
 
 class AFortQuickBars : public AActor {
@@ -71,8 +74,6 @@ public:
 	void EquipHarvestingTool();
 
 	void AddItemToQuickBar(FGuid Guid, uint8 QuickBar);
-
-	int32 GetNextAvailableSlot(uint8 QuickBar, FGuid Guid) const;
 
 	void OnRep_PrimaryQuickBar();
 

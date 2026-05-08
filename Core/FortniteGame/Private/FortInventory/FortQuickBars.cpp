@@ -144,7 +144,7 @@ int32 AFortQuickBars::FindQuickBarSlotForItem(uint8 QuickBar, FGuid Guid) const
 		for (int i = 0; i < PrimaryQuickBar.Slots.Num(); i++)
 		{
 			const FQuickBarSlot& Slot = PrimaryQuickBar.Slots.GetWithSize(i, FQuickBarSlot::GetSize());
-			for (FGuid& ItemGuid : Slot.Items)
+			for (const FGuid& ItemGuid : Slot.Items)
 			{
 				if (ItemGuid == Guid)
 					return i;
@@ -155,7 +155,7 @@ int32 AFortQuickBars::FindQuickBarSlotForItem(uint8 QuickBar, FGuid Guid) const
 		for (int i = 0; i < SecondaryQuickBar.Slots.Num(); i++)
 		{
 			const FQuickBarSlot& Slot = SecondaryQuickBar.Slots.GetWithSize(i, FQuickBarSlot::GetSize());
-			for (FGuid& ItemGuid : Slot.Items)
+			for (const FGuid& ItemGuid : Slot.Items)
 			{
 				if (ItemGuid == Guid)
 					return i;
@@ -212,12 +212,7 @@ void AFortQuickBars::AddItemToQuickBar(FGuid Guid, uint8 QuickBar)
 	if (!Guid.IsValid())
 		return;
 
-	ServerAddItemInternal(Guid, QuickBar, GetNextAvailableSlot(QuickBar, Guid));
-}
-
-int32 AFortQuickBars::GetNextAvailableSlot(uint8 QuickBar, FGuid Guid) const
-{
-	return -1;
+	ServerAddItemInternal(Guid, QuickBar, -1);
 }
 
 void AFortQuickBars::OnRep_PrimaryQuickBar()
