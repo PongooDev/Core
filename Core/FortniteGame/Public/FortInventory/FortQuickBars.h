@@ -8,6 +8,7 @@
 class UFortItemDefinition;
 class UFortItem;
 class UFortWorldItem;
+class AFortPlayerController;
 
 struct FQuickBarSlot {
 public:
@@ -60,4 +61,14 @@ public:
 	void ServerActivateSlotInternal(uint8 InQuickBar, int32 Slot, float ActivateDelay, bool bUpdatePreviousFocusedSlot);
 
 	void EnableSlot(uint8 InQuickBar, int32 SlotIndex);
+
+	int32 FindQuickBarSlotForItem(uint8 QuickBar, FGuid Guid) const;
+
+	void EmptyQuickbarSlot(FGuid Guid);
+
+	AFortPlayerController* GetOwnerPlayerController() const;
+
+	void EquipHarvestingTool();
+
+	void AddItemToQuickBar(FGuid Guid);
 };

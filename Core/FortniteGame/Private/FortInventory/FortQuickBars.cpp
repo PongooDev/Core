@@ -3,6 +3,8 @@
 
 #include "FortniteGame/Public/FortItemDefinition/FortWeaponItemDefinition.h"
 #include "FortniteGame/Public/FortItem/FortWorldItem.h"
+#include "FortniteGame/Public/FortPlayerController/FortPlayerControllerAthena.h"
+#include "FortniteGame/Public/FortInventory/FortInventory.h"
 
 void AFortQuickBars::ServerAddItemInternal(const FGuid& Item, uint8 InQuickBar, int32 Slot)
 {
@@ -131,4 +133,84 @@ void AFortQuickBars::EnableSlot(uint8 InQuickBar, int32 SlotIndex)
 	Parms.SlotIndex = SlotIndex;
 
 	ProcessEvent(Func, &Parms);
+}
+
+int32 AFortQuickBars::FindQuickBarSlotForItem(uint8 QuickBar, FGuid Guid) const
+{
+	if (!Guid.IsValid())
+		return -1;
+
+	if (QuickBar == EFortQuickBars::GetPrimary()) {
+		for (int i = 0; i < PrimaryQuickBar.Slots.Num(); i++)
+		{
+			const FQuickBarSlot& Slot = PrimaryQuickBar.Slots.GetWithSize(i, FQuickBarSlot::GetSize());
+			for (FGuid& ItemGuid : Slot.Items)
+			{
+				if (ItemGuid == Guid)
+					return i;
+			}
+		}
+	}
+	else if (QuickBar == EFortQuickBars::GetSecondary()) {
+		for (int i = 0; i < SecondaryQuickBar.Slots.Num(); i++)
+		{
+			const FQuickBarSlot& Slot = SecondaryQuickBar.Slots.GetWithSize(i, FQuickBarSlot::GetSize());
+			for (FGuid& ItemGuid : Slot.Items)
+			{
+				if (ItemGuid == Guid)
+					return i;
+			}
+		}
+	}
+	else {
+		Log("AFortQuickBars::FindQuickBarSlotForItem: Unhandled QuickBar value: " + std::to_string(QuickBar));
+	}
+
+	return -1;
+}
+
+void AFortQuickBars::EmptyQuickbarSlot(FGuid Guid)
+{
+	if (!Guid.IsValid())
+		return;
+
+	AFortPlayerController* PC = GetOwnerPlayerController();
+	if (!PC)
+		return;
+
+	if (PC->WorldInventory->IsCurrentItem(Guid))
+	{
+		PC->WorldInventory->EquipHarvestingTool();
+	}
+
+	const int32 PrimarySlotIndex = FindQuickBarSlotForItem(EFortQuickBars::GetPrimary(), Guid);
+	if (PrimarySlotIndex != -1)
+	{
+		EmptySlot(EFortQuickBars::GetPrimary(), PrimarySlotIndex);
+	}
+
+	const int32 SecondarySlotIndex = FindQuickBarSlotForItem(EFortQuickBars::GetSecondary(), Guid);
+	if (SecondarySlotIndex != -1)
+	{
+		EmptySlot(EFortQuickBars::GetSecondary(), SecondarySlotIndex);
+	}
+
+	ServerRemoveItemInternal(Guid, false, true);
+}
+
+AFortPlayerController* AFortQuickBars::GetOwnerPlayerController() const
+{
+	return Owner ? Owner->Cast<AFortPlayerController>() : nullptr;
+}
+
+void AFortQuickBars::EquipHarvestingTool() {
+	ServerActivateSlotInternal(EFortQuickBars::GetPrimary(), 0, 0.f, true);
+}
+
+void AFortQuickBars::AddItemToQuickBar(FGuid Guid)
+{
+	if (!Guid.IsValid())
+		return;
+
+	ServerAddItemInternal(Guid, EFortQuickBars::GetMax_None(), -1);
 }

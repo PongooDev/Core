@@ -15,6 +15,7 @@ class AFortPickup;
 class AFortPlayerController;
 class IFortInventoryOwnerInterface;
 class UFortWorldItemDefinition;
+class AFortQuickBars;
 
 class AFortInventory : public AActor
 {
@@ -66,6 +67,8 @@ public:
 	bool RemoveItem(FGuid Guid, int32 Count = INT_MAX);
 	bool RemoveItem(UFortItemDefinition* Def, int32 Count = INT_MAX);
 
+	void RemoveEntryAndInstance(FGuid Guid);
+
 	// =================================================================
 	// Inventory State
 	// =================================================================
@@ -102,6 +105,8 @@ public:
 	// =================================================================
 
 	bool CanAddItem(UFortItemDefinition* Def, int32 Count = 1) const;
+	bool CanRemoveItem(FGuid Guid, int32 Count) const;
+
 	bool IsPrimaryItem(UFortItemDefinition* Def) const;
 	bool IsSecondaryItem(UFortItemDefinition* Def) const;
 
