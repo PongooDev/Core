@@ -5,6 +5,7 @@
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
 #include "FortniteGame/Public/FortItem/FortItemEntry.h"
+#include "FortniteGame/Public/FortItemDefinition/FortWeaponItemDefinition.h"
 
 bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, EFortPickupSourceTypeFlag InSourceTypeFlag, EFortPickupSpawnSource InSpawnSource) {
 	UWorld* World = UWorld::GetWorld();
