@@ -138,9 +138,6 @@ void AFortPickup::GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* 
 			return;
 		}
 
-		PickupTargetController->WorldInventory->AddItemAndHandleOverflow(
-			This->PrimaryPickupItemEntry.ItemDefinition,
-			This->PrimaryPickupItemEntry.Count
-		);
+		PickupTargetController->WorldInventory->AddItemAndHandleOverflow(This->PrimaryPickupItemEntry);
 	}
 }

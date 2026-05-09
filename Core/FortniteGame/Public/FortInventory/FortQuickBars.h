@@ -26,10 +26,9 @@ struct FQuickBarSlotData
 public:
 	DefineUnrealStruct(FQuickBarSlotData);
 
-	TArray<EFortItemType> AcceptedItemTypes;
-	bool bStaticSlot;
-	uint8 Pad_11[0x7];
-	TSoftObjectPtr<UFortWorldItemDefinition> DefaultItem;
+	DefineStructProperty(TArray<EFortItemType>, AcceptedItemTypes);
+	DefineStructProperty(bool, bStaticSlot);
+	DefineStructProperty(TSoftObjectPtr<UFortWorldItemDefinition>, DefaultItem);
 };
 
 struct FQuickBarData {

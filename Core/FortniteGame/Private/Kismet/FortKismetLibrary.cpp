@@ -169,7 +169,12 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	FFortItemEntry& PickupEntry = Pickup->PrimaryPickupItemEntry;
 	PickupEntry.ItemDefinition = ItemDefinition;
 	PickupEntry.Count = NumberToSpawn;
-	PickupEntry.LoadedAmmo = ItemDefinition->GetClipSize();
+
+	UFortWeaponRangedItemDefinition* WeaponDef = ItemDefinition->Cast<UFortWeaponRangedItemDefinition>();
+	if (WeaponDef) {
+		PickupEntry.LoadedAmmo = WeaponDef->GetClipSize();
+	}
+
 	PickupEntry.ReplicationKey++;
 	Pickup->OnRep_PrimaryPickupItemEntry();
 
@@ -308,25 +313,7 @@ UFortWorldItem* UFortKismetLibrary::GiveItemToInventoryOwner(
 		+ FortPlayerController->GetName().ToString()
 	);
 
-	int32 Overflow = FortPlayerController->WorldInventory->GetOverflowFromAddingItem(ItemDefinition, NumberToGive);
-	if (Overflow > 0) {
-		UFortKismetLibrary::K2_SpawnPickupInWorld(
-			FortPlayerController->GetWorld(),
-			ItemDefinition,
-			Overflow,
-			FortPlayerController->Pawn->K2_GetActorLocation(),
-			FVector(),
-			-1,
-			true,
-			true,
-			false,
-			-1,
-			EFortPickupSourceTypeFlag::Player,
-			EFortPickupSpawnSource::Unset,
-			FortPlayerController,
-			false
-		);
-	}
+	FortPlayerController->WorldInventory->AddItemAndHandleOverflow(ItemDefinition, NumberToGive);
 
 	return FortPlayerController->WorldInventory->FindItemInstance(ItemDefinition);
 }
@@ -607,25 +594,7 @@ void UFortKismetLibrary::K2_GiveItemToAllPlayers(
 	for (int i = 0; i < GameMode->AlivePlayers.Num(); i++) {
 		AFortPlayerControllerAthena* PlayerController = GameMode->AlivePlayers[i];
 		if (PlayerController) {
-			int32 Overflow = PlayerController->WorldInventory->GetOverflowFromAddingItem(ItemDefinition, NumberToGive);
-			if (Overflow > 0) {
-				UFortKismetLibrary::K2_SpawnPickupInWorld(
-					PlayerController->GetWorld(),
-					ItemDefinition,
-					Overflow,
-					PlayerController->Pawn->K2_GetActorLocation(),
-					FVector(),
-					-1,
-					true,
-					true,
-					false,
-					-1,
-					EFortPickupSourceTypeFlag::Player,
-					EFortPickupSpawnSource::Unset,
-					PlayerController,
-					false
-				);
-			}
+			PlayerController->WorldInventory->AddItemAndHandleOverflow(ItemDefinition, NumberToGive);
 		}
 		else {
 			Log("UFortKismetLibrary::K2_GiveItemToAllPlayers: Failed to get player controller for player at index: " + std::to_string(i));

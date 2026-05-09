@@ -28,3 +28,17 @@ void FFortItemEntry::SetToDirty() {
 	}
 	bIsDirty = true;
 }
+
+void FFortItemEntry::CopyGenericValuesFrom(const FFortItemEntry* Other) {
+	AlterationDefinitions = Other->AlterationDefinitions;
+	AlterationInstances = Other->AlterationInstances;
+	bUpdateStatsOnCollection = Other->bUpdateStatsOnCollection;
+	ControlOverride = Other->ControlOverride;
+	Durability = Other->Durability;
+	GiftingInfo = Other->GiftingInfo;
+	ItemSource = Other->ItemSource;
+	LoadedAmmo = Other->LoadedAmmo;
+	StateValues = Other->StateValues;
+
+	SetToDirty();
+}

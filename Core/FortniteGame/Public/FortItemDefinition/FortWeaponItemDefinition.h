@@ -6,6 +6,7 @@
 #include "FortWorldItemDefinition.h"
 
 class UBuildingEditModeMetadata;
+class FFortRangedWeaponStats;
 
 class UFortWeaponItemDefinition : public UFortWorldItemDefinition {
 public:
@@ -44,4 +45,8 @@ public:
 class UFortWeaponRangedItemDefinition : public UFortWeaponItemDefinition {
 public:
 	DefineUnrealClass(UFortWeaponRangedItemDefinition);
+
+	FFortRangedWeaponStats* GetRangedWeaponStats() const;
+
+	int32 GetClipSize() const;
 };

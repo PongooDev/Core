@@ -16,7 +16,6 @@
 
 class UFortItemDefinition;
 class AFortPawn;
-class AFortPickup;
 class AFortPickupEffect;
 class IFortInventoryOwnerInterface;
 

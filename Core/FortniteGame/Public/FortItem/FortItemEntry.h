@@ -49,4 +49,6 @@ public:
 	void SetStateValue(EFortItemEntryState StateType, int32 InValue);
 
 	void SetToDirty();
+
+	void CopyGenericValuesFrom(const FFortItemEntry* Other);
 };

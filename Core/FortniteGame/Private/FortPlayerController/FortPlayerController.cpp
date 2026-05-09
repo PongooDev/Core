@@ -179,25 +179,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 			return;
 		}
 
-		int32 Overflow = This->WorldInventory->GetOverflowFromAddingItem(ItemDef, Count);
-		if (Overflow > 0) {
-			UFortKismetLibrary::K2_SpawnPickupInWorld(
-				This->GetWorld(),
-				ItemDef,
-				Overflow,
-				This->Pawn->K2_GetActorLocation(),
-				FVector(),
-				-1,
-				true,
-				true,
-				false,
-				-1,
-				EFortPickupSourceTypeFlag::Player,
-				EFortPickupSpawnSource::Unset,
-				This,
-				false
-			);
-		}
+		This->WorldInventory->AddItemAndHandleOverflow(ItemDef, Count);
 	}
 	else if (Parser.IsCommand("SetLoadedAmmo")) {
 		if (Parser.GetArgCount() < 1)

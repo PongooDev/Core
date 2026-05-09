@@ -18,8 +18,6 @@ public:
 
 	bool IsStackable() const;
 
-	int32 GetClipSize();
-
 	uint8 GetQuickBarForItem();
 };
 

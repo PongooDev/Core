@@ -84,38 +84,6 @@ bool UFortItemDefinition::IsStackable() const
 	return false;
 }
 
-int32 UFortItemDefinition::GetClipSize() {
-	auto RangedDef = Cast<UFortWeaponRangedItemDefinition>();
-	if (!RangedDef) {
-		return 1;
-	}
-
-	auto DataTable = RangedDef->WeaponStatHandle.DataTable;
-	auto RowName = RangedDef->WeaponStatHandle.RowName;
-
-	if (!DataTable || !RowName.IsNone()) {
-		return 1;
-	}
-
-	auto& RowMap = DataTable->RowMap;
-
-	for (int i = 0; i < RowMap.Num(); i++)
-	{
-		auto& Pair = RowMap[i];
-
-		FName CurrentRowName = Pair.Key();
-		FFortRangedWeaponStats* PackageData = (FFortRangedWeaponStats*)Pair.Value();
-
-		if (CurrentRowName == RowName && PackageData)
-		{
-			return PackageData->ClipSize;
-		}
-	}
-
-	Log("GetClipSize: Row not found in DataTable or PackageData is null.");
-	return 1;
-}
-
 uint8 UFortItemDefinition::GetQuickBarForItem() {
 	if (ItemType == EFortItemType::GetWeaponHarvest())
 		return EFortQuickBars::GetMax_None();

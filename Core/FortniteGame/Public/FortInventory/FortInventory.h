@@ -62,7 +62,7 @@ public:
 	UFortWorldItem* AddItem(UFortItemDefinition* Def, int32 Count = 1, int32 Level = 0);
 	UFortWorldItem* AddItem(const FFortItemEntry& ItemEntry);
 
-	int32 GetOverflowFromAddingItem(UFortItemDefinition* Def, int32 Count = 1);
+	int32 GetOverflowFromAddingItem(const FFortItemEntry& ItemEntry);
 
 	bool RemoveItem(FGuid Guid, int32 Count = INT_MAX);
 	bool RemoveItem(UFortItemDefinition* Def, int32 Count = INT_MAX);
@@ -84,14 +84,18 @@ public:
 	bool CanSwapForItem(UFortItemDefinition* Def);
 
 	bool SwapCurrentItem(
-		UFortItemDefinition* NewItemDef,
-		int32 NewCount,
+		const FFortItemEntry& NewItemEntry,
 		bool bSpawnPickup = true
 	);
 
 	bool AddItemAndHandleOverflow(
+		const FFortItemEntry& ItemEntry,
+		bool bAllowSwap = true,
+		bool bSpawnOverflowPickup = true
+	);
+	bool AddItemAndHandleOverflow(
 		UFortItemDefinition* Def,
-		int32 Count = 1,
+		int32 Count,
 		bool bAllowSwap = true,
 		bool bSpawnOverflowPickup = true
 	);
@@ -105,6 +109,7 @@ public:
 	// =================================================================
 
 	bool CanAddItem(UFortItemDefinition* Def, int32 Count = 1) const;
+	bool CanAddItem(const FFortItemEntry& ItemEntry) const;
 	bool CanRemoveItem(FGuid Guid, int32 Count) const;
 
 	bool IsPrimaryItem(UFortItemDefinition* Def) const;
@@ -113,6 +118,6 @@ public:
 	int32 TryAddToEntry(FFortItemEntry& ItemEntry, int32 Count = 1, int32 MaxStackSize = 1);
 	int32 TryCreateStack(UFortItemDefinition* Def, int32 Count = 1, int32 MaxStackSize = 1);
 
-	bool SpawnPickupFromDefinition(UFortItemDefinition* Def, int32 Count = 1);
-	bool SpawnPickupFromEntry(const FFortItemEntry& ItemEntry);
+	AFortPickup* SpawnPickupFromDefinition(UFortItemDefinition* Def, int32 Count = 1);
+	AFortPickup* SpawnPickupFromEntry(const FFortItemEntry& ItemEntry);
 };

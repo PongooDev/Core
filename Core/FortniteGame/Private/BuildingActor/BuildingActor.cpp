@@ -79,27 +79,7 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 			(Damage == 100.f)
 		);
 
-		if (PC->WorldInventory) {
-			int32 ExcessCount = PC->WorldInventory->GetOverflowFromAddingItem(ResourceDef, MaterialCount);
-			if (ExcessCount > 0) {
-				AFortPickup* Pickup = UFortKismetLibrary::K2_SpawnPickupInWorld(
-					World,
-					ResourceDef,
-					ExcessCount,
-					PC->MyFortPawn->K2_GetActorLocation(),
-					FVector(),
-					-1,
-					true,
-					true,
-					false,
-					-1,
-					EFortPickupSourceTypeFlag::Player,
-					EFortPickupSpawnSource::TossedByPlayer,
-					PC,
-					false
-				);
-			}
-		}
+		PC->WorldInventory->AddItemAndHandleOverflow(ResourceDef, MaterialCount);
 	}
 	else {
 		Log("ABuildingActor::OnDamageServer: Failed to get ResourceDef for ResourceType: " + std::to_string(BuildingSMActor->ResourceType));
