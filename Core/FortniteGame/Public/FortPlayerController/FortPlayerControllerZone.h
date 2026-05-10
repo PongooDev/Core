@@ -19,5 +19,8 @@ public:
 	static inline void (*ServerSendLoadoutConfigOG)(AFortPlayerControllerZone* This, int32 LoadoutSeed, TArray<uint8>& Loadout);
 	static void ServerSendLoadoutConfig(AFortPlayerControllerZone* This, int32 LoadoutSeed, TArray<uint8>& Loadout);
 
+	static inline void (*ServerSetShouldDisablePlayerTeleportingDuringMissionResultsOG)(AFortPlayerControllerZone* This);
+	static void ServerSetShouldDisablePlayerTeleportingDuringMissionResults(AFortPlayerControllerZone* This);
+
 	static void Hook();
 };

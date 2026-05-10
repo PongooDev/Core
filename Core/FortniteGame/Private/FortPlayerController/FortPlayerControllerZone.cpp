@@ -46,6 +46,12 @@ void AFortPlayerControllerZone::ServerSendLoadoutConfig(AFortPlayerControllerZon
 	ServerSendLoadoutConfigOG(This, LoadoutSeed, Loadout);
 }
 
+void AFortPlayerControllerZone::ServerSetShouldDisablePlayerTeleportingDuringMissionResults(AFortPlayerControllerZone* This) {
+	ServerSetShouldDisablePlayerTeleportingDuringMissionResultsOG(This);
+
+	Log("ServerSetShouldDisablePlayerTeleportingDuringMissionResults called!");
+}
+
 void AFortPlayerControllerZone::Hook() {
 	HookEveryVTable(AFortPlayerControllerZone::StaticClass(), AFortPlayerControllerZone::StaticClass()->GetFunction("Function /Script/Engine.PlayerController.ServerAcknowledgePossession"), ServerAcknowledgePossession, nullptr);
 	
@@ -56,6 +62,13 @@ void AFortPlayerControllerZone::Hook() {
 		AFortPlayerControllerZone::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerControllerZone.ServerSendLoadoutConfig"),
 		ServerSendLoadoutConfig,
 		(LPVOID*)&ServerSendLoadoutConfigOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerControllerZone::StaticClass(),
+		AFortPlayerControllerZone::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerControllerZone.ServerSetShouldDisablePlayerTeleportingDuringMissionResults"),
+		ServerSetShouldDisablePlayerTeleportingDuringMissionResults,
+		(LPVOID*)&ServerSetShouldDisablePlayerTeleportingDuringMissionResultsOG
 	);
 
 	Log("Hooked AFortPlayerControllerZone");
