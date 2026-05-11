@@ -570,4 +570,9 @@ namespace ServerOffsets {
 	inline uintptr_t AActor_GetNetOwnerVFT = 0;
 
 	inline uintptr_t UFortWorldItemDefinition_ServerExecuteVFT = 0;
+
+	inline uintptr_t UFortWorldItem_SetOwningInventory = 0;
+	inline uintptr_t UFortWorldItem_SetOwningInventoryVFT = 0;
+	inline uintptr_t UFortWorldItem_SetLoadedAmmoVFT = 0;
+	inline uintptr_t UFortWorldItem_SetPhantomReserveAmmoVFT = 0;
 }

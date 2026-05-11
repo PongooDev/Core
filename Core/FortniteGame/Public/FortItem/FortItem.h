@@ -18,4 +18,6 @@ public:
 	void SetOwningControllerForTemporaryItem(AFortPlayerController* InController);
 
 	FGuid GetItemGuid() const;
+
+	AFortPlayerController* GetOwningController() const;
 };

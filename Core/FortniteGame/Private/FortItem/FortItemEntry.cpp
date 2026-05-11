@@ -35,6 +35,7 @@ void FFortItemEntry::CopyGenericValuesFrom(const FFortItemEntry* Other) {
 	GiftingInfo = Other->GiftingInfo;
 	ItemSource = Other->ItemSource;
 	LoadedAmmo = Other->LoadedAmmo;
+	PhantomReserveAmmo = Other->PhantomReserveAmmo;
 	StateValues = Other->StateValues;
 
 	SetToDirty();

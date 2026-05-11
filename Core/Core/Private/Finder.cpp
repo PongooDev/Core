@@ -9,7 +9,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Object.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Class.h"
 
-// TODO: Find GWorld and set it in ServerOffsets
+#include "FortniteGame/Public/FortItem/FortItemEntry.h"
 
 uintptr_t Finder::FindGUObjectArray() {
 	static uintptr_t Addr = 0;
@@ -7340,6 +7340,80 @@ uintptr_t Finder::FindABuildingActor_PostUpdateVFT()
 
 	Log("ABuildingActor_PostUpdateVFT found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingActor_PostUpdateVFT));
 	return ServerOffsets::ABuildingActor_PostUpdateVFT;
+}
+
+uintptr_t Finder::FindUFortWorldItem_SetOwningInventory() {
+	if (ServerOffsets::UFortWorldItem_SetOwningInventory)
+		return ServerOffsets::UFortWorldItem_SetOwningInventory;
+	uintptr_t Addr = 0;
+
+	Addr = Memcury::Scanner::FindPattern("48 85 D2 74 ? 80 BA ? ? ? ? ? 75 ? 48 89 91").Get();
+	if (!Addr) {
+		Addr = Memcury::Scanner::FindPattern("48 83 EC ? 48 85 D2 74 ? 80 BA ? ? ? ? ? 75 ? 48 81 C1").Get();
+	}
+	if (!Addr) {
+		Addr = Memcury::Scanner::FindPattern("48 85 D2 74 ? 48 89 5C 24 ? 57 48 83 EC ? 48 8B F9 48 8B DA 48 8B CA E8 ? ? ? ? 83 F8 ? 75").Get();
+	}
+
+	if (Addr) {
+		ServerOffsets::UFortWorldItem_SetOwningInventory = Addr - ImageBase;
+	}
+
+	Log("UFortWorldItem_SetOwningInventory found at: 0x" + std::format("{:X}", ServerOffsets::UFortWorldItem_SetOwningInventory));
+	return ServerOffsets::UFortWorldItem_SetOwningInventory;
+}
+
+uintptr_t Finder::FindUFortWorldItem_SetOwningInventoryVFT() {
+	if (ServerOffsets::UFortWorldItem_SetOwningInventoryVFT)
+		return ServerOffsets::UFortWorldItem_SetOwningInventoryVFT;
+
+	void** VFT = ((UClass*)FUObjectArray::FindObject("Class /Script/FortniteGame.FortWorldItem"))->GetDefaultObject()->VTable;
+	
+	for (int i = 0; i < 512; i++)
+	{
+		if (VFT[i] == (void*)(FindUFortWorldItem_SetOwningInventory() + ImageBase))
+		{
+			ServerOffsets::UFortWorldItem_SetOwningInventoryVFT = i;
+			break;
+		}
+	}
+
+	Log("UFortWorldItem_SetOwningInventoryVFT found at: 0x" + std::format("{:X}", ServerOffsets::UFortWorldItem_SetOwningInventoryVFT));
+	return ServerOffsets::UFortWorldItem_SetOwningInventoryVFT;
+}
+
+uintptr_t Finder::FindUFortWorldItem_SetLoadedAmmoVFT() {
+	if (ServerOffsets::UFortWorldItem_SetLoadedAmmoVFT)
+		return ServerOffsets::UFortWorldItem_SetLoadedAmmoVFT;
+
+	bool bHasPhantomReserveAmmo = FFortItemEntry::StaticStruct()->FindPropertyByName("PhantomReserveAmmo") != nullptr;
+	uintptr_t SetOwningInventoryIdx = FindUFortWorldItem_SetOwningInventoryVFT();
+
+	if (bHasPhantomReserveAmmo) {
+		ServerOffsets::UFortWorldItem_SetLoadedAmmoVFT = uint32(SetOwningInventoryIdx - (Version::Engine_Version < 4.27 ? 2 : 3));
+	}
+	else {
+		ServerOffsets::UFortWorldItem_SetLoadedAmmoVFT = uint32(SetOwningInventoryIdx - 1);
+	}
+
+	Log("UFortWorldItem_SetLoadedAmmoVFT found at: 0x" + std::format("{:X}", ServerOffsets::UFortWorldItem_SetLoadedAmmoVFT));
+	return ServerOffsets::UFortWorldItem_SetLoadedAmmoVFT;
+}
+
+uintptr_t Finder::FindUFortWorldItem_SetPhantomReserveAmmoVFT() {
+	if (ServerOffsets::UFortWorldItem_SetPhantomReserveAmmoVFT)
+		return ServerOffsets::UFortWorldItem_SetPhantomReserveAmmoVFT;
+
+	bool bHasPhantomReserveAmmo = FFortItemEntry::StaticStruct()->FindPropertyByName("PhantomReserveAmmo") != nullptr;
+	if (!bHasPhantomReserveAmmo)
+		return 0;
+
+	uintptr_t SetOwningInventoryIdx = FindUFortWorldItem_SetOwningInventoryVFT();
+
+	ServerOffsets::UFortWorldItem_SetPhantomReserveAmmoVFT = uint32(SetOwningInventoryIdx - (Version::Engine_Version < 4.27 ? 1 : 2));
+
+	Log("UFortWorldItem_SetPhantomReserveAmmoVFT found at: 0x" + std::format("{:X}", ServerOffsets::UFortWorldItem_SetPhantomReserveAmmoVFT));
+	return ServerOffsets::UFortWorldItem_SetPhantomReserveAmmoVFT;
 }
 
 void Finder::SetupOffsets() {

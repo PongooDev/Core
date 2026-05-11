@@ -926,6 +926,14 @@ public:
 	static uintptr_t FindABuildingSMActor_PostUpdate();
 
 	static uintptr_t FindABuildingActor_PostUpdateVFT();
+
+	static uintptr_t FindUFortWorldItem_SetOwningInventory();
+
+	static uintptr_t FindUFortWorldItem_SetOwningInventoryVFT();
+
+	static uintptr_t FindUFortWorldItem_SetLoadedAmmoVFT();
+
+	static uintptr_t FindUFortWorldItem_SetPhantomReserveAmmoVFT();
 public:
 	static void SetupOffsets();
 

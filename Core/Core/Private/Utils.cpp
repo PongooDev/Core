@@ -23,6 +23,7 @@
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
 #include "FortniteGame/Public/FortPlayerState/FortPlayerStateAthena.h"
 #include "FortniteGame/Public/FortPawn/FortPlayerPawnAthena.h"
+#include "FortniteGame/Public/FortItem/FortWorldItem.h"
 
 void Utils::InitConsole(FCoreConfig& Config)
 {
@@ -205,6 +206,7 @@ void Utils::Hook() {
 	AFortPlayerStateAthena::Hook();
 	AFortPlayerPawn::Hook();
 	ABuildingSMActor::Hook();
+	UFortWorldItem::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {

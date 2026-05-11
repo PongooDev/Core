@@ -33,3 +33,16 @@ FGuid UFortItem::GetItemGuid() const
 
 	return FGuid();
 }
+
+AFortPlayerController* UFortItem::GetOwningController() const
+{
+	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetOwningController"));
+	if (Function) {
+		static uintptr_t VTableIdx = GetVTableIndex(Function);
+
+		AFortPlayerController* (*&GetOwningControllerInternal)(const UFortItem*) = decltype(GetOwningControllerInternal)(VTable[VTableIdx]);
+		return GetOwningControllerInternal(this);
+	}
+
+	return nullptr;
+}

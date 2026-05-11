@@ -20,12 +20,17 @@ public:
 public:
 	uint8 GetQuickBarForItem();
 
-public:
-	operator FFortItemEntry& () {
-		return ItemEntry;
-	}
+	void SetOwningInventory(AFortInventory* NewOwnerInventory);
 
-	operator FFortItemEntry* () {
-		return &ItemEntry;
+	static bool SetLoadedAmmo(UFortWorldItem* This, int32 InCount);
+
+	static void Hook() {
+		HookEveryVTableIdx(
+			UFortWorldItem::StaticClass(),
+			Finder::FindUFortWorldItem_SetLoadedAmmoVFT(),
+			SetLoadedAmmo
+		);
+
+		Log("UFortWorldItem Hooked!");
 	}
 };

@@ -28,6 +28,7 @@ public:
 	DefineStructProperty(float, Durability);
 	DefineStructProperty(int32, Level);
 	DefineStructProperty(int32, LoadedAmmo);
+	DefineStructProperty(int32, PhantomReserveAmmo);
 	DefineStructProperty(TArray<FString>, AlterationDefinitions);
 	DefineStructProperty(FString, ItemSource);
 	DefineStructProperty(FGuid, ItemGuid);
