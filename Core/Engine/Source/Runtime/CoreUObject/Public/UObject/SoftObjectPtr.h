@@ -18,10 +18,6 @@ public:
 	{
 		return WeakPtr.Get();
 	}
-	class UObject* operator->() const
-	{
-		return WeakPtr.Get();
-	}
 };
 
 class FSoftObjectPtr : public TPersistentObjectPtr<FSoftObjectPath>
@@ -33,10 +29,6 @@ class TSoftObjectPtr : public FSoftObjectPtr
 {
 public:
 	UEType* Get() const
-	{
-		return static_cast<UEType*>(TPersistentObjectPtr::Get());
-	}
-	UEType* operator->() const
 	{
 		return static_cast<UEType*>(TPersistentObjectPtr::Get());
 	}

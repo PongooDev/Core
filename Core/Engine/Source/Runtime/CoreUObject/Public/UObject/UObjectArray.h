@@ -99,13 +99,11 @@ public:
 
 	FUObjectItem const* GetObjectPtr(int32 Index) const
 	{
-		check(Index >= 0 && Index < NumElements);
 		return &Objects[Index];
 	}
 
 	FUObjectItem* GetObjectPtr(int32 Index)
 	{
-		check(Index >= 0 && Index < NumElements);
 		return &Objects[Index];
 	}
 

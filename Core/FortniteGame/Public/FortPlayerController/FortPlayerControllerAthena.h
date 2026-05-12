@@ -9,6 +9,7 @@
 class AFortPlayerPawnAthena;
 class AFortBroadcastRemoteClientInfo;
 class UFortHero;
+class UFortHeroType;
 class AFortAircraft;
 
 class AFortPlayerControllerAthena : public AFortPlayerControllerZone {
@@ -18,6 +19,7 @@ public:
 	DefineUProperty(AFortBroadcastRemoteClientInfo*, BroadcastRemoteClientInfo);
 
 	DefineUProperty(UFortHero*, StrongMyHero);
+	DefineUProperty(TArray<UFortHeroType*>, DefaultHeroes);
 public:
 	static inline void (*EnterAircraftOG)(AFortPlayerControllerAthena* This, AFortAircraft* InAircraft);
 	static void EnterAircraft(AFortPlayerControllerAthena* This, AFortAircraft* InAircraft);

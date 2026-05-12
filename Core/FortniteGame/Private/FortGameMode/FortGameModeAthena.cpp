@@ -54,6 +54,8 @@ void AFortGameModeAthena::BeginPlay(AFortGameModeAthena* This) {
 	BeginPlayOG(This);
 
 	if (Version::Fortnite_Version <= 1.72) {
-		This->DefaultPawnClass = AFortPlayerPawnAthena::StaticClass();
+		This->DefaultPawnClass = (UClass*)StaticLoadObject("/Game/Athena/PlayerPawn_Athena.PlayerPawn_Athena_C");
+		This->PlayerControllerClass = (UClass*)StaticLoadObject("/Game/Athena/Athena_PlayerController.Athena_PlayerController_C");
+		This->PlayerStateClass = AFortPlayerStateAthena::StaticClass();
 	}
 }

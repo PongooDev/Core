@@ -22,3 +22,17 @@ enum EObjectFlags
 
 	RF_ClassDefaultObject = 0x00000010,
 };
+
+#define DefineCustomProperty(PropertyType, PropertyName, Offset) \
+public: \
+    FORCEINLINE PropertyType& _Get##PropertyName() { \
+        return *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset); \
+    } \
+    FORCEINLINE PropertyType _Get##PropertyName() const { \
+        return *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset); \
+    } \
+    FORCEINLINE void _Set##PropertyName(PropertyType Value) { \
+        *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset) = Value; \
+    } \
+public: \
+    __declspec(property(get = _Get##PropertyName, put = _Set##PropertyName)) PropertyType PropertyName;
