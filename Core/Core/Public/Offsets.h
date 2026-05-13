@@ -388,6 +388,7 @@ namespace ServerOffsets {
 	inline uintptr_t AFortGameModeAthena_SpawnDefaultPawnFor = 0;
 	inline uintptr_t AFortGameModeAthena_RestartPlayer = 0;
 	inline uintptr_t AFortGameModeAthena_FinishWorldInitialization = 0;
+	inline uintptr_t AFortGameModeAthena_AddToAlivePlayers = 0;
 
 	inline uintptr_t AFortGameStateAthena_OnRep_CurrentPlaylistInfo = 0;
 	inline uintptr_t AFortGameStateAthena_OnPlaylistDataLoadCompleted = 0;

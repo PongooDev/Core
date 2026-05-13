@@ -20,4 +20,9 @@ public:
 
 	DefineUProperty(TArray<TSoftObjectPtr<UFortHeroSpecialization>>, Specializations);
 	DefineUProperty(TArray<FHeroItem>, HeroItems)
+public:
+	inline TArray<TSoftObjectPtr<UFortHeroSpecialization>>* GetSpecializationsPtr() {
+		static auto* SpecializationArray = reinterpret_cast<TArray<TSoftObjectPtr<UFortHeroSpecialization>>*>(__int64(this) + ClassPrivate->GetPropertyOffset("Specializations"));
+		return SpecializationArray;
+	}
 };

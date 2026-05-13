@@ -952,6 +952,8 @@ public:
 	static uintptr_t FindAGameModeBase_SpawnPlayerController();
 
 	static uintptr_t FindAGameModeBase_SpawnPlayerControllerVFT();
+
+	static uintptr_t FindAFortGameModeAthena_AddToAlivePlayers();
 public:
 	static void SetupOffsets();
 

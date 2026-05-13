@@ -85,8 +85,13 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 		AFortPlayerStateAthena* FortPSAthena = BotController->PlayerState->Cast<AFortPlayerStateAthena>();
 		AFortPlayerControllerAthena* FortPCAthena = BotController->Cast<AFortPlayerControllerAthena>();
 		AFortPlayerPawnAthena* FortPlayerPawnAthena = BotController->Pawn->Cast<AFortPlayerPawnAthena>();
+		AFortGameModeAthena* FortGameModeAthena = Cast<AFortGameModeAthena>();
 
 		if (FortPCAthena && FortPlayerPawnAthena) {
+			if (FortGameModeAthena) {
+				FortGameModeAthena->AddToAlivePlayers(FortPCAthena);
+			}
+
 			if (!FortPSAthena->HeroType) {
 				if (FortPCAthena->DefaultHeroes.Num() > 0) {
 					UFortHeroType* RandomHeroType = FortPCAthena->DefaultHeroes[UKismetMathLibrary::RandomIntegerInRange(0, FortPCAthena->DefaultHeroes.Num() - 1)];
@@ -99,8 +104,8 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 			UFortHeroType* HeroType = FortPSAthena->HeroType;
 
 			if (Version::Fortnite_Version <= 1.72) {
-				if (HeroType && HeroType->Specializations.Num() > 0) {
-					UFortHeroSpecialization* RandomSpecialization = HeroType->Specializations.GetWithSize(UKismetMathLibrary::RandomIntegerInRange(0, HeroType->Specializations.Num() - 1), FSoftObjectPtr::GetSize()).Get();
+				if (HeroType && HeroType->GetSpecializationsPtr()->Num() > 0) {
+					UFortHeroSpecialization* RandomSpecialization = (*HeroType->GetSpecializationsPtr()).GetWithSize(UKismetMathLibrary::RandomIntegerInRange(0, HeroType->GetSpecializationsPtr()->Num() - 1), FSoftObjectPtr::GetSize()).Get();
 					if (RandomSpecialization) {
 						int32 NumParts = RandomSpecialization->CharacterParts.Num();
 

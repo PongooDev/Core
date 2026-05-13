@@ -7673,6 +7673,42 @@ uintptr_t Finder::FindAGameModeBase_SpawnPlayerControllerVFT() {
 	return ServerOffsets::AGameModeBase_SpawnPlayerControllerVFT;
 }
 
+uintptr_t Finder::FindAFortGameModeAthena_AddToAlivePlayers() {
+	if (ServerOffsets::AFortGameModeAthena_AddToAlivePlayers)
+		return ServerOffsets::AFortGameModeAthena_AddToAlivePlayers;
+	uintptr_t Addr = 0;
+	
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"FortGameModeAthena: Player [%s] added to alive players list (Team [%d]).  Player count is now [%d].  Team count is now [%d]. ").Get();
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"FortGameModeAthena::AddToAlivePlayers: Player [%s] PC [%s] doesn't have a valid PvP team, and won't be added to the alive players list.").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"FortGameModeAthena::AddToAlivePlayers: Player [%s] PC [%s] added to alive players list (Team [%d]).  Player count is now [%d].  Team count is now [%d].").Get();
+	}
+
+	if (StringAddr) {
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x40 && *(Ptr + 1) == 0x53)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
+	}
+	else {
+		Log("Failed to find string reference for AFortGameModeAthena_AddToAlivePlayers");
+	}
+	
+	if (Addr) {
+		ServerOffsets::AFortGameModeAthena_AddToAlivePlayers = Addr - ImageBase;
+	}
+
+	Log("AFortGameModeAthena_AddToAlivePlayers found at: 0x" + std::format("{:X}", ServerOffsets::AFortGameModeAthena_AddToAlivePlayers));
+	return ServerOffsets::AFortGameModeAthena_AddToAlivePlayers;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -7779,6 +7815,8 @@ void Finder::SetupOffsets() {
 	FindGHandle();
 
 	FindAGameSession__NextPlayerID();
+
+	FindAFortGameModeAthena_AddToAlivePlayers();
 
 	return;
 }

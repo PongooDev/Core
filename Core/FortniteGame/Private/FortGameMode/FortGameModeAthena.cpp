@@ -59,3 +59,8 @@ void AFortGameModeAthena::BeginPlay(AFortGameModeAthena* This) {
 		This->PlayerStateClass = AFortPlayerStateAthena::StaticClass();
 	}
 }
+
+void AFortGameModeAthena::AddToAlivePlayers(AFortPlayerControllerAthena* PC) {
+	void (*AddToAlivePlayersInternal)(AFortGameModeAthena* This, AFortPlayerControllerAthena* PC) = decltype(AddToAlivePlayersInternal)(ImageBase + Finder::FindAFortGameModeAthena_AddToAlivePlayers());
+	AddToAlivePlayersInternal(this, PC);
+}

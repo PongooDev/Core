@@ -35,6 +35,8 @@ public:
 	static inline void (*BeginPlayOG)(AFortGameModeAthena* This);
 	static void BeginPlay(AFortGameModeAthena* This);
 
+	void AddToAlivePlayers(AFortPlayerControllerAthena* PC);
+
 	static void Hook() {
 		//MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortGameModeAthena_ReadyToStartMatch()), ReadyToStartMatch, (LPVOID*)&ReadyToStartMatchOG);
 		HookEveryVTable(
