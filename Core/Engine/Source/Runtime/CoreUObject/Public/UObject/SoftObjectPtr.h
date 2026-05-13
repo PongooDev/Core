@@ -42,8 +42,8 @@ public:
             {
                 auto AssetLongPathname = *(FString*)(__int64(this) + offsetof(FSoftObjectPtr, ObjectID));
 
-				Log("AssetLongPathname: " + AssetLongPathname.ToString());
-                WeakPtr = Ret = StaticLoadObject(AssetLongPathname);
+                if (!AssetLongPathname.IsEmpty() && AssetLongPathname.IsValid())
+                    WeakPtr = Ret = StaticLoadObject(AssetLongPathname);
             }
             else if (Version::Fortnite_Version >= 23)
             {
