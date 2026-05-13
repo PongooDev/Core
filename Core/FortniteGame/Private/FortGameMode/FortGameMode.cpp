@@ -100,17 +100,26 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 
 			if (Version::Fortnite_Version <= 1.72) {
 				if (HeroType && HeroType->Specializations.Num() > 0) {
-					UFortHeroSpecialization* RandomSpecialization = HeroType->Specializations[UKismetMathLibrary::RandomIntegerInRange(0, HeroType->Specializations.Num() - 1)].Get();
-					if (RandomSpecialization && RandomSpecialization->CharacterParts.Num() > 0) {
-						for (int32 i = 0; i < RandomSpecialization->CharacterParts.Num(); i++) {
-							UCustomCharacterPart* CharacterPartAsset = RandomSpecialization->CharacterParts[i].Get();
+					UFortHeroSpecialization* RandomSpecialization = HeroType->Specializations.GetWithSize(UKismetMathLibrary::RandomIntegerInRange(0, HeroType->Specializations.Num() - 1), FSoftObjectPtr::GetSize()).Get();
+					if (RandomSpecialization) {
+						int32 NumParts = RandomSpecialization->CharacterParts.Num();
+
+						for (int32 i = 0; i < NumParts; i++) {
+							TSoftObjectPtr<UCustomCharacterPart>& PartPtr = RandomSpecialization->CharacterParts.GetWithSize(i, FSoftObjectPtr::GetSize());
+							
+							UCustomCharacterPart* CharacterPartAsset = PartPtr.Get();
+							
 							if (CharacterPartAsset) {
 								FortPlayerPawnAthena->ServerChoosePart(CharacterPartAsset, CharacterPartAsset->CharacterPartType);
+								Log("AFortGameMode::SpawnPlayerBot: Applied character part: " + std::string(CharacterPartAsset ? CharacterPartAsset->GetName().ToString() : "None"));
+							}
+							else {
+								Log("AFortGameMode::SpawnPlayerBot: Failed to load character part asset for part index: " + std::to_string(i));
 							}
 						}
 					}
 					else {
-						Log("AFortGameMode::SpawnPlayerBot: Failed to get random specialization or character parts!");
+						Log("AFortGameMode::SpawnPlayerBot: Failed to get random specialization!");
 					}
 				}
 

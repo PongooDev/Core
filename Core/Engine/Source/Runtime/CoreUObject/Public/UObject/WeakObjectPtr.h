@@ -7,37 +7,31 @@
 class FWeakObjectPtr
 {
 public:
-	FORCEINLINE FWeakObjectPtr()
+	FWeakObjectPtr(int32 Index = 0, int32 SerialNumber = 0)
+		: ObjectIndex(Index)
+		, ObjectSerialNumber(SerialNumber)
 	{
-		Reset();
 	}
 
-	FORCEINLINE FWeakObjectPtr(const class UObject* Object)
+	FWeakObjectPtr(const UObject* Object)
 	{
-		if (!Object)
+		if (Object)
 		{
-			Log("FWeakObjectPtr: Constructor called with null object pointer.");
-			Reset();
-			return;
-		}
-
-		ObjectIndex = Object->InternalIndex;
-
-		FUObjectItem* item = FUObjectArray::IndexToObject(ObjectIndex);
-		if (item)
-		{
-			ObjectSerialNumber = item->SerialNumber;
+			ObjectIndex = Object->InternalIndex;
+			auto Item = FUObjectArray::IndexToObject(Object->InternalIndex);
+			ObjectSerialNumber = Item->SerialNumber;
 		}
 		else
 		{
-			Log("FWeakObjectPtr: Failed to get FUObjectItem for object index " + std::to_string(ObjectIndex));
+			ObjectIndex = INDEX_NONE;
 			ObjectSerialNumber = 0;
 		}
 	}
 
 	FORCEINLINE FWeakObjectPtr(const FWeakObjectPtr& Other)
 	{
-		(*this) = Other;
+		ObjectIndex = Other.ObjectIndex;
+		ObjectSerialNumber = Other.ObjectSerialNumber;
 	}
 
 	FORCEINLINE void Reset()
@@ -62,7 +56,43 @@ public:
 public:
 	UObject* Get() const
 	{
-		return (UObject*)FUObjectArray::IndexToObject(ObjectIndex)->Object;
+		if (!this)
+			return nullptr;
+
+		if (ObjectIndex < 0 || ObjectSerialNumber == 0)
+			return nullptr;
+
+		auto Item = FUObjectArray::IndexToObject(ObjectIndex);
+
+		if (!Item || Item->SerialNumber != ObjectSerialNumber)
+			return nullptr;
+
+		return (UObject*)Item->Object;
+	}
+
+	const UObject* operator->() const
+	{
+		return Get();
+	}
+
+	bool operator==(const FWeakObjectPtr& Other) const
+	{
+		return ObjectIndex == Other.ObjectIndex;
+	}
+
+	bool operator!=(const FWeakObjectPtr& Other) const
+	{
+		return ObjectIndex != Other.ObjectIndex;
+	}
+
+	bool operator==(const class UObject* Other) const
+	{
+		return ObjectIndex == Other->InternalIndex;
+	}
+
+	bool operator!=(const class UObject* Other) const
+	{
+		return ObjectIndex != Other->InternalIndex;
 	}
 };
 

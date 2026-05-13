@@ -145,4 +145,9 @@ public:
 	{
 		return ToString();
 	}
+
+	bool IsValid() const
+	{
+		return Data.IsValid();
+	}
 };
