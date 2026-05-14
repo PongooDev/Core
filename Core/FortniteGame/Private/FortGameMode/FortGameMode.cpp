@@ -70,15 +70,9 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 
 		BotController->PlayerState->bIsABot = true;
 
-		APawn* BotPawn = (APawn*)World->SpawnActor(DefaultPawnClass.Class, SpawnLocation, SpawnRotation);
-		if (!BotPawn) {
-			Log("AFortGameMode::SpawnPlayerBot: Failed to manually spawn bot pawn!");
-			return false;
-		}
-
-		BotController->Possess(BotPawn);
-		if (BotController->Pawn != BotPawn) {
-			Log("AFortGameMode::SpawnPlayerBot: Failed to possess bot pawn!");
+		RestartPlayerAtTransform(BotController, SpawnPoint->GetTransform());
+		if (!BotController->Pawn) {
+			Log("AFortGameMode::SpawnPlayerBot: Failed to spawn bot pawn!");
 			return false;
 		}
 

@@ -9,9 +9,11 @@ APawn* AGameModeBase::SpawnDefaultPawnFor(AController* NewPlayer, AActor* StartS
 	if (Function) {
 		static uintptr_t VTableIdx = GetVTableIndex(Function);
 
-		void (*&SpawnDefaultPawnForInternal)(AGameModeBase*, AController*, AActor*) = decltype(SpawnDefaultPawnForInternal)(VTable[VTableIdx]);
-		SpawnDefaultPawnForInternal(this, NewPlayer, StartSpot);
+		APawn* (*&SpawnDefaultPawnForInternal)(AGameModeBase*, AController*, AActor*) = decltype(SpawnDefaultPawnForInternal)(VTable[VTableIdx]);
+		return SpawnDefaultPawnForInternal(this, NewPlayer, StartSpot);
 	}
+
+	return nullptr;
 }
 
 APawn* AGameModeBase::SpawnDefaultPawnAtTransform(AController* NewPlayer, const FTransform& SpawnTransform)
@@ -20,7 +22,7 @@ APawn* AGameModeBase::SpawnDefaultPawnAtTransform(AController* NewPlayer, const 
 	if (Function) {
 		static uintptr_t VTableIdx = GetVTableIndex(Function);
 
-		void (*&SpawnDefaultPawnAtTransformInternal)(AGameModeBase*, AController*, const FTransform&) = decltype(SpawnDefaultPawnAtTransformInternal)(VTable[VTableIdx]);
+		APawn* (*&SpawnDefaultPawnAtTransformInternal)(AGameModeBase*, AController*, const FTransform&) = decltype(SpawnDefaultPawnAtTransformInternal)(VTable[VTableIdx]);
 		SpawnDefaultPawnAtTransformInternal(this, NewPlayer, SpawnTransform);
 	}
 }
