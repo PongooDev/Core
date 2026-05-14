@@ -31,6 +31,10 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 		return false;
 	}
 
+	AFortGameMode* FortGameMode = this->Cast<AFortGameMode>();
+	AFortGameModeZone* FortGameModeZone = FortGameMode ? FortGameMode->Cast<AFortGameModeZone>() : nullptr;
+	AFortGameModeAthena* FortGameModeAthena = this->Cast<AFortGameModeAthena>();
+
 	static TArray<AActor*> PlayerStarts;
 	if (PlayerStarts.Num() == 0) {
 		UGameplayStatics::GetAllActorsOfClass(World, AFortPlayerStartWarmup::StaticClass(), &PlayerStarts);
@@ -62,13 +66,22 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 			return false;
 		}
 
+		AFortPlayerController* FortPC = BotController->Cast<AFortPlayerController>();
+		AFortPlayerControllerAthena* FortPCAthena = BotController->Cast<AFortPlayerControllerAthena>();
+
 		BotController->InitPlayerState();
 		if (!BotController->PlayerState) {
 			Log("AFortGameMode::SpawnPlayerBot: Failed to initialize BotController's PlayerState!");
 			return false;
 		}
 
+		AFortPlayerStateAthena* FortPSAthena = BotController->PlayerState->Cast<AFortPlayerStateAthena>();
+
 		BotController->PlayerState->bIsABot = true;
+		if (FortGameModeAthena) {
+			FortGameModeAthena->AddToAlivePlayers(FortPCAthena);
+			NumBots++;
+		}
 
 		RestartPlayerAtTransform(BotController, SpawnPoint->GetTransform());
 		if (!BotController->Pawn) {
@@ -77,6 +90,9 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 		}
 
 		AFortPawn* FortPawn = BotController->Pawn->Cast<AFortPawn>();
+		AFortPlayerPawn* FortPlayerPawn = BotController->Pawn->Cast<AFortPlayerPawn>();
+		AFortPlayerPawnAthena* FortPlayerPawnAthena = BotController->Pawn->Cast<AFortPlayerPawnAthena>();
+
 		if (FortPawn) {
 			FortPawn->SetMaxHealth(100.0f);
 			FortPawn->SetHealth(100.0f);
@@ -84,23 +100,13 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 			FortPawn->SetShield(0.0f);
 		}
 
-		AFortPlayerController* FortPC = BotController->Cast<AFortPlayerController>();
-		AFortPlayerPawn* FortPlayerPawn = BotController->Pawn->Cast<AFortPlayerPawn>();
 		if (FortPC && FortPlayerPawn) {
 			if (!FortPC->MyFortPawn) {
 				FortPC->MyFortPawn = FortPlayerPawn;
 			}
 		}
-
-		AFortPlayerStateAthena* FortPSAthena = BotController->PlayerState->Cast<AFortPlayerStateAthena>();
-		AFortPlayerControllerAthena* FortPCAthena = BotController->Cast<AFortPlayerControllerAthena>();
-		AFortPlayerPawnAthena* FortPlayerPawnAthena = BotController->Pawn->Cast<AFortPlayerPawnAthena>();
-		AFortGameModeAthena* FortGameModeAthena = Cast<AFortGameModeAthena>();
+		
 		if (FortPCAthena) {
-			if (FortGameModeAthena) {
-				FortGameModeAthena->AddToAlivePlayers(FortPCAthena);
-			}
-
 			if (FortPSAthena) {
 				if (!FortPSAthena->HeroType && FortPCAthena->DefaultHeroes.Num() > 0) {
 					UFortHeroType* RandomHeroType = FortPCAthena->DefaultHeroes[UKismetMathLibrary::RandomIntegerInRange(0, FortPCAthena->DefaultHeroes.Num() - 1)];

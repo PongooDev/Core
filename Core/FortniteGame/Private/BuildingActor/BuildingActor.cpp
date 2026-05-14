@@ -60,7 +60,7 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 
 	AFortWeapon* Weapon = DamageCauser->Cast<AFortWeapon>();
 	if (!Weapon) {
-		Log("ABuildingActor::OnDamageServer: DamageCauser is not a FortWeapon!");
+		//Log("ABuildingActor::OnDamageServer: DamageCauser is not a FortWeapon!");
 		return OnDamageServerOG(This, Damage, DamageTags, Momentum, HitInfo, InstigatedBy, DamageCauser, EffectContext);
 	}
 
