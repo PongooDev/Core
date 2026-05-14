@@ -107,7 +107,6 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 				if (HeroType && HeroType->GetSpecializationsAssetPtr().Num() > 0) {
 					UFortHeroSpecialization* RandomSpecialization = HeroType->GetSpecializationsAssetPtr()[UKismetMathLibrary::RandomIntegerInRange(0, HeroType->GetSpecializationsAssetPtr().Num() - 1)].Get();
 					if (RandomSpecialization) {
-						Log("AFortGameMode::SpawnPlayerBot: Applying specialization: " + RandomSpecialization->GetName().ToString());
 						int32 NumParts = RandomSpecialization->GetCharacterPartsAssetPtr().Num();
 
 						for (int32 i = 0; i < NumParts; i++) {
@@ -117,7 +116,6 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 							
 							if (CharacterPartAsset) {
 								FortPlayerPawnAthena->ServerChoosePart(CharacterPartAsset, CharacterPartAsset->CharacterPartType);
-								Log("AFortGameMode::SpawnPlayerBot: Applied character part: " + std::string(CharacterPartAsset ? CharacterPartAsset->GetName().ToString() : "None"));
 							}
 							else {
 								Log("AFortGameMode::SpawnPlayerBot: Failed to load character part asset for part index: " + std::to_string(i));

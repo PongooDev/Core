@@ -12,17 +12,19 @@ public:
         if (!this)
             return nullptr;
 
-        if (Version::Engine_Version <= 4.16)
-        {
-            
-        }
-
         auto Object = WeakPtr.Get();
 
         if (!Object)
         {
             const UObject* Ret = nullptr;
 
+            if (Version::Engine_Version <= 4.16)
+            {
+                auto AssetLongPathname = *(FString*)(__int64(this) + offsetof(FSoftObjectPtr, ObjectID));
+
+                if (!AssetLongPathname.IsEmpty() && AssetLongPathname.IsValid())
+                    WeakPtr = Ret = StaticLoadObject(AssetLongPathname);
+            }
             if (Version::Fortnite_Version >= 23)
             {
                 auto& PackageName = *(FName*)(__int64(this) + (Version::Engine_Version < 5.3 ? 0xC : 0x8));

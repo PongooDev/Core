@@ -36,6 +36,11 @@ public:
 
 		return Object;
 	}
+
+	const UObject* Get()
+	{
+		return InternalGet();
+	}
 };
 
 template<class T>
