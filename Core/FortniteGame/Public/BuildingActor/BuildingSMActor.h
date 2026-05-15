@@ -40,6 +40,8 @@ public:
 
 	void RepairBuilding(AFortPlayerController* RepairingController, int32 ResourcesSpent);
 
+	void SetEditingPlayer(AFortPlayerStateZone* NewEditingPlayer);
+
 	static void Hook() {
 		Log("ABuildingSMActor Hooked!");
 	}

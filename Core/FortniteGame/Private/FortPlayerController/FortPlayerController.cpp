@@ -592,8 +592,6 @@ bool AFortPlayerController::RemoveInventoryItem(AFortPlayerController* This, FGu
 }
 
 void AFortPlayerController::ServerCreateBuildingActorOld(AFortPlayerController* This, FBuildingClassData& BuildingClassData, FVector& BuildLoc, FRotator& BuildRot, bool bMirrored) {
-	Log("ServerCreateBuildingActorOld called with BuildingClass: " + (BuildingClassData.BuildingClass ? BuildingClassData.BuildingClass->GetName().ToString() : "null") + ", bMirrored: " + std::to_string(bMirrored));
-
 	UWorld* World = UWorld::GetWorld();
 	if (!World) {
 		Log("ServerCreateBuildingActor: World is null!");
@@ -656,4 +654,48 @@ bool AFortPlayerController::CanAffordToPlaceBuildableClass(FBuildingClassData* C
 int32 AFortPlayerController::PayBuildableClassPlacementCost(FBuildingClassData* ClassToBuildData) {
 	int32(*&PayBuildableClassPlacementCostInternal)(AFortPlayerController * This, FBuildingClassData * ClassToBuildData) = decltype(PayBuildableClassPlacementCostInternal)(VTable[Finder::FindAFortPlayerController_PayBuildableClassPlacementCostVFT()]);
 	return PayBuildableClassPlacementCostInternal(this, ClassToBuildData);
+}
+
+void AFortPlayerController::ServerBeginEditingBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToEdit) {
+	Log("ServerBeginEditingBuildingActor Called!");
+	
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("ServerBeginEditingBuildingActor: World is null!");
+		return;
+	}
+
+	AFortPlayerStateZone* PlayerState = This->PlayerState->Cast<AFortPlayerStateZone>();
+	if (!PlayerState) {
+		Log("ServerBeginEditingBuildingActor: PlayerState is null or not AFortPlayerStateZone!");
+		return;
+	}
+
+	BuildingActorToEdit->SetEditingPlayer(PlayerState);
+
+	AFortPawn* MyFortPawn = This->MyFortPawn;
+	if (!MyFortPawn) {
+		Log("ServerBeginEditingBuildingActor: MyFortPawn is null!");
+		return;
+	}
+
+	if (!MyFortPawn->CurrentWeapon->Cast<AFortWeap_EditingTool>()) {
+		FFortItemEntry* ItemEntry = This->WorldInventory->FindItemEntry(UFortEditToolItemDefinition::StaticClass());
+		if (ItemEntry) {
+			This->ServerExecuteInventoryItem(This, ItemEntry->ItemGuid);
+		}
+		else {
+			Log("ServerBeginEditingBuildingActor: Failed to find edit tool in inventory!");
+			return;
+		}
+	}
+
+	AFortWeap_EditingTool* EditingTool = MyFortPawn->CurrentWeapon->Cast<AFortWeap_EditingTool>();
+	if (!EditingTool) {
+		Log("ServerBeginEditingBuildingActor: Current weapon is not the editing tool!");
+		return;
+	}
+
+	EditingTool->EditActor = BuildingActorToEdit;
+	EditingTool->OnRep_EditActor();
 }

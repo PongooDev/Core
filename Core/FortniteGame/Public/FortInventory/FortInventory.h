@@ -44,6 +44,7 @@ public:
 	FFortItemEntry* FindItemEntry(FGuid Guid);
 	FFortItemEntry* FindItemEntry(UFortItemDefinition* ItemDefinition);
 	FFortItemEntry* FindItemEntry(int32 ItemType);
+	FFortItemEntry* FindItemEntry(UClass* ItemDefinitionClass);
 
 	UFortWorldItem* FindItemInstance(FGuid Guid);
 	UFortWorldItem* FindItemInstance(UFortItemDefinition* ItemDefinition);

@@ -16,3 +16,8 @@ void ABuildingSMActor::RepairBuilding(AFortPlayerController* RepairingController
 		return RepairBuildingInternal(this, RepairingController, ResourcesSpent);
 	}
 }
+
+void ABuildingSMActor::SetEditingPlayer(AFortPlayerStateZone* NewEditingPlayer) {
+	void (*&SetEditingPlayerInternal)(ABuildingSMActor * This, AFortPlayerStateZone * NewEditingPlayer) = decltype(SetEditingPlayerInternal)(VTable[Finder::FindABuildingSMActor_SetEditingPlayerVFT()]);
+	SetEditingPlayerInternal(this, NewEditingPlayer);
+}

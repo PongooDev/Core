@@ -8102,6 +8102,40 @@ uintptr_t Finder::FindAFortPlayerController_PayBuildableClassPlacementCostVFT() 
 	return ServerOffsets::AFortPlayerController_PayBuildableClassPlacementCostVFT;
 }
 
+uintptr_t Finder::FindABuildingSMActor_SetEditingPlayer() {
+	if (ServerOffsets::ABuildingSMActor_SetEditingPlayer)
+		return ServerOffsets::ABuildingSMActor_SetEditingPlayer;
+	uintptr_t Addr = 0;
+
+	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 80 B9 ? ? ? ? ? 48 8B FA 48 8B D9 75 ? 48 83 B9 ? ? ? ? 00").Get();
+
+	if (Addr) {
+		ServerOffsets::ABuildingSMActor_SetEditingPlayer = Addr - ImageBase;
+	}
+
+	Log("ABuildingSMActor_SetEditingPlayer found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingSMActor_SetEditingPlayer));
+	return ServerOffsets::ABuildingSMActor_SetEditingPlayer;
+}
+
+uintptr_t Finder::FindABuildingSMActor_SetEditingPlayerVFT() {
+	if (ServerOffsets::ABuildingSMActor_SetEditingPlayerVFT)
+		return ServerOffsets::ABuildingSMActor_SetEditingPlayerVFT;
+	
+	void** VFT = ((UClass*)FUObjectArray::FindObject("Class /Script/FortniteGame.BuildingSMActor"))->GetDefaultObject()->VTable;
+	
+	for (int i = 0; i < 1024; i++)
+	{
+		if (VFT[i] == (void*)(FindABuildingSMActor_SetEditingPlayer() + ImageBase))
+		{
+			ServerOffsets::ABuildingSMActor_SetEditingPlayerVFT = i;
+			break;
+		}
+	}
+
+	Log("ABuildingSMActor_SetEditingPlayerVFT found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingSMActor_SetEditingPlayerVFT));
+	return ServerOffsets::ABuildingSMActor_SetEditingPlayerVFT;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;

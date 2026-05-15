@@ -116,6 +116,28 @@ FFortItemEntry* AFortInventory::FindItemEntry(int32 ItemType)
 	return nullptr;
 }
 
+FFortItemEntry* AFortInventory::FindItemEntry(UClass* ItemDefinitionClass)
+{
+	if (!ItemDefinitionClass)
+		return nullptr;
+
+	if (!Inventory.ReplicatedEntries.IsValid())
+		return nullptr;
+
+	for (int i = 0; i < Inventory.ReplicatedEntries.Num(); i++)
+	{
+		if (!Inventory.ReplicatedEntries.IsValidIndex(i)) continue;
+
+		auto& Entry = Inventory.ReplicatedEntries.GetWithSize(i, FFortItemEntry::GetSize());
+		if (Entry.ItemDefinition && Entry.ItemDefinition->IsA(ItemDefinitionClass))
+		{
+			return &Entry;
+		}
+	}
+
+	return nullptr;
+}
+
 UFortWorldItem* AFortInventory::FindItemInstance(FGuid Guid)
 {
 	if (!Guid.IsValid())

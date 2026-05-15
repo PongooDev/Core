@@ -22,3 +22,13 @@ void AFortWeap_BuildingTool::OnRep_DefaultMetadata(UBuildingEditModeMetadata* Ol
 
 	ProcessEvent(Func, &Parms);
 }
+
+void AFortWeap_EditingTool::OnRep_EditActor()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("OnRep_EditActor");
+
+	ProcessEvent(Func, nullptr);
+}

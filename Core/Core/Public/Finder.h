@@ -984,6 +984,10 @@ public:
 	static uintptr_t FindAFortPlayerController_PayBuildableClassPlacementCost();
 
 	static uintptr_t FindAFortPlayerController_PayBuildableClassPlacementCostVFT();
+
+	static uintptr_t FindABuildingSMActor_SetEditingPlayer();
+
+	static uintptr_t FindABuildingSMActor_SetEditingPlayerVFT();
 public:
 	static void SetupOffsets();
 

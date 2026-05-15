@@ -6,6 +6,7 @@
 
 class UBuildingEditModeMetadata;
 class UFortWeaponItemDefinition;
+class ABuildingSMActor;
 
 class AFortWeapon : public AActor {
 public:
@@ -27,4 +28,14 @@ public:
 	DefineUProperty(UBuildingEditModeMetadata*, DefaultMetadata);
 public:
 	void OnRep_DefaultMetadata(UBuildingEditModeMetadata* OldMetadata);
+};
+
+class AFortWeap_EditingTool : public AFortWeap_BuildingToolBase {
+public:
+	DefineUnrealClass(AFortWeap_EditingTool);
+
+	DefineUProperty(ABuildingSMActor*, EditActor);
+	DefineUProperty(bool, bEditConfirmed);
+public:
+	void OnRep_EditActor();
 };

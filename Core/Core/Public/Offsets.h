@@ -422,6 +422,8 @@ namespace ServerOffsets {
 	inline uintptr_t ABuildingSMActor_ReplaceBuildingActor = 0;
 	inline uintptr_t ABuildingSMActor_ReplaceBuildingActorVFT = 0;
 	inline uintptr_t ABuildingSMActor_PostUpdate = 0;
+	inline uintptr_t ABuildingSMActor_SetEditingPlayer = 0;
+	inline uintptr_t ABuildingSMActor_SetEditingPlayerVFT = 0;
 
 	inline uintptr_t AFortPickup_FinishedTargetSpline = 0;
 	inline uintptr_t AFortPickup_ForceFinishedTargetSpline = 0;

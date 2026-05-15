@@ -86,6 +86,8 @@ public:
 
 	int32 PayBuildableClassPlacementCost(FBuildingClassData* ClassToBuildData);
 
+	static void ServerBeginEditingBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToEdit);
+
 	static void Hook() {
 		/*HookVTableIdx(
 			AFortPlayerController::GetDefaultObj(),
@@ -156,6 +158,13 @@ public:
 				(LPVOID*)&ServerCreateBuildingActorOldOG
 			);
 		}
+
+		HookEveryVTable(
+			AFortPlayerController::StaticClass(),
+			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerBeginEditingBuildingActor"),
+			ServerBeginEditingBuildingActor,
+			nullptr
+		);
 
 		Log("Hooked AFortPlayerController");
 	}
