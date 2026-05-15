@@ -23,8 +23,17 @@ public:
 
 	uint8 PickTeam(uint8 PreferredTeam, AFortPlayerController* ControllerToPickFor);
 
+	static inline UClass** (*GetGameSessionClassOG)(AFortGameMode* This, UClass** result);
+	static UClass** GetGameSessionClass(AFortGameMode* This, UClass** result);
+
 	static void Hook() {
 		CreateVTableOriginal(AFortGameMode::GetDefaultObj(), AFortGameMode::StaticClass()->GetFunction("Function /Script/Engine.GameModeBase.SpawnDefaultPawnFor"), (LPVOID*)&SpawnDefaultPawnForOG);
+
+		MH_CreateHook(
+			(LPVOID)(GetOffsetFromVTable(AFortGameMode::GetDefaultObj(), Finder::FindAGameModeBase_GetGameSessionClassVFT())),
+			GetGameSessionClass,
+			(LPVOID*)&GetGameSessionClassOG
+		);
 
 		Log("AFortGameMode Hooked!");
 	}

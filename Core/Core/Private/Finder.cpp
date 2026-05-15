@@ -2746,9 +2746,8 @@ uintptr_t Finder::FindAGameModeBase_InitGame() {
 		return ServerOffsets::AGameModeBase_InitGame;
 	static uintptr_t Addr = 0;
 
-	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC ? 48 8B 01 49 8B F0").Get();
-	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B 01 49 8B E8 48 8B D9").Get();
+	if (Version::Engine_Version == 4.16) {
+		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? ? ? ? 49 8B E8 48 8B D9").Get();
 	}
 
 	if (Addr) {
@@ -2757,6 +2756,25 @@ uintptr_t Finder::FindAGameModeBase_InitGame() {
 
 	Log("AGameModeBase_InitGame found at: 0x" + std::format("{:X}", ServerOffsets::AGameModeBase_InitGame));
 	return ServerOffsets::AGameModeBase_InitGame;
+}
+
+uintptr_t Finder::FindAGameModeBase_InitGameVFT() {
+	if (ServerOffsets::AGameModeBase_InitGameVFT)
+		return ServerOffsets::AGameModeBase_InitGameVFT;
+
+	void** VFT = ((UClass*)FUObjectArray::FindObject("Class /Script/Engine.GameModeBase"))->GetDefaultObject()->VTable;
+
+	for (int i = 0; i < 1024; i++)
+	{
+		if (VFT[i] == (void*)(FindAGameModeBase_InitGame() + ImageBase))
+		{
+			ServerOffsets::AGameModeBase_InitGameVFT = i;
+			break;
+		}
+	}
+
+	Log("AGameModeBase_InitGameVFT found at: 0x" + std::format("{:X}", ServerOffsets::AGameModeBase_InitGameVFT));
+	return ServerOffsets::AGameModeBase_InitGameVFT;
 }
 
 uintptr_t Finder::FindAGameModeBase_InitGameState() {
@@ -7844,6 +7862,42 @@ uintptr_t Finder::FindAFortGameMode_PickTeamVFT() {
 	return ServerOffsets::AFortGameMode_PickTeamVFT;
 }
 
+uintptr_t Finder::FindAGameModeBase_GetGameSessionClass() {
+	if (ServerOffsets::AGameModeBase_GetGameSessionClass)
+		return ServerOffsets::AGameModeBase_GetGameSessionClass;
+	uintptr_t Addr = 0;
+
+	if (Version::Engine_Version == 4.16) {
+		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 48 83 B9 ? ? ? ? 00 48 8B DA 48 8B F9 74 ? E8 ? ? ? ? 48 8B 97").Get();
+	}
+
+	if (Addr) {
+		ServerOffsets::AGameModeBase_GetGameSessionClass = Addr - ImageBase;
+	}
+
+	Log("AGameModeBase_GetGameSessionClass found at: 0x" + std::format("{:X}", ServerOffsets::AGameModeBase_GetGameSessionClass));
+	return ServerOffsets::AGameModeBase_GetGameSessionClass;
+}
+
+uintptr_t Finder::FindAGameModeBase_GetGameSessionClassVFT() {
+	if (ServerOffsets::AGameModeBase_GetGameSessionClassVFT)
+		return ServerOffsets::AGameModeBase_GetGameSessionClassVFT;
+
+	void** VFT = ((UClass*)FUObjectArray::FindObject("Class /Script/Engine.GameModeBase"))->GetDefaultObject()->VTable;
+
+	for (int i = 0; i < 1024; i++)
+	{
+		if (VFT[i] == (void*)(FindAGameModeBase_GetGameSessionClass() + ImageBase))
+		{
+			ServerOffsets::AGameModeBase_GetGameSessionClassVFT = i;
+			break;
+		}
+	}
+
+	Log("AGameModeBase_GetGameSessionClassVFT found at: 0x" + std::format("{:X}", ServerOffsets::AGameModeBase_GetGameSessionClassVFT));
+	return ServerOffsets::AGameModeBase_GetGameSessionClassVFT;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -7952,6 +8006,9 @@ void Finder::SetupOffsets() {
 	FindAGameSession__NextPlayerID();
 
 	FindAFortGameModeAthena_AddToAlivePlayers();
+
+	FindAGameModeBase_GetGameSessionClass();
+	FindAGameModeBase_GetGameSessionClassVFT();
 
 	return;
 }

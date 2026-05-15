@@ -21,6 +21,7 @@ public:
 
 	DefineUProperty(AGameSession*, GameSession);
 
+	DefineUProperty(TSubclassOf<AGameSession>, GameSessionClass);
 	DefineUProperty(TSubclassOf<APawn>, DefaultPawnClass);
 	DefineUProperty(TSubclassOf<APlayerController>, PlayerControllerClass);
 	DefineUProperty(TSubclassOf<APlayerState>, PlayerStateClass);
@@ -42,4 +43,8 @@ public:
 	void RestartPlayerAtTransform(AController* NewPlayer, const FTransform& SpawnTransform);
 
 	APlayerController* SpawnPlayerController(ENetRole InRemoteRole, FVector const& SpawnLocation, FRotator const& SpawnRotation);
+
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage);
+
+	TSubclassOf<AGameSession>* GetGameSessionClass() const;
 };

@@ -311,6 +311,8 @@ public:
 
 	static uintptr_t FindAGameModeBase_InitGame();
 
+	static uintptr_t FindAGameModeBase_InitGameVFT();
+
 	static uintptr_t FindAGameModeBase_InitGameState();
 
 	static uintptr_t FindAGameModeBase_CanServerTravel();
@@ -962,6 +964,10 @@ public:
 	static uintptr_t FindAFortGameMode_PickTeam();
 
 	static uintptr_t FindAFortGameMode_PickTeamVFT();
+
+	static uintptr_t FindAGameModeBase_GetGameSessionClass();
+
+	static uintptr_t FindAGameModeBase_GetGameSessionClassVFT();
 public:
 	static void SetupOffsets();
 

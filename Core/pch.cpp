@@ -185,18 +185,43 @@ void CreateVTableOriginal(void* Base, class UFunction* Func, void** Original) {
 	}
 }
 
-uintptr_t GetOffsetFromVTable(class UObject* Object, class UFunction* Func) {
+uintptr_t GetOffsetFromVTable(UObject* Object, UFunction* Func)
+{
 	if (!Object || !Func)
 	{
 		Log("Invalid parameters for GetOffsetFromVTable");
-		return -1;
+		return static_cast<uintptr_t>(-1);
 	}
 
 	int VTableIndex = GetVTableIndex(Func);
+	void** VTable = Object->VTable;
+	uintptr_t Offset = reinterpret_cast<uintptr_t>(VTable[VTableIndex]);
 
-	void** VTable = *(void***)Object;
+	std::stringstream ss;
+	ss << "Offset for " << Func->GetName().ToString()
+		<< ": 0x" << std::hex << (Offset - ImageBase);
+	Log(ss.str());
 
-	return (uintptr_t)VTable[VTableIndex];
+	return Offset;
+}
+
+uintptr_t GetOffsetFromVTable(UObject* Object, int Idx)
+{
+	if (!Object)
+	{
+		Log("Invalid parameters for GetOffsetFromVTable");
+		return static_cast<uintptr_t>(-1);
+	}
+
+	void** VTable = Object->VTable;
+	uintptr_t Offset = reinterpret_cast<uintptr_t>(VTable[Idx]);
+
+	std::stringstream ss;
+	ss << "Offset for index " << Idx
+		<< ": 0x" << std::hex << (Offset - ImageBase);
+	Log(ss.str());
+
+	return Offset;
 }
 
 // When you are using pre-compiled headers, this source file is necessary for compilation to succeed.

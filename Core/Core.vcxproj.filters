@@ -609,6 +609,12 @@
     <ClInclude Include="FortniteGame\Public\FortAnalytics\FortAnalytics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortGameSession\FortGameSessionDedicated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortGameMode\FortGameModeFrontEnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">

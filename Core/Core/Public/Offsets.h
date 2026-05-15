@@ -221,6 +221,7 @@ namespace ServerOffsets {
 	inline uintptr_t AGameSession_GetPlayerControllerFromNetId = 0;
 
 	inline uintptr_t AGameModeBase_InitGame = 0;
+	inline uintptr_t AGameModeBase_InitGameVFT = 0;
 	inline uintptr_t AGameModeBase_InitGameState = 0;
 	inline uintptr_t AGameModeBase_CanServerTravel = 0;
 	inline uintptr_t AGameModeBase_SpawnDefaultPawnFor = 0;
@@ -231,6 +232,8 @@ namespace ServerOffsets {
 	inline uintptr_t AGameModeBase_HandleStartingNewPlayer = 0;
 	inline uintptr_t AGameModeBase_SpawnPlayerController = 0;
 	inline uintptr_t AGameModeBase_SpawnPlayerControllerVFT = 0;
+	inline uintptr_t AGameModeBase_GetGameSessionClass = 0;
+	inline uintptr_t AGameModeBase_GetGameSessionClassVFT = 0;
 
 	inline uintptr_t UKismetStringLibrary_Conv_StringToName = 0;
 

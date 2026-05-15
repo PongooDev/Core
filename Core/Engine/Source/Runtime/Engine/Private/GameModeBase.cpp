@@ -92,3 +92,17 @@ APlayerController* AGameModeBase::SpawnPlayerController(ENetRole InRemoteRole, F
 	APlayerController* (*&SpawnPlayerControllerInternal)(AGameModeBase*, ENetRole, const FVector&, const FRotator&) = decltype(SpawnPlayerControllerInternal)(VTable[Finder::FindAGameModeBase_SpawnPlayerControllerVFT()]);
 	return SpawnPlayerControllerInternal(this, InRemoteRole, SpawnLocation, SpawnRotation);
 }
+
+void AGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	void (*&InitGameInternal)(AGameModeBase*, const FString&, const FString&, FString&) = decltype(InitGameInternal)(VTable[Finder::FindAGameModeBase_InitGameVFT()]);
+	InitGameInternal(this, MapName, Options, ErrorMessage);
+}
+
+TSubclassOf<AGameSession>* AGameModeBase::GetGameSessionClass() const
+{
+	TSubclassOf<AGameSession> GameSessionClass;
+	TSubclassOf<AGameSession> (*&GetGameSessionClassInternal)(const AGameModeBase*, TSubclassOf<AGameSession>*) = decltype(GetGameSessionClassInternal)(VTable[Finder::FindAGameModeBase_GetGameSessionClassVFT()]);
+	GetGameSessionClassInternal(this, &GameSessionClass);
+	return &GameSessionClass;
+}

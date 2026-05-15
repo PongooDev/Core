@@ -267,6 +267,8 @@
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingContainer.h" />
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingSMActor.h" />
     <ClInclude Include="FortniteGame\Public\FortAnalytics\FortAnalytics.h" />
+    <ClInclude Include="FortniteGame\Public\FortGameMode\FortGameModeFrontEnd.h" />
+    <ClInclude Include="FortniteGame\Public\FortGameSession\FortGameSessionDedicated.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerStart\FortPlayerStart.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerStart\FortPlayerStartWarmup.h" />
     <ClInclude Include="FortniteGame\Public\FortSet\FortAttributeSet.h" />

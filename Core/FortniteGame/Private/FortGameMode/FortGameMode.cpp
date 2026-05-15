@@ -15,6 +15,7 @@
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
 #include "FortniteGame/Public/FortInventory/FortQuickBars.h"
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
+#include "FortniteGame/Public/FortGameMode/FortGameModeFrontEnd.h"
 #include "FortniteGame/Public/FortPlayerController/FortPlayerControllerZone.h"
 #include "FortniteGame/Public/FortPlayerState/FortPlayerStateZone.h"
 #include "FortniteGame/Public/FortAbility/FortAbilitySet.h"
@@ -22,6 +23,7 @@
 #include "FortniteGame/Public/AI/FortAIDirector.h"
 #include "FortniteGame/Public/AI/FortAIGoalManager.h"
 #include "FortniteGame/Public/FortItemDefinition/FortWeaponItemDefinition.h"
+#include "FortniteGame/Public/FortGameSession/FortGameSessionDedicated.h"
 
 bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 {
@@ -163,4 +165,13 @@ bool AFortGameMode::SpawnPlayerBot(AActor* SpawnPoint)
 uint8 AFortGameMode::PickTeam(uint8 PreferredTeam, AFortPlayerController* ControllerToPickFor) {
 	uint8 (*&PickTeamInternal)(AFortGameMode* This, uint8 PreferredTeam, AFortPlayerController* ControllerToPickFor) = decltype(PickTeamInternal)(VTable[Finder::FindAFortGameMode_PickTeamVFT()]);
 	return PickTeamInternal(this, PreferredTeam, ControllerToPickFor);
+}
+
+UClass** AFortGameMode::GetGameSessionClass(AFortGameMode* This, UClass** result) {
+	Log("AFortGameMode::GetGameSessionClass called.");
+
+	*result = AFortGameSessionDedicated::StaticClass();
+	This->GameSessionClass = *result;
+
+	return result;
 }
