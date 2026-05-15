@@ -53,12 +53,12 @@ void AFortPlayerControllerZone::ServerSetShouldDisablePlayerTeleportingDuringMis
 }
 
 void AFortPlayerControllerZone::ClientOnPawnDied(AFortPlayerControllerZone* This, FFortPlayerDeathReport& DeathReport) {
-	ClientOnPawnDiedOG(This, DeathReport);
-
 	Log("ClientOnPawnDied called!");
 	if (This->WorldInventory) {
 		This->WorldInventory->DropAllItems();
 	}
+
+	ClientOnPawnDiedOG(This, DeathReport);
 }
 
 void AFortPlayerControllerZone::Hook() {
