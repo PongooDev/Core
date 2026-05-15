@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "FortniteGame/Public/BuildingActor/BuildingSMActor.h"
 
-ABuildingSMActor* ABuildingSMActor::ReplaceBuildingActor(EBuildingReplacementType ReplacementType, UClass* ReplacementClass, int ReplacementUpgradeLevel, int RotationIterations, bool InbMirrored, AFortPlayerController* EditingController) {
-	ABuildingSMActor* (*&ReplaceBuildingActorInternal)(ABuildingSMActor * This, EBuildingReplacementType ReplacementType, UClass * ReplacementClass, int ReplacementUpgradeLevel, int RotationIterations, bool InbMirrored, AFortPlayerController * EditingController) = decltype(ReplaceBuildingActorInternal)(VTable[Finder::FindABuildingSMActor_ReplaceBuildingActorVFT()]);
+ABuildingSMActor* ABuildingSMActor::ReplaceBuildingActor(uint8 ReplacementType, UClass* ReplacementClass, int ReplacementUpgradeLevel, int RotationIterations, bool InbMirrored, AFortPlayerController* EditingController) {
+	ABuildingSMActor* (*&ReplaceBuildingActorInternal)(ABuildingSMActor * This, uint8 ReplacementType, UClass * ReplacementClass, int ReplacementUpgradeLevel, int RotationIterations, bool InbMirrored, AFortPlayerController * EditingController) = decltype(ReplaceBuildingActorInternal)(VTable[Finder::FindABuildingSMActor_ReplaceBuildingActorVFT()]);
 	return ReplaceBuildingActorInternal(this, ReplacementType, ReplacementClass, ReplacementUpgradeLevel, RotationIterations, InbMirrored, EditingController);
 }
 

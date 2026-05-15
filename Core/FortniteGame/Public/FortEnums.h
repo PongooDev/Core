@@ -164,12 +164,14 @@ enum class EFortCustomPartType : uint8
 	EFortCustomPartType_MAX = 7,
 };
 
-enum class EBuildingReplacementType : uint8
-{
-	BRT_None = 0,
-	BRT_Edited = 1,
-	BRT_Conversion = 2,
-	BRT_MAX = 3,
+class EBuildingReplacementType {
+public:
+	DefineUnrealEnum(EBuildingReplacementType);
+
+	DefineEnumProperty(BRT_None);
+	DefineEnumProperty(BRT_Edited);
+	DefineEnumProperty(BRT_Conversion);
+	DefineEnumProperty(BRT_MAX);
 };
 
 class EFortItemType

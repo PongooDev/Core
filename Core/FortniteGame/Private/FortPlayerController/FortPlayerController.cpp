@@ -657,8 +657,6 @@ int32 AFortPlayerController::PayBuildableClassPlacementCost(FBuildingClassData* 
 }
 
 void AFortPlayerController::ServerBeginEditingBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToEdit) {
-	Log("ServerBeginEditingBuildingActor Called!");
-	
 	UWorld* World = UWorld::GetWorld();
 	if (!World) {
 		Log("ServerBeginEditingBuildingActor: World is null!");
@@ -669,6 +667,14 @@ void AFortPlayerController::ServerBeginEditingBuildingActor(AFortPlayerControlle
 	if (!PlayerState) {
 		Log("ServerBeginEditingBuildingActor: PlayerState is null or not AFortPlayerStateZone!");
 		return;
+	}
+
+	AFortPlayerStateAthena* PlayerStateAthena = PlayerState->Cast<AFortPlayerStateAthena>();
+	if (PlayerStateAthena) {
+		if (PlayerStateAthena->TeamIndex != BuildingActorToEdit->Team) {
+			Log("ServerBeginEditingBuildingActor: Player is not on the same team as the building, cannot edit. Player hacking?");
+			return;
+		}
 	}
 
 	BuildingActorToEdit->SetEditingPlayer(PlayerState);
@@ -698,4 +704,61 @@ void AFortPlayerController::ServerBeginEditingBuildingActor(AFortPlayerControlle
 
 	EditingTool->EditActor = BuildingActorToEdit;
 	EditingTool->OnRep_EditActor();
+}
+
+void AFortPlayerController::ServerEditBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToEdit, TSubclassOf<ABuildingSMActor> NewBuildingClass, int32 RotationIterations, bool bMirrored) {
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("ServerEditBuildingActor: World is null!");
+		return;
+	}
+
+	if (!NewBuildingClass) {
+		Log("ServerEditBuildingActor: NewBuildingClass is null!");
+		return;
+	}
+
+	if (BuildingActorToEdit->bDestroyed) {
+		Log("ServerEditBuildingActor: BuildingActorToEdit is destroyed!");
+		return;
+	}
+
+	AFortPlayerStateZone* PlayerState = This->PlayerState->Cast<AFortPlayerStateZone>();
+	if (!PlayerState) {
+		Log("ServerEditBuildingActor: PlayerState is null or not AFortPlayerStateZone!");
+		return;
+	}
+
+	if (BuildingActorToEdit->EditingPlayer != PlayerState) {
+		Log("ServerEditBuildingActor: Player is not the editing player for this building!");
+		return;
+	}
+
+	AFortPlayerStateAthena* PlayerStateAthena = PlayerState->Cast<AFortPlayerStateAthena>();
+	if (PlayerStateAthena) {
+		if (PlayerStateAthena->TeamIndex != BuildingActorToEdit->Team) {
+			Log("ServerEditBuildingActor: Player is not on the same team as the building, cannot edit. Player hacking?");
+			return;
+		}
+	}
+
+	ABuildingSMActor* ReplacedBuildingActor = BuildingActorToEdit->ReplaceBuildingActor(
+		EBuildingReplacementType::GetBRT_Edited(),
+		NewBuildingClass.Class,
+		BuildingActorToEdit->CurrentBuildingLevel,
+		RotationIterations,
+		bMirrored,
+		This
+	);
+
+	if (!ReplacedBuildingActor) {
+		Log("ServerEditBuildingActor: Failed to replace building actor!");
+		return;
+	}
+
+	ReplacedBuildingActor->bPlayerPlaced = true;
+	if (PlayerStateAthena) {
+		ReplacedBuildingActor->Team = PlayerStateAthena->TeamIndex;
+		ReplacedBuildingActor->TeamIndex = PlayerStateAthena->TeamIndex;
+	}
 }

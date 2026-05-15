@@ -31,7 +31,7 @@ public:
 	DefineBitfieldUProperty(bMirrored);
 public:
 	ABuildingSMActor* ReplaceBuildingActor(
-		EBuildingReplacementType ReplacementType,
+		uint8 ReplacementType,
 		UClass* ReplacementClass,
 		int ReplacementUpgradeLevel,
 		int RotationIterations,
