@@ -196,3 +196,8 @@ enum EAnalyticsProviderType : int32
     EPT_EsportsServerGameInstance = 3,
     EPT_MMRServerGameInstance = 4,
 };
+
+class EBuildingAttachmentType {
+public:
+	DefineUnrealEnum(EBuildingAttachmentType);
+};

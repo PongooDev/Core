@@ -259,6 +259,7 @@
     <ClInclude Include="Engine\Source\Runtime\GameplayTasks\Classes\GameplayTasksComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Classes\Net\Serialization\FastArraySerializer.h" />
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Public\Net\Core\Connection\NetEnums.h" />
+    <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingTrap.h" />
     <ClInclude Include="FortniteGame\Public\FortAnalytics\AnalyticsProvider.h" />
     <ClInclude Include="FortniteGame\Public\AI\FortAIController.h" />
     <ClInclude Include="FortniteGame\Public\AI\FortAIDirector.h" />
@@ -329,6 +330,7 @@
     <ClInclude Include="FortniteGame\Public\FortInventory\FortQuickBars.h" />
     <ClInclude Include="FortniteGame\Public\FortInventory\FortQuickBarsAthena.h" />
     <ClInclude Include="FortniteGame\Public\FortSet\FortHealthSet.h" />
+    <ClInclude Include="FortniteGame\Public\FortWeapon\FortDecoTool.h" />
     <ClInclude Include="FortniteGame\Public\FortWeapon\FortWeapon.h" />
     <ClInclude Include="FortniteGame\Public\FortWeapon\FortWeaponStats.h" />
     <ClInclude Include="FortniteGame\Public\FortWorker\FortWorker.h" />
@@ -426,6 +428,7 @@
     <ClCompile Include="FortniteGame\Private\FortPlayerState\FortPlayerState.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPlayerState\FortPlayerStateAthena.cpp" />
     <ClCompile Include="FortniteGame\Private\FortSet\FortHealthSet.cpp" />
+    <ClCompile Include="FortniteGame\Private\FortWeapon\FortDecoTool.cpp" />
     <ClCompile Include="FortniteGame\Private\FortWeapon\FortWeapon.cpp" />
     <ClCompile Include="FortniteGame\Private\Kismet\FortKismetLibrary.cpp" />
     <ClCompile Include="FortniteGame\Private\Mcp\McpProfileGroup.cpp" />

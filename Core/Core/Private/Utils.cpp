@@ -20,6 +20,7 @@
 #include "FortniteGame/Public/FortGameState/FortGameStateAthena.h"
 #include "FortniteGame/Public/Mcp/McpProfileGroup.h"
 #include "FortniteGame/Public/BuildingActor/BuildingActor.h"
+#include "FortniteGame/Public/BuildingActor/BuildingTrap.h"
 #include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
@@ -29,6 +30,7 @@
 #include "FortniteGame/Public/FortAnalytics/FortAnalytics.h"
 #include "FortniteGame/Public/FortGameInstance/FortGameInstance.h"
 #include "FortniteGame/Public/FortGameSession/FortGameSessionDedicated.h"
+#include "FortniteGame/Public/FortWeapon/FortDecoTool.h"
 
 void Utils::InitConsole(FCoreConfig& Config)
 {
@@ -218,6 +220,7 @@ void Utils::Hook() {
 	UFortAnalytics::Hook();
 	UFortGameInstance::Hook();
 	AFortGameSessionDedicated::Hook();
+	AFortDecoTool::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {

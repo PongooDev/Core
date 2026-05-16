@@ -624,6 +624,12 @@
     <ClInclude Include="Core\Public\Patches.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortWeapon\FortDecoTool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingTrap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -879,6 +885,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\FortGameSession\FortGameSessionDedicated.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\FortWeapon\FortDecoTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
