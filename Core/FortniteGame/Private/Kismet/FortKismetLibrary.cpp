@@ -137,8 +137,8 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	bool bRandomRotation,
 	bool bBlockedFromAutoPickup,
 	int32 PickupInstigatorHandle,
-	EFortPickupSourceTypeFlag SourceType,
-	EFortPickupSpawnSource Source,
+	uint8 SourceType,
+	uint8 Source,
 	AFortPlayerController* OptionalOwnerPC,
 	bool bPickupOnlyRelevantToOwner) {
 	if (!ItemDefinition) {
@@ -198,7 +198,7 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 		Source
 	);
 
-	if (SourceType == EFortPickupSourceTypeFlag::Container)
+	if (SourceType == EFortPickupSourceTypeFlag::GetContainer())
 	{
 		Pickup->bTossedFromContainer = true;
 		Pickup->OnRep_TossedFromContainer();
@@ -231,8 +231,8 @@ void UFortKismetLibrary::execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stac
 	bool bRandomRotation = false;
 	bool bBlockedFromAutoPickup = false;
 	int32 PickupInstigatorHandle = 0;
-	EFortPickupSourceTypeFlag SourceType = EFortPickupSourceTypeFlag();
-	EFortPickupSpawnSource Source = EFortPickupSpawnSource();
+	uint8 SourceType = 0;
+	uint8 Source = 0;
 	AFortPlayerController* OptionalOwnerPC = nullptr;
 	bool bPickupOnlyRelevantToOwner = false;
 	for (auto& Param : K2_SpawnPickupInWorldFn->GetParams().NameOffsetMap)

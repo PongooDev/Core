@@ -783,8 +783,8 @@ AFortPickup* AFortInventory::SpawnPickupFromDefinition(UFortItemDefinition* Def,
 		true,
 		false,
 		-1,
-		EFortPickupSourceTypeFlag::Player,
-		EFortPickupSpawnSource::Unset,
+		EFortPickupSourceTypeFlag::GetPlayer(),
+		EFortPickupSpawnSource::GetUnset(),
 		PC,
 		false
 	);

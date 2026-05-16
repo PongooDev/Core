@@ -4,36 +4,40 @@
 #include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
-enum class EFortPickupSourceTypeFlag : uint8
-{
-	Other = 0,
-	Player = 1,
-	Destruction = 2,
-	Container = 4,
-	AI = 8,
-	Tossed = 16,
-	FloorLoot = 32,
-	Fishing = 64,
-	NPCService = 128,
+class EFortPickupSourceTypeFlag {
+public:
+	DefineUnrealEnum(EFortPickupSourceTypeFlag);
+
+	DefineEnumProperty(Other);
+	DefineEnumProperty(Player);
+	DefineEnumProperty(Destruction);
+	DefineEnumProperty(Container);
+	DefineEnumProperty(AI);
+	DefineEnumProperty(Tossed);
+	DefineEnumProperty(FloorLoot);
+	DefineEnumProperty(Fishing);
+	DefineEnumProperty(NPCService);
 };
 
-enum class EFortPickupSpawnSource : uint8
-{
-	Unset = 0,
-	PlayerElimination = 1,
-	Chest = 2,
-	SupplyDrop = 3,
-	AmmoBox = 4,
-	Drone = 5,
-	ItemSpawner = 6,
-	BotElimination = 7,
-	NPCElimination = 8,
-	LootDrop = 9,
-	TossedByPlayer = 10,
-	NPC = 11,
-	NPCGift = 12,
-	CraftingBench = 13,
-	VendingMachine = 14,
+class EFortPickupSpawnSource {
+public:
+	DefineUnrealEnum(EFortPickupSpawnSource);
+
+	DefineEnumProperty(Unset);
+	DefineEnumProperty(PlayerElimination);
+	DefineEnumProperty(Chest);
+	DefineEnumProperty(SupplyDrop);
+	DefineEnumProperty(AmmoBox);
+	DefineEnumProperty(Drone);
+	DefineEnumProperty(ItemSpawner);
+	DefineEnumProperty(BotElimination);
+	DefineEnumProperty(NPCElimination);
+	DefineEnumProperty(LootDrop);
+	DefineEnumProperty(TossedByPlayer);
+	DefineEnumProperty(NPC);
+	DefineEnumProperty(NPCGift);
+	DefineEnumProperty(CraftingBench);
+	DefineEnumProperty(VendingMachine);
 };
 
 enum class EFortPickupTossState : uint8

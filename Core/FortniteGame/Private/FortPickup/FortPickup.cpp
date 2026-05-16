@@ -34,7 +34,7 @@ void AFortPickup::OnRep_TossedFromContainer()
 	ProcessEvent(Func, nullptr);
 }
 
-void AFortPickup::TossPickup(const struct FVector& FinalLocation, class AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, bool bShouldCombinePickupsWhenTossCompletes, const EFortPickupSourceTypeFlag InPickupSourceTypeFlags, const EFortPickupSpawnSource InPickupSpawnSource)
+void AFortPickup::TossPickup(const struct FVector& FinalLocation, class AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, bool bShouldCombinePickupsWhenTossCompletes, const uint8 InPickupSourceTypeFlags, const uint8 InPickupSpawnSource)
 {
 	static UFunction* Func = nullptr;
 
@@ -49,8 +49,8 @@ void AFortPickup::TossPickup(const struct FVector& FinalLocation, class AFortPaw
 		int32 OverrideMaxStackCount;
 		bool bToss;
 		bool bShouldCombinePickupsWhenTossCompletes;
-		EFortPickupSourceTypeFlag InPickupSourceTypeFlags;
-		EFortPickupSpawnSource InPickupSpawnSource;
+		uint8 InPickupSourceTypeFlags;
+		uint8 InPickupSpawnSource;
 	};
 
 	FortPickup_TossPickup Parms{};
@@ -110,10 +110,10 @@ void AFortPickup::SetupForMovementCompToss()
 	SetupForMovementCompTossInternal(this);
 }
 
-void AFortPickup::SetPickupItems(FFortItemEntry* PrimaryEntry, TArray<FFortItemEntry>* AdditionalEntries, EFortPickupSourceTypeFlag SourceTypeFlags, bool bInSplitOnPickup, EFortPickupSpawnSource SpawnSource)
+void AFortPickup::SetPickupItems(FFortItemEntry* PrimaryEntry, TArray<FFortItemEntry>* AdditionalEntries, uint8 SourceTypeFlags, bool bInSplitOnPickup, uint8 SpawnSource)
 {
 	if (Version::Fortnite_Version >= 16) {
-		void (*&SetPickupItemsInternal)(AFortPickup * This, FFortItemEntry * PrimaryEntry, TArray<FFortItemEntry>*AdditionalEntries, EFortPickupSourceTypeFlag SourceTypeFlags, bool bInSplitOnPickup, EFortPickupSpawnSource SpawnSource) = decltype(SetPickupItemsInternal)(VTable[Finder::FindAFortPickup_SetPickupItemsVFT()]);
+		void (*&SetPickupItemsInternal)(AFortPickup * This, FFortItemEntry * PrimaryEntry, TArray<FFortItemEntry>*AdditionalEntries, uint8 SourceTypeFlags, bool bInSplitOnPickup, uint8 SpawnSource) = decltype(SetPickupItemsInternal)(VTable[Finder::FindAFortPickup_SetPickupItemsVFT()]);
 		SetPickupItemsInternal(this, PrimaryEntry, AdditionalEntries, SourceTypeFlags, bInSplitOnPickup, SpawnSource);
 	}
 	else {

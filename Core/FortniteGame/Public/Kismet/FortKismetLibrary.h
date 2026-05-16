@@ -65,8 +65,8 @@ public:
 		bool bRandomRotation,
 		bool bBlockedFromAutoPickup,
 		int32 PickupInstigatorHandle,
-		EFortPickupSourceTypeFlag SourceType,
-		EFortPickupSpawnSource Source,
+		uint8 SourceType,
+		uint8 Source,
 		AFortPlayerController* OptionalOwnerPC,
 		bool bPickupOnlyRelevantToOwner
 	);

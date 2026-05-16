@@ -45,7 +45,7 @@ public:
 
 	void OnRep_TossedFromContainer();
 
-	void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, bool bShouldCombinePickupsWhenTossCompletes, const EFortPickupSourceTypeFlag InPickupSourceTypeFlags, const EFortPickupSpawnSource InPickupSpawnSource);
+	void TossPickup(const FVector& FinalLocation, AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, bool bShouldCombinePickupsWhenTossCompletes, const uint8 InPickupSourceTypeFlags, const uint8 InPickupSpawnSource);
 
 	void OnRep_bPickedUp();
 
@@ -62,9 +62,9 @@ public:
 	void SetPickupItems(
 		FFortItemEntry* PrimaryEntry,
 		TArray<FFortItemEntry>* AdditionalEntries,
-		EFortPickupSourceTypeFlag SourceTypeFlags,
+		uint8 SourceTypeFlags,
 		bool bInSplitOnPickup,
-		EFortPickupSpawnSource SpawnSource
+		uint8 SpawnSource
 	);
 
 	static inline void (*GivePickupToOG)(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup);

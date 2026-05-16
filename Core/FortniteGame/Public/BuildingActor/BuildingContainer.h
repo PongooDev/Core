@@ -24,7 +24,7 @@ public:
 	DefineBitfieldUProperty(bStartAlreadySearched_Athena);
 
 public:
-	static bool SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, EFortPickupSourceTypeFlag InSourceTypeFlag, EFortPickupSpawnSource InSpawnSource);
+	static bool SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, uint8 InSourceTypeFlag, uint8 InSpawnSource);
 
 	void OnRep_bAlreadySearched();
 

@@ -7,7 +7,7 @@
 #include "FortniteGame/Public/FortItem/FortItemEntry.h"
 #include "FortniteGame/Public/FortItemDefinition/FortWeaponItemDefinition.h"
 
-bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, EFortPickupSourceTypeFlag InSourceTypeFlag, EFortPickupSpawnSource InSpawnSource) {
+bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, uint8 InSourceTypeFlag, uint8 InSpawnSource) {
 	if (This->bAlreadySearched) {
 		return false;
 	}
@@ -45,8 +45,8 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 			true,
 			false,
 			-1,
-			EFortPickupSourceTypeFlag::Container,
-			EFortPickupSpawnSource::Unset,
+			EFortPickupSourceTypeFlag::GetContainer(),
+			EFortPickupSpawnSource::GetUnset(),
 			nullptr,
 			false
 		);
@@ -163,7 +163,7 @@ void ABuildingContainer::PostUpdate(ABuildingContainer* This)
 	}
 
 	if (This->bStartAlreadySearched_Athena == 1) {
-		SpawnLoot(This, nullptr, EFortPickupSourceTypeFlag::Container, EFortPickupSpawnSource::Unset);
+		SpawnLoot(This, nullptr, EFortPickupSourceTypeFlag::GetContainer(), EFortPickupSpawnSource::GetUnset());
 	}
 
 	//This->bAllowInteract = false;
