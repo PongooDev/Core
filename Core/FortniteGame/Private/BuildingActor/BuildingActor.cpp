@@ -72,6 +72,10 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 		return OnDamageServerOG(This, Damage, DamageTags, Momentum, HitInfo, InstigatedBy, DamageCauser, EffectContext);
 	}
 
+	if (This->GetHealth() == 1) {
+		return OnDamageServerOG(This, Damage, DamageTags, Momentum, HitInfo, InstigatedBy, DamageCauser, EffectContext);
+	}
+
 	AFortWeapon* Weapon = DamageCauser->Cast<AFortWeapon>();
 	if (!Weapon) {
 		return OnDamageServerOG(This, Damage, DamageTags, Momentum, HitInfo, InstigatedBy, DamageCauser, EffectContext);
@@ -98,7 +102,7 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 		ResourceRates = StaticLoadObject<UCurveTable>("/Game/Balance/DataTables/ResourceRates.ResourceRates");
 
 	int ResourceCount = (Damage / (UKismetMathLibrary::RandomIntegerInRange(8, 16)));
-	if (BuildingSMActor->HasBuildingResourceAmountOverride()) {
+	/*if (BuildingSMActor->HasBuildingResourceAmountOverride()) {
 		FCurveTableRowHandle& BuildingResourceAmountOverride = BuildingSMActor->BuildingResourceAmountOverride;
 
 		if (BuildingResourceAmountOverride.RowName.ComparisonIndex > 0)
@@ -112,7 +116,7 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 
 			ResourceCount = (int)round(RC);
 		}
-	}
+	}*/
 
 	PC->ClientReportDamagedResourceBuilding(
 		BuildingSMActor,
@@ -151,4 +155,24 @@ void ABuildingActor::PlacedByPlacementTool(ABuildingActor* This) {
 	else {
 		PlacedByPlacementToolOG(This);
 	}
+}
+
+float ABuildingActor::GetHealth() const
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("GetHealth");
+
+	struct BuildingActor_GetHealth final
+	{
+	public:
+		float ReturnValue;
+	};
+
+	BuildingActor_GetHealth Parms{};
+
+	const_cast<ABuildingActor*>(this)->ProcessEvent(Func, &Parms);
+
+	return Parms.ReturnValue;
 }

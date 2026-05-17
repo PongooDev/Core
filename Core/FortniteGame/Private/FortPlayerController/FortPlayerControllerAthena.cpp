@@ -15,8 +15,10 @@ void AFortPlayerControllerAthena::ServerAttemptAircraftJump(AFortPlayerControlle
 }
 
 void AFortPlayerControllerAthena::ClientOnPawnDied(AFortPlayerControllerAthena* This, FFortPlayerDeathReport& DeathReport) {
-	if (This->WorldInventory) {
-		This->WorldInventory->DropAllItems();
+	if (This->IsA(AFortPlayerControllerAthena::StaticClass())) {
+		if (This->WorldInventory) {
+			This->WorldInventory->DropAllItems();
+		}
 	}
 
 	ClientOnPawnDiedOG(This, DeathReport);

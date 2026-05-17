@@ -170,9 +170,10 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	PickupEntry.ItemDefinition = ItemDefinition;
 	PickupEntry.Count = NumberToSpawn;
 
-	UFortWeaponRangedItemDefinition* WeaponDef = ItemDefinition->Cast<UFortWeaponRangedItemDefinition>();
+	UFortWeaponItemDefinition* WeaponDef = ItemDefinition->Cast<UFortWeaponItemDefinition>();
 	if (WeaponDef) {
 		PickupEntry.LoadedAmmo = WeaponDef->GetClipSize();
+		PickupEntry.Durability = WeaponDef->GetDurability();
 	}
 
 	PickupEntry.ReplicationKey++;
@@ -394,13 +395,13 @@ bool UFortKismetLibrary::PickLootDrops(
 	AFortGameModeAthena* FortGameModeAthena = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
 	AFortGameStateAthena* FortGameStateAthena = World->GameState->Cast<AFortGameStateAthena>();
 
-	/*Log(
+	Log(
 		"UFortKismetLibrary::PickLootDrops: Picking loot drops for TierGroup: "
 		+ TierGroupName.ToString().ToString() +
 		" WorldLevel: " + std::to_string(WorldLevel) +
 		" ForcedLootTier: " + std::to_string(ForcedLootTier) +
 		" In World: " + World->GetName().ToString()
-	);*/
+	);
 
 	TArray<UDataTable*> LootTierDataTables;
 	TArray<UDataTable*> LootPackagesDataTables;
@@ -436,7 +437,7 @@ bool UFortKismetLibrary::PickLootDrops(
 				);
 			}
 			else {
-				DefaultLTD = StaticLoadObject<UDataTable>(
+				DefaultLTD = (UDataTable*)StaticLoadObject(
 					"/Game/Items/Datatables/LootTierData_Client.LootTierData_Client"
 				);
 			}
@@ -455,7 +456,7 @@ bool UFortKismetLibrary::PickLootDrops(
 				);
 			}
 			else {
-				DefaultLP = StaticLoadObject<UDataTable>(
+				DefaultLP = (UDataTable*)StaticLoadObject(
 					"/Game/Items/Datatables/LootPackages_Client.LootPackages_Client"
 				);
 			}
@@ -471,12 +472,15 @@ bool UFortKismetLibrary::PickLootDrops(
 
 	FFortLootTierData* LootTierData = FFortLootTierData::PickLootTierData(
 		LootTierDataTables,
-		TierGroupName
+		TierGroupName,
+		WorldLevel,
+		ForcedLootTier
 	);
 
 	TArray<FFortItemEntry> LootItems = FFortLootPackageData::GetLootItems(
 		LootPackagesDataTables,
-		LootTierData
+		LootTierData,
+		WorldLevel
 	);
 
 	for (int i = 0; i < LootItems.Num(); i++) {
@@ -503,7 +507,7 @@ void UFortKismetLibrary::execPickLootDrops(UObject* Object, FFrame& Stack, bool*
 	UObject* WorldContextObject = nullptr;
 	TArray<FFortItemEntry> OutLootToDrop;
 	FName TierGroupName = FName();
-	int32 WorldLevel = 0;
+	int32 WorldLevel = -1;
 	int32 ForcedLootTier = -1;
 	for (auto& Param : PickLootDropsFn->GetParams().NameOffsetMap)
 	{

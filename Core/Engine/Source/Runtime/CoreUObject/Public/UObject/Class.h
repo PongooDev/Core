@@ -69,6 +69,8 @@ public:
 	{
 		if (!Base)
 			return false;
+        if (!SuperStruct) 
+			return false;
 
 		for (const UStruct* Struct = this; Struct; Struct = Struct->SuperStruct)
 		{

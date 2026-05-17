@@ -57,6 +57,8 @@ public:
 
 	static inline void (*PlacedByPlacementToolOG)(ABuildingActor* This);
 	static void PlacedByPlacementTool(ABuildingActor* This);
+
+	float GetHealth() const;
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindABuildingActor_OnDamageServer()), OnDamageServer, (LPVOID*)&OnDamageServerOG);

@@ -22,26 +22,6 @@ void AFortGameModeZone::HandleStartingNewPlayer(AFortGameModeZone* This, AFortPl
 		Log("HandleStartingNewPlayer: World is null!");
 		return;
 	}
-
-	auto PlayerState = (AFortPlayerStateZone*)NewPlayer->PlayerState;
-	if (PlayerState) {
-		if (PlayerState->AbilitySystemComponent) {
-			UFortAbilitySet* FortAbilitySet = nullptr;
-
-			if (Version::Fortnite_Version >= 2) {
-				FortAbilitySet = StaticLoadObject<UFortAbilitySet>("/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_AthenaPlayer.GAS_AthenaPlayer");
-			}
-			else {
-				FortAbilitySet = StaticLoadObject<UFortAbilitySet>("/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer");
-			}
-
-			TScriptInterface<IAbilitySystemInterface> AbilitySystemInterface = TScriptInterface<IAbilitySystemInterface>();
-			AbilitySystemInterface.ObjectPointer = PlayerState;
-			AbilitySystemInterface.InterfacePointer = PlayerState->GetInterfaceAddress(IAbilitySystemInterface::StaticClass());
-
-			UFortKismetLibrary::EquipFortAbilitySet(AbilitySystemInterface, FortAbilitySet, PlayerState);
-		}
-	}
 }
 
 void AFortGameModeZone::CreateAIDirector() {
@@ -77,13 +57,31 @@ void AFortGameModeZone::CreateAIGoalManager() {
 }
 
 void AFortGameModeZone::FinishWorldInitialization(AFortGameModeZone* This, AFortWorldManager* WorldManager) {
-	Log("AFortGameModeZone::FinishWorldInitialization called!");
-
 	AFortGameMode::FinishWorldInitialization(This, WorldManager);
 }
 
 APawn* AFortGameModeZone::SpawnDefaultPawnFor(AFortGameModeZone* This, AController* NewPlayer, AActor* StartSpot) {
-	APawn* Pawn = AFortGameMode::SpawnDefaultPawnForOG(This, NewPlayer, StartSpot);
+	APawn* Pawn = AFortGameMode::SpawnDefaultPawnFor(This, NewPlayer, StartSpot);
+
+	auto PlayerState = (AFortPlayerStateZone*)NewPlayer->PlayerState;
+	if (PlayerState) {
+		if (PlayerState->AbilitySystemComponent) {
+			UFortAbilitySet* FortAbilitySet = nullptr;
+
+			if (Version::Fortnite_Version >= 2) {
+				FortAbilitySet = StaticLoadObject<UFortAbilitySet>("/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_AthenaPlayer.GAS_AthenaPlayer");
+			}
+			else {
+				FortAbilitySet = StaticLoadObject<UFortAbilitySet>("/Game/Abilities/Player/Generic/Traits/DefaultPlayer/GAS_DefaultPlayer.GAS_DefaultPlayer");
+			}
+
+			TScriptInterface<IAbilitySystemInterface> AbilitySystemInterface = TScriptInterface<IAbilitySystemInterface>();
+			AbilitySystemInterface.ObjectPointer = PlayerState;
+			AbilitySystemInterface.InterfacePointer = PlayerState->GetInterfaceAddress(IAbilitySystemInterface::StaticClass());
+
+			UFortKismetLibrary::EquipFortAbilitySet(AbilitySystemInterface, FortAbilitySet, PlayerState);
+		}
+	}
 
 	Log("AFortGameModeZone::SpawnDefaultPawnFor: Spawned default pawn. NewPlayer=" + (NewPlayer ? NewPlayer->GetName().ToString() : "None") + " Pawn=" + (Pawn ? Pawn->GetName().ToString() : "None"));
 	return Pawn;

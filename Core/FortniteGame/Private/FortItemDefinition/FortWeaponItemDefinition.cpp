@@ -3,7 +3,7 @@
 
 #include "FortniteGame/Public/FortWeapon/FortWeaponStats.h"
 
-FFortRangedWeaponStats* UFortWeaponRangedItemDefinition::GetRangedWeaponStats() const {
+FFortBaseWeaponStats* UFortWeaponItemDefinition::GetWeaponStats() const {
 	if (!WeaponStatHandle.DataTable)
 		return nullptr;
 
@@ -25,14 +25,51 @@ FFortRangedWeaponStats* UFortWeaponRangedItemDefinition::GetRangedWeaponStats() 
 		}
 	}
 
-	Log("UFortWeaponRangedItemDefinition::GetRangedWeaponStats: Row not found in DataTable or PackageData is null.");
+	Log("UFortWeaponItemDefinition::GetWeaponStats: Row not found in DataTable or PackageData is null.");
 	return nullptr;
 }
 
-int32 UFortWeaponRangedItemDefinition::GetClipSize() const {
-	FFortRangedWeaponStats* RangedWeaponStats = GetRangedWeaponStats();
-	if (!RangedWeaponStats)
+FFortRangedWeaponStats* UFortWeaponItemDefinition::GetRangedWeaponStats() const {
+	if (!IsA(UFortWeaponRangedItemDefinition::StaticClass()))
+		return nullptr;
+
+	return (FFortRangedWeaponStats*)GetWeaponStats();
+}
+
+int32 UFortWeaponItemDefinition::GetClipSize() const {
+	FFortBaseWeaponStats* WeaponStats = GetWeaponStats();
+	if (!WeaponStats)
 		return 1;
 
-	return RangedWeaponStats->ClipSize;
+	return WeaponStats->ClipSize;
+}
+
+float UFortWeaponItemDefinition::GetDurability() const {
+	FFortBaseWeaponStats* WeaponStats = GetWeaponStats();
+	if (!WeaponStats)
+		return 0.f;
+
+	auto DataTable = WeaponStats->Durability;
+	if (!DataTable)
+		return 0.f;
+
+	auto RowName = WeaponStats->DurabilityRowName;
+
+	auto& RowMap = DataTable->RowMap;
+
+	for (int i = 0; i < RowMap.Num(); i++)
+	{
+		auto& Pair = RowMap[i];
+
+		FName CurrentRowName = Pair.Key();
+		float* Durability = (float*)Pair.Value();
+
+		if (CurrentRowName == RowName && Durability)
+		{
+			return *Durability;
+		}
+	}
+
+	Log("UFortWeaponItemDefinition::GetDurability: Row not found in DataTable or Durability is null.");
+	return 0.f;
 }

@@ -96,75 +96,70 @@ void ABuildingContainer::PostUpdate(ABuildingContainer* This)
 		return;
 	}
 
-	AFortGameModeAthena* GameMode = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
-	if (!GameMode) {
-		//Log("ABuildingContainer::PostUpdate: GameMode is not AFortGameModeAthena!");
-		return;
-	}
+	AFortGameModeAthena* FortGameModeAthena = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
+	if (FortGameModeAthena) {
+		if (UProperty* RedirectAthenaLootTierGroupsProp = FortGameModeAthena->FindPropertyByName("RedirectAthenaLootTierGroups")) {
 
-	if (UProperty* RedirectAthenaLootTierGroupsProp = GameMode->FindPropertyByName("RedirectAthenaLootTierGroups")) {
+			uintptr_t RedirectAthenaLootTierGroupsOffset = RedirectAthenaLootTierGroupsProp->Offset_Internal;
 
-		uintptr_t RedirectAthenaLootTierGroupsOffset = RedirectAthenaLootTierGroupsProp->Offset_Internal;
+			if (Version::Fortnite_Version >= 20)
+			{
+				auto& RedirectAthenaLootTierGroups = *(TMap<int32, int32>*)(__int64(FortGameModeAthena) + RedirectAthenaLootTierGroupsOffset);
 
-		if (Version::Fortnite_Version >= 20)
-		{
-			auto& RedirectAthenaLootTierGroups = *(TMap<int32, int32>*)(__int64(GameMode) + RedirectAthenaLootTierGroupsOffset);
+				for (int i = 0; i < RedirectAthenaLootTierGroups.Num(); i++) {
+					auto& Pair = RedirectAthenaLootTierGroups[i];
 
-			for (int i = 0; i < RedirectAthenaLootTierGroups.Num(); i++) {
-				auto& Pair = RedirectAthenaLootTierGroups[i];
+					int32 OldTierGroup = Pair.Key();
+					int32 RedirectedTierGroup = Pair.Value();
 
-				int32 OldTierGroup = Pair.Key();
-				int32 RedirectedTierGroup = Pair.Value();
+					if (OldTierGroup == This->SearchLootTierGroup.ComparisonIndex)
+					{
+						This->SearchLootTierGroup.ComparisonIndex = RedirectedTierGroup;
+						break;
+					}
+				}
+			}
+			else
+			{
+				auto& RedirectAthenaLootTierGroups = *(TMap<FName, FName>*)(__int64(FortGameModeAthena) + RedirectAthenaLootTierGroupsOffset);
 
-				if (OldTierGroup == This->SearchLootTierGroup.ComparisonIndex)
-				{
-					This->SearchLootTierGroup.ComparisonIndex = RedirectedTierGroup;
-					break;
+				for (int i = 0; i < RedirectAthenaLootTierGroups.Num(); i++) {
+					auto& Pair = RedirectAthenaLootTierGroups[i];
+
+					FName OldTierGroup = Pair.Key();
+					FName RedirectedTierGroup = Pair.Value();
+
+					if (OldTierGroup == This->SearchLootTierGroup)
+					{
+						This->SearchLootTierGroup = RedirectedTierGroup;
+						break;
+					}
 				}
 			}
 		}
-		else
-		{
-			auto& RedirectAthenaLootTierGroups = *(TMap<FName, FName>*)(__int64(GameMode) + RedirectAthenaLootTierGroupsOffset);
+		else {
+			static FName Loot_Treasure = UKismetStringLibrary::Conv_StringToName("Loot_Treasure");
+			static FName Loot_Ammo = UKismetStringLibrary::Conv_StringToName("Loot_Ammo");
+			static FName Loot_AthenaTreasure = UKismetStringLibrary::Conv_StringToName("Loot_AthenaTreasure");
+			static FName Loot_AthenaAmmoLarge = UKismetStringLibrary::Conv_StringToName("Loot_AthenaAmmoLarge");
+			static auto Loot_AthenaFloorLoot = UKismetStringLibrary::Conv_StringToName(L"Loot_AthenaFloorLoot");
+			static auto Loot_AthenaFloorLoot_Warmup = UKismetStringLibrary::Conv_StringToName(L"Loot_AthenaFloorLoot_Warmup");
 
-			for (int i = 0; i < RedirectAthenaLootTierGroups.Num(); i++) {
-				auto& Pair = RedirectAthenaLootTierGroups[i];
-
-				FName OldTierGroup = Pair.Key();
-				FName RedirectedTierGroup = Pair.Value();
-
-				if (OldTierGroup == This->SearchLootTierGroup)
-				{
-					This->SearchLootTierGroup = RedirectedTierGroup;
-					break;
-				}
+			if (This->SearchLootTierGroup == Loot_Treasure) {
+				This->SearchLootTierGroup = Loot_AthenaTreasure;
+				This->bDestroyContainerOnSearch = false;
 			}
-		}
-	}
-	else {
-		static FName Loot_Treasure = UKismetStringLibrary::Conv_StringToName("Loot_Treasure");
-		static FName Loot_Ammo = UKismetStringLibrary::Conv_StringToName("Loot_Ammo");
-		static FName Loot_AthenaTreasure = UKismetStringLibrary::Conv_StringToName("Loot_AthenaTreasure");
-		static FName Loot_AthenaAmmoLarge = UKismetStringLibrary::Conv_StringToName("Loot_AthenaAmmoLarge");
-		static auto Loot_AthenaFloorLoot = UKismetStringLibrary::Conv_StringToName(L"Loot_AthenaFloorLoot");
-		static auto Loot_AthenaFloorLoot_Warmup = UKismetStringLibrary::Conv_StringToName(L"Loot_AthenaFloorLoot_Warmup");
-
-		if (This->SearchLootTierGroup == Loot_Treasure) {
-			This->SearchLootTierGroup = Loot_AthenaTreasure;
-			This->bDestroyContainerOnSearch = false;
-		}
-		else if (This->SearchLootTierGroup == Loot_Ammo) {
-			This->SearchLootTierGroup = Loot_AthenaAmmoLarge;
-			This->bDestroyContainerOnSearch = false;
-		}
-		else if (This->SearchLootTierGroup == Loot_AthenaFloorLoot || This->SearchLootTierGroup == Loot_AthenaFloorLoot_Warmup) {
-			This->bDestroyContainerOnSearch = true;
+			else if (This->SearchLootTierGroup == Loot_Ammo) {
+				This->SearchLootTierGroup = Loot_AthenaAmmoLarge;
+				This->bDestroyContainerOnSearch = false;
+			}
+			else if (This->SearchLootTierGroup == Loot_AthenaFloorLoot || This->SearchLootTierGroup == Loot_AthenaFloorLoot_Warmup) {
+				This->bDestroyContainerOnSearch = true;
+			}
 		}
 	}
 
 	if (This->bStartAlreadySearched_Athena == 1) {
 		SpawnLoot(This, nullptr, EFortPickupSourceTypeFlag::GetContainer(), EFortPickupSpawnSource::GetUnset());
 	}
-
-	//This->bAllowInteract = false;
 }

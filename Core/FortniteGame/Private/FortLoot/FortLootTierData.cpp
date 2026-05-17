@@ -6,11 +6,7 @@
 #include "FortniteGame/Public/FortItemDefinition/FortItemDefinition.h"
 
 bool FFortLootTierData::IsValid() {
-	if (!this) {
-		return false;
-	}
-
-	if (NumLootPackageDrops <= 0) {
+	if (NumLootPackageDrops <= 0.0f) {
 		return false;
 	}
 
@@ -22,70 +18,97 @@ bool FFortLootTierData::IsValid() {
 	return true;
 }
 
-FFortLootTierData* FFortLootTierData::ChooseLootTierData(TArray<FFortLootTierData*>& LootTierData) {
+FFortLootTierData* FFortLootTierData::ChooseLootTierData(TArray<FFortLootTierData*>& LootTierData)
+{
 	if (LootTierData.Num() == 0) {
 		return nullptr;
 	}
-	float TotalWeight = 0;
+
+	float TotalWeight = 0.0f;
 
 	for (auto Item : LootTierData)
-		TotalWeight += Item->Weight;
+	{
+		if (!Item)
+			continue;
 
-	float RandomNumber = UKismetMathLibrary::RandomFloatInRange(0, TotalWeight);
-
-	FFortLootTierData* SelectedItem = nullptr;
-
-	if (LootTierData.Num() == 1) {
-		SelectedItem = LootTierData[0];
-		return SelectedItem;
+		if (Item->Weight > 0.0f)
+			TotalWeight += Item->Weight;
 	}
-	else {
-		for (auto Item : LootTierData)
+
+	if (TotalWeight <= 0.0f)
+	{
+		Log("FFortLootTierData::ChooseLootTierData: TotalWeight <= 0!");
+		return nullptr;
+	}
+
+	float RandomNumber = UKismetMathLibrary::RandomFloatInRange(0.0f, TotalWeight);
+
+	for (auto Item : LootTierData)
+	{
+		if (!Item || Item->Weight <= 0.0f)
+			continue;
+
+		if (RandomNumber <= Item->Weight)
 		{
-			if (Item->Weight == 0) continue;
-			if (RandomNumber <= Item->Weight)
-			{
-				SelectedItem = Item;
-				break;
-			}
-
-			RandomNumber -= Item->Weight;
+			return Item;
 		}
+
+		RandomNumber -= Item->Weight;
 	}
 
-	if (!SelectedItem) {
-		Log("FFortLootTierData::ChooseLootTierData: No item was selected, repicking...");
-		return ChooseLootTierData(LootTierData);
+	for (int i = LootTierData.Num() - 1; i >= 0; --i)
+	{
+		if (LootTierData[i] && LootTierData[i]->Weight > 0.0f)
+			return LootTierData[i];
 	}
 
-	return SelectedItem;
+	return nullptr;
 }
 
-FFortLootTierData* FFortLootTierData::ChooseLootTierData(TArray<UDataTable*> LootTierDataTables, FName TierGroupName, int32 WorldLevel, int32 ForcedLootTier) {
+FFortLootTierData* FFortLootTierData::ChooseLootTierData(
+	TArray<UDataTable*> LootTierDataTables,
+	FName TierGroupName,
+	int32 WorldLevel,
+	int32 ForcedLootTier)
+{
 	if (LootTierDataTables.Num() == 0) {
 		Log("FFortLootTierData::ChooseLootTierData: No LootTierDataTable(s) in array!");
 		return nullptr;
 	}
 
 	TArray<FFortLootTierData*> TierGroupRows;
+
 	for (int i = 0; i < LootTierDataTables.Num(); i++) {
 		UDataTable* DataTable = LootTierDataTables[i];
-		if (DataTable) {
-			TArray<FFortLootTierData*> Rows;
-			DataTable->GetAllRows<FFortLootTierData>(Rows);
-			for (int j = 0; j < Rows.Num(); j++) {
-				FFortLootTierData* Row = Rows[j];
-				if (Row
-					&& Row->TierGroup == TierGroupName
-					/*&& Row->Weight != 0*/
-					&& (
-						(Row->MinWorldLevel == -1 || Row->MaxWorldLevel == -1)
-						|| (Row->MinWorldLevel <= WorldLevel && Row->MaxWorldLevel >= WorldLevel)
-						)
-					&& (Row->LootTier == ForcedLootTier || ForcedLootTier == -1)) {
-					TierGroupRows.Add(Row);
-				}
-			}
+		if (!DataTable)
+			continue;
+
+		TArray<FFortLootTierData*> Rows;
+		DataTable->GetAllRows<FFortLootTierData>(Rows);
+
+		for (int j = 0; j < Rows.Num(); j++) {
+			FFortLootTierData* Row = Rows[j];
+			if (!Row)
+				continue;
+
+			if (Row->TierGroup != TierGroupName)
+				continue;
+
+			if (Row->Weight <= 0)
+				continue;
+
+			const bool bMatchesWorldLevel =
+				(WorldLevel == -1) ||
+				((Row->MinWorldLevel == -1 || Row->MinWorldLevel <= WorldLevel) &&
+					(Row->MaxWorldLevel == -1 || Row->MaxWorldLevel >= WorldLevel));
+
+			if (!bMatchesWorldLevel)
+				continue;
+
+			if (ForcedLootTier != -1 && Row->LootTier != ForcedLootTier)
+				continue;
+
+			TierGroupRows.Add(Row);
 		}
 	}
 
@@ -152,25 +175,27 @@ int32 FFortLootTierData::GetTotalCategoryMin() {
 FFortLootTierData* FFortLootTierData::PickLootTierData(
 	TArray<UDataTable*> LootTierDataTables,
 	FName TierGroupName,
-	int32 RecursionDepth,
 	int32 WorldLevel,
-	int32 ForcedLootTier) {
+	int32 ForcedLootTier,
+	int32 RecursionDepth)
+{
 	if (RecursionDepth >= 5)
 	{
 		return nullptr;
 	}
 
 	FFortLootTierData* LootTierData = FFortLootTierData::ChooseLootTierData(LootTierDataTables, TierGroupName, WorldLevel, ForcedLootTier);
-	if (!LootTierData->IsValid()) {
-		return PickLootTierData(LootTierDataTables, TierGroupName, ++RecursionDepth, WorldLevel, ForcedLootTier);
+
+	if (!LootTierData || !LootTierData->IsValid()) {
+		return PickLootTierData(LootTierDataTables, TierGroupName, WorldLevel, ForcedLootTier, RecursionDepth + 1);
 	}
 
-	int32 TotalCategoryWeight = LootTierData->GetTotalCategoryWeight();
+	/*int32 TotalCategoryWeight = LootTierData->GetTotalCategoryWeight();
 	int32 TotalCategoryMin = LootTierData->GetTotalCategoryMin();
+
 	if (TotalCategoryWeight > TotalCategoryMin) {
-		//Log("FFortLootTierData::PickLootTierData: TotalCategoryWeight (" + std::to_string(TotalCategoryWeight) + ") is greater than TotalCategoryMin (" + std::to_string(TotalCategoryMin) + ") for picked LootTierData, repicking...");
-		return PickLootTierData(LootTierDataTables, TierGroupName, ++RecursionDepth, WorldLevel, ForcedLootTier);
-	}
+		return PickLootTierData(LootTierDataTables, TierGroupName, WorldLevel, ForcedLootTier, RecursionDepth + 1);
+	}*/
 
 	return LootTierData;
 }

@@ -45,8 +45,8 @@ public:
 	static FFortLootTierData* PickLootTierData(
 		TArray<UDataTable*> LootTierDataTables,
 		FName TierGroupName,
-		int32 RecursionDepth = 0,
-		int32 WorldLevel = 0,
-		int32 ForcedLootTier = -1
+		int32 WorldLevel = -1,
+		int32 ForcedLootTier = -1,
+		int32 RecursionDepth = 0
 	);
 };

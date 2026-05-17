@@ -584,6 +584,11 @@ bool AFortPlayerController::RemoveInventoryItem(AFortPlayerController* This, FGu
 		Log("RemoveInventoryItem: Failed to get PlayerController from interface pointer!");
 		return false;
 	}
+	if (PlayerController->IsA(AFortPlayerState::StaticClass())) {
+		AFortPlayerState* PlayerState = PlayerController->Cast<AFortPlayerState>();
+		PlayerController = (AFortPlayerController*)PlayerState->Owner;
+	}
+
 	if (!PlayerController->IsA(AFortPlayerController::StaticClass())) {
 		Log("RemoveInventoryItem: PlayerController is not a AFortPlayerController!");
 		return false;

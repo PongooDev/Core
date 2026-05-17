@@ -32,23 +32,28 @@ public:
 	DefineStructProperty(bool, bAllowBonusDrops);
 	DefineStructProperty(FString, Annotation);
 public:
+	bool DoesLootPackageMatchWorldLevel(int32 WorldLevel);
+
 	static FFortLootPackageData* GetLootPackage(
 		TArray<FFortLootPackageData*> LootPackages
 	);
 	static TArray<FFortLootPackageData*> GetLootPackages(
 		TArray<UDataTable*> LootPackageDataTables,
-		FFortLootTierData* LootTierData
+		FFortLootTierData* LootTierData,
+		int32 WorldLevel = -1
 	);
 
 	static TArray<FFortLootPackageData*> GetCandidateLootPackages(
 		TArray<UDataTable*>& LootPackageDataTables,
 		TArray<FFortLootPackageData*> LootPackages,
 		FString LootPackageID,
-		FFortLootTierData* LootTierData
+		FFortLootTierData* LootTierData,
+		int32 WorldLevel = -1
 	);
 
 	static TArray<FFortItemEntry> GetLootItems(
 		TArray<UDataTable*> LootPackageDataTables,
-		FFortLootTierData* LootTierData
+		FFortLootTierData* LootTierData,
+		int32 WorldLevel = -1
 	);
 };
