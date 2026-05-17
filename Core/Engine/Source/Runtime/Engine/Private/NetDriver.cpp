@@ -644,8 +644,7 @@ void UNetDriver::ServerReplicateActors_BuildConsiderList(TArray<FNetworkObjectIn
 			{
 				const float NextUpdateDelta = bUseAdapativeNetFrequency ? ActorInfo->OptimalNetUpdateDelta : 1.0f / Actor->NetUpdateFrequency;
 
-				//ActorInfo->NextUpdateTime = World->TimeSeconds + UKismetMathLibrary::RandomFloat() * ServerTickTime + NextUpdateDelta;
-				ActorInfo->NextUpdateTime = World->TimeSeconds;
+				ActorInfo->NextUpdateTime = World->TimeSeconds + UKismetMathLibrary::RandomFloat() * ServerTickTime + NextUpdateDelta;
 
 				ActorInfo->LastNetUpdateTime = Time;
 			}
