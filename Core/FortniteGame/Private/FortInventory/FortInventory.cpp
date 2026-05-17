@@ -559,29 +559,30 @@ bool AFortInventory::CanSwapForItem(UFortItemDefinition* Def)
 	return true;
 }
 
-bool AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEntry, bool bSpawnPickup)
+FFortItemEntry* AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEntry, bool bSpawnPickup)
 {
 	if (!CanAddItem(NewItemEntry))
-		return false;
+		return nullptr;
 
 	if (!CanSwapForItem(NewItemEntry.ItemDefinition))
-		return false;
+		return nullptr;
 
 	FFortItemEntry* CurrentItemEntry = GetCurrentItemEntry();
 	if (!CurrentItemEntry)
-		return false;
+		return nullptr;
 
 	const FFortItemEntry OldItemEntry = *CurrentItemEntry;
 	const FGuid CurrentGuid = CurrentItemEntry->ItemGuid;
 	const int32 CurrentCount = CurrentItemEntry->Count;
 
 	if (!RemoveItem(CurrentGuid, CurrentCount))
-		return false;
+		return nullptr;
 
-	if (!AddItem(NewItemEntry))
+	FFortItemEntry* AddedEntry = AddItem(NewItemEntry);
+	if (!AddedEntry)
 	{
 		AddItem(OldItemEntry);
-		return false;
+		return nullptr;
 	}
 
 	if (bSpawnPickup)
@@ -589,11 +590,17 @@ bool AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEntry, bool bS
 		SpawnPickupFromEntry(OldItemEntry);
 	}
 
-	return true;
+	return AddedEntry;
 }
 
 bool AFortInventory::AddItemAndHandleOverflow(const FFortItemEntry& ItemEntry, bool bAllowSwap, bool bSpawnOverflowPickup)
 {
+	AFortPlayerController* PC = GetOwnerPlayerController();
+	if (!PC) {
+		Log("AFortInventory::AddItemAndHandleOverflow: Owner player controller is null!");
+		return false;
+	}
+
 	if (!CanAddItem(ItemEntry))
 		return false;
 
@@ -606,8 +613,14 @@ bool AFortInventory::AddItemAndHandleOverflow(const FFortItemEntry& ItemEntry, b
 
 	if (bAllowSwap && CanSwapForItem(OverflowEntry.ItemDefinition))
 	{
-		if (SwapCurrentItem(OverflowEntry, bSpawnOverflowPickup))
+		FFortItemEntry* AddedEntry = SwapCurrentItem(OverflowEntry, bSpawnOverflowPickup);
+		if (AddedEntry)
 		{
+			PC->ServerExecuteInventoryItem(PC, AddedEntry->ItemGuid);
+			if (PC->IsUsingOldQuickBars())
+			{
+				PC->QuickBars->EquipItem(AddedEntry->ItemGuid);
+			}
 			return true;
 		}
 	}

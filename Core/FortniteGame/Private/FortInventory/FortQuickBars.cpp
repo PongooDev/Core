@@ -234,3 +234,29 @@ void AFortQuickBars::OnRep_SecondaryQuickBar()
 
 	ProcessEvent(Func, nullptr);
 }
+
+bool AFortQuickBars::EquipItem(FGuid Guid) {
+	if (!Guid.IsValid())
+		return false;
+
+	AFortPlayerController* PC = GetOwnerPlayerController();
+	if (!PC)
+		return false;
+
+	FFortItemEntry* ItemEntry = PC->FindItemEntry(Guid);
+	if (!ItemEntry) {
+		Log("AFortQuickBars::EquipItem: Failed to find item entry for GUID: " + Guid.FormatGuid());
+		return false;
+	}
+
+	UFortItemDefinition* ItemDef = ItemEntry->ItemDefinition;
+	if (!ItemDef) {
+		Log("AFortQuickBars::EquipItem: ItemDefinition is null for GUID: " + Guid.FormatGuid());
+		return false;
+	}
+
+	uint8 ItemDefQuickBar = ItemDef->GetQuickBarForItem();
+	ServerActivateSlotInternal(ItemDefQuickBar, FindQuickBarSlotForItem(ItemDefQuickBar, Guid), 0.f, true);
+
+	return true;
+}

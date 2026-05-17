@@ -4,6 +4,9 @@
 
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/GameInstance.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h"
 
 class AFortPlayerPawn;
 class ABuildingSMActor;

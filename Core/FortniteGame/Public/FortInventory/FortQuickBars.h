@@ -82,4 +82,6 @@ public:
 	void OnRep_PrimaryQuickBar();
 
 	void OnRep_SecondaryQuickBar();
+
+	bool EquipItem(FGuid Guid);
 };

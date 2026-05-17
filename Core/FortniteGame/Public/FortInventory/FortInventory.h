@@ -84,7 +84,7 @@ public:
 
 	bool CanSwapForItem(UFortItemDefinition* Def);
 
-	bool SwapCurrentItem(
+	FFortItemEntry* SwapCurrentItem(
 		const FFortItemEntry& NewItemEntry,
 		bool bSpawnPickup = true
 	);
