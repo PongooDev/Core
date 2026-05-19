@@ -20,7 +20,13 @@ void UFortWorldItem::SetOwningInventory(AFortInventory* NewOwnerInventory) {
 }
 
 bool UFortWorldItem::SetLoadedAmmo(UFortWorldItem* This, int32 InCount) {
-	AFortInventory* Inventory = This->OwnerInventory;
+	AFortPlayerController* FortPC = This->GetOwningController();
+	if (!FortPC) {
+		Log("UFortWorldItem::SetLoadedAmmo: GetOwningController returned null!");
+		return false;
+	}
+
+	AFortInventory* Inventory = FortPC->WorldInventory;
 	if (!Inventory) {
 		Log("UFortWorldItem::SetLoadedAmmo: OwnerInventory is null!");
 		return false;
@@ -51,8 +57,15 @@ bool UFortWorldItem::SetInInventoryOverflow(UFortWorldItem* This, bool bInInvent
 }
 
 bool UFortWorldItem::SetDurability(UFortWorldItem* This, float InDurability) {
-	AFortInventory* Inventory = This->OwnerInventory;
+	AFortPlayerController* FortPC = This->GetOwningController();
+	if (!FortPC) {
+		Log("UFortWorldItem::SetDurability: GetOwningController returned null!");
+		return false;
+	}
+
+	AFortInventory* Inventory = FortPC->WorldInventory;
 	if (!Inventory) {
+		Log("UFortWorldItem::SetDurability: OwnerInventory is null!");
 		return false;
 	}
 

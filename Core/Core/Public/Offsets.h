@@ -417,6 +417,7 @@ namespace ServerOffsets {
 	inline uintptr_t UGameplayStatics_BeginDeferredActorSpawnFromClass = 0;
 
 	inline uintptr_t UFortKismetLibrary_CanPlaceBuildableClassInStructuralGrid = 0;
+	inline uintptr_t UFortKismetLibrary_GetWeaponStatsRow = 0;
 
 	inline uintptr_t FRotator_Quaternion = 0;
 

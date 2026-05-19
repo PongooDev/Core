@@ -8,6 +8,13 @@
 #include "Engine/Source/Runtime/Core/Public/Misc/OutputDevice.h"
 #include "Engine/Source/Runtime/Core/Public/Templates/TypeCompatibleBytes.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptInterface.h"
+#include "Engine/Source/Runtime/Net/Core/Classes/Net/Serialization/FastArraySerializer.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DataAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DataTable.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/CurveTable.h"
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 
 #include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/FortAbility/FortAbilitySet.h"
@@ -27,6 +34,7 @@ class IAbilitySystemInterface;
 class AFortPlayerController;
 class UFortItemDefinition;
 class UFortWorldItemDefinition;
+class FFortBaseWeaponStats;
 
 class UFortKismetLibrary : public UBlueprintFunctionLibrary {
 public:
@@ -110,6 +118,8 @@ public:
 		int AmountToRemove
 	);
 	static void execK2_RemoveItemFromAllPlayers(UObject* Object, FFrame& Stack);
+
+	static bool GetWeaponStatsRow(const FDataTableRowHandle& DataTableRowHandle, FFortBaseWeaponStats* OutRow);
 
 	static void Hook() {
 		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld", execK2_SpawnPickupInWorld);

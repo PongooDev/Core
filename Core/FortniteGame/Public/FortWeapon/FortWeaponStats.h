@@ -14,6 +14,8 @@ public:
 	DefineStructProperty(int32, ClipSize);
 	DefineStructProperty(UDataTable*, Durability);
 	DefineStructProperty(FName, DurabilityRowName);
+public:
+	uint8 Padding[0x118];
 };
 
 struct FFortRangedWeaponStats : public FFortBaseWeaponStats {

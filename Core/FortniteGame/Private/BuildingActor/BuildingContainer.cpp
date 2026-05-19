@@ -50,6 +50,13 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 			nullptr,
 			false
 		);
+		if (Pickup) {
+			UFortWeaponItemDefinition* WeaponDef = Pickup->PrimaryPickupItemEntry.ItemDefinition->Cast<UFortWeaponItemDefinition>();
+			if (WeaponDef) {
+				Pickup->PrimaryPickupItemEntry.LoadedAmmo = WeaponDef->GetClipSize();
+				Pickup->PrimaryPickupItemEntry.Durability = WeaponDef->GetDurability();
+			}
+		}
 	}
 
 	This->bAlreadySearched = true;

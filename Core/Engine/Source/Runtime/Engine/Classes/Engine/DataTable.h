@@ -131,4 +131,7 @@ public:
 	DefineUnrealStruct(FTaleRowBase);
 
 	FTableRowBase() {}
+
+public:
+	void** VTable;
 };

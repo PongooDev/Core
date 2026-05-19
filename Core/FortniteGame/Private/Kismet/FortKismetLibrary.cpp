@@ -15,6 +15,7 @@
 #include "FortniteGame/Public/FortLoot/FortLootPackageData.h"
 #include "FortniteGame/Public/AI/FortAIDirector.h"
 #include "FortniteGame/Public/AI/FortAIGoalManager.h"
+#include "FortniteGame/Public/FortWeapon/FortWeaponStats.h"
 
 class UFortResourceItemDefinition* UFortKismetLibrary::K2_GetResourceItemDefinition(const uint8 ResourceType)
 {
@@ -170,12 +171,6 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	PickupEntry.ItemDefinition = ItemDefinition;
 	PickupEntry.Count = NumberToSpawn;
 
-	UFortWeaponItemDefinition* WeaponDef = ItemDefinition->Cast<UFortWeaponItemDefinition>();
-	if (WeaponDef) {
-		PickupEntry.LoadedAmmo = WeaponDef->GetClipSize();
-		PickupEntry.Durability = WeaponDef->GetDurability();
-	}
-
 	PickupEntry.ReplicationKey++;
 	Pickup->OnRep_PrimaryPickupItemEntry();
 
@@ -194,7 +189,7 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 		OptionalOwnerPC ? OptionalOwnerPC->Pawn->Cast<AFortPawn>() : nullptr,
 		OverrideMaxStackCount,
 		bToss,
-		false,
+		true,
 		SourceType,
 		Source
 	);
@@ -788,4 +783,10 @@ void UFortKismetLibrary::execK2_RemoveItemFromAllPlayers(UObject* Object, FFrame
 	Stack.IncrementCode();
 
 	K2_RemoveItemFromAllPlayers(WorldContextObject, ItemDefinition, &ItemVariantGuid, AmountToRemove);
+}
+
+bool UFortKismetLibrary::GetWeaponStatsRow(const FDataTableRowHandle& DataTableRowHandle, FFortBaseWeaponStats* OutRow)
+{
+	bool (*GetWeaponStatsRowInternal)(const FDataTableRowHandle&, FFortBaseWeaponStats*) = decltype(GetWeaponStatsRowInternal)(ImageBase + Finder::FindUFortKismetLibrary_GetWeaponStatsRow());
+	return GetWeaponStatsRowInternal(DataTableRowHandle, OutRow);
 }

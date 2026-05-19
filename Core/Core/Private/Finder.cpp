@@ -8260,6 +8260,32 @@ uintptr_t Finder::FindUClass_GetSparseClassData() {
 	return ServerOffsets::UClass_GetSparseClassData;
 }
 
+uintptr_t Finder::FindUFortKismetLibrary_GetWeaponStatsRow() {
+	if (ServerOffsets::UFortKismetLibrary_GetWeaponStatsRow)
+		return ServerOffsets::UFortKismetLibrary_GetWeaponStatsRow;
+	uintptr_t Addr = 0;
+
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"UFortKismetLibrary::GetWeaponStatsRow").Get();
+	if (StringAddr) {
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x5C)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
+	}
+
+	if (Addr) {
+		ServerOffsets::UFortKismetLibrary_GetWeaponStatsRow = Addr - ImageBase;
+	}
+
+	Log("UFortKismetLibrary_GetWeaponStatsRow found at: 0x" + std::format("{:X}", ServerOffsets::UFortKismetLibrary_GetWeaponStatsRow));
+	return ServerOffsets::UFortKismetLibrary_GetWeaponStatsRow;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -8514,6 +8540,9 @@ void Finder::SetupOffsets() {
 	FindAFortInventory_GetInventoryCapacity();
 
 	FindUObjectBaseUtility_GetPathName();
+
+	FindUFortKismetLibrary_CanPlaceBuildableClassInStructuralGrid();
+	FindUFortKismetLibrary_GetWeaponStatsRow();
 
 	return;
 }

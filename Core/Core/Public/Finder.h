@@ -994,6 +994,8 @@ public:
 	static uintptr_t FindABuildingSMActor_SetEditingPlayerVFT();
 
 	static uintptr_t FindUClass_GetSparseClassData();
+
+	static uintptr_t FindUFortKismetLibrary_GetWeaponStatsRow();
 public:
 	static void SetupOffsets();
 
