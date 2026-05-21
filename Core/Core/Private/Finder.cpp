@@ -979,9 +979,20 @@ uintptr_t Finder::FindUObjectBase_IsValidLowLevel() {
 		return ServerOffsets::UObjectBase_IsValidLowLevel;
 	static uintptr_t Addr = 0;
 
-	Addr = Memcury::Scanner::FindPattern("48 83 EC ?? 4C 8B C1 48 85 C9 75").Get();
-	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("48 83 EC ? 48 85 C9 75 ? 80 3D").Get();
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"NULL object").Get();
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Object is not registered").Get();
+	}
+	if (StringAddr) {
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x83 && *(Ptr + 2) == 0xEC)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
 	}
 
 	if (Addr) {
@@ -997,7 +1008,36 @@ uintptr_t Finder::FindUObjectBase_IsValidLowLevelFast() {
 		return ServerOffsets::UObjectBase_IsValidLowLevelFast;
 	static uintptr_t Addr = 0;
 
-	Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 48 8B D9 48 81 F9").Get();
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"'this' pointer is misaligned.").Get();
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Virtual functions table is invalid.").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Object flags are invalid or either Class or Outer is misaligned").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Class object failed IsValidLowLevelFast test.").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Object array index or name index is invalid.").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Class pointer is invalid or CDO is invalid.").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"'this' pointer is invalid.").Get();
+	}
+	if (StringAddr) {
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x40 && *(Ptr + 1) == 0x53)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
+	}
 
 	if (Addr) {
 		ServerOffsets::UObjectBase_IsValidLowLevelFast = Addr - ImageBase;
@@ -2045,8 +2085,7 @@ uintptr_t Finder::FindUWorld_InternalGetNetMode() {
 		return ServerOffsets::UWorld_InternalGetNetMode;
 	static uintptr_t Addr = 0;
 
-	Addr = Memcury::Scanner::FindPattern("40 53 48 81 EC ? ? ? ? 48 83 79 ? ? 48 8B D9 74").Get();
-	if (!Addr) {
+	if (Version::Engine_Version == 4.16) {
 		Addr = Memcury::Scanner::FindPattern("48 83 79 ? ? 74 ? B8 ? ? ? ? C3").Get();
 	}
 
@@ -2183,7 +2222,26 @@ uintptr_t Finder::FindUWorld_ServerTravel() {
 		return ServerOffsets::UWorld_ServerTravel;
 	static uintptr_t Addr = 0;
 
-	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 56 48 83 EC ? 48 8B B9 ? ? ? ? 45 0F B6 F1").Get();
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef("?Restart").Get();
+	if (StringAddr) {
+		int CallCount = 0;
+
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr + i);
+			if (*Ptr == 0xE8)
+			{
+				CallCount++;
+
+				if (CallCount == 2)
+				{
+					int32_t Rel = *reinterpret_cast<int32_t*>(Ptr + 1);
+					Addr = reinterpret_cast<uintptr_t>(Ptr) + 5 + Rel;
+					break;
+				}
+			}
+		}
+	}
 
 	if (Addr) {
 		ServerOffsets::UWorld_ServerTravel = Addr - ImageBase;
@@ -2485,14 +2543,32 @@ uintptr_t Finder::FindAActor_InternalGetNetMode() {
 	if (ServerOffsets::AActor_InternalGetNetMode)
 		return ServerOffsets::AActor_InternalGetNetMode;
 	static uintptr_t Addr = 0;
-	Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 48 8B 01 48 8B D9 FF 90 ? ? ? ? 48 8B 9B").Get();
-	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 48 8B 01 48 8B D9 FF 90 ? ? ? ? 4C 8B 83").Get();
+
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"ClientPlayerJoined %s %s.").Get();
+	if (StringAddr) {
+		int CallCount = 0;
+
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr + i);
+			if (*Ptr == 0xE8)
+			{
+				CallCount++;
+
+				if (CallCount == 3)
+				{
+					int32_t Rel = *reinterpret_cast<int32_t*>(Ptr + 1);
+					Addr = reinterpret_cast<uintptr_t>(Ptr) + 5 + Rel;
+					break;
+				}
+			}
+		}
 	}
 
 	if (Addr) {
 		ServerOffsets::AActor_InternalGetNetMode = Addr - ImageBase;
 	}
+
 	Log("AActor_InternalGetNetMode found at: 0x" + std::format("{:X}", ServerOffsets::AActor_InternalGetNetMode));
 	return ServerOffsets::AActor_InternalGetNetMode;
 }
@@ -3919,10 +3995,13 @@ uintptr_t Finder::FindFURL_GetHostPortString() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::FURL_GetHostPortString)
 		return ServerOffsets::FURL_GetHostPortString;
+
 	Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 48 8B DA 48 81 C1 ? ? ? ? 48 8D 54 24 ? E8 ? ? ? ? 83 78").Get();
+
 	if (Addr) {
 		ServerOffsets::FURL_GetHostPortString = Addr - ImageBase;
 	}
+
 	Log("FURL_GetHostPortString found at: 0x" + std::format("{:X}", ServerOffsets::FURL_GetHostPortString));
 	return ServerOffsets::FURL_GetHostPortString;
 }
@@ -3931,16 +4010,17 @@ uintptr_t Finder::FindFWorldContext_SetCurrentWorld() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::FWorldContext_SetCurrentWorld)
 		return ServerOffsets::FWorldContext_SetCurrentWorld;
-	Addr = Memcury::Scanner::FindPattern("40 57 48 83 EC ? 48 89 5C 24 ? 48 8B D9 48 8B FA").Get();
-	if (!Addr) {
+	
+	if (Version::Engine_Version == 4.16) {
 		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 48 8B FA 48 8B D9 48 85 D2 74 ? 8B 91").Get();
 	}
+
 	if (Addr) {
 		ServerOffsets::FWorldContext_SetCurrentWorld = Addr - ImageBase;
-		Log("FWorldContext_SetCurrentWorld found at: 0x" + std::format("{:X}", ServerOffsets::FWorldContext_SetCurrentWorld));
-		return ServerOffsets::FWorldContext_SetCurrentWorld;
 	}
-	return 0;
+
+	Log("FWorldContext_SetCurrentWorld found at: 0x" + std::format("{:X}", ServerOffsets::FWorldContext_SetCurrentWorld));
+	return ServerOffsets::FWorldContext_SetCurrentWorld;
 }
 
 uintptr_t Finder::FindFWorldContext__ThisCurrentWorld()
@@ -3967,22 +4047,14 @@ uintptr_t Finder::FindFWorldContext__ThisCurrentWorld()
 				ServerOffsets::FWorldContext__ThisCurrentWorld = dispLoad;
 			}
 		}
-	}
 
-	if (!ServerOffsets::FWorldContext__ThisCurrentWorld)
-	{
-		for (size_t i = 0; i + 7 <= scanSize; i++)
+		if (p[0] == 0x48 &&
+			p[1] == 0x89 &&
+			p[2] == 0xBB)
 		{
-			uint8_t* p = reinterpret_cast<uint8_t*>(func + i);
-
-			if (p[0] == 0x48 &&
-				p[1] == 0x89 &&
-				p[2] == 0xBB)
-			{
-				uint32_t disp = *reinterpret_cast<uint32_t*>(p + 3);
-				ServerOffsets::FWorldContext__ThisCurrentWorld = disp;
-				break;
-			}
+			uint32_t disp = *reinterpret_cast<uint32_t*>(p + 3);
+			ServerOffsets::FWorldContext__ThisCurrentWorld = disp;
+			break;
 		}
 	}
 
@@ -4011,9 +4083,26 @@ uintptr_t Finder::FindUEngine_GetWorldContextFromWorldChecked() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::UEngine_GetWorldContextFromWorldChecked)
 		return ServerOffsets::UEngine_GetWorldContextFromWorldChecked;
-	Addr = Memcury::Scanner::FindPattern("48 83 EC ? 48 8B 81 ? ? ? ? 48 63 89 ? ? ? ? 48 8D 0C C8 48 3B C1 74 ? 0F 1F 44 00 ? 4C 8B 00 49 39 90 ? ? ? ? 74 ? 48 83 C0 ? 48 3B C1 75 ? 80 3D ? ? ? ? ? 75 ? 80 3D ? ? ? ? ? 72 ? 48 8D 05 ? ? ? ? 41 B9 ? ? ? ? 4C 8D 05 ? ? ? ? 48 89 44 24 ? 33 D2 33 C9 E8 ? ? ? ? 48 8B 0D ? ? ? ? 33 D2 48 83 C4 ? E9 ? ? ? ? 49 8B C0 48 83 C4 ? C3 90 F2 0F 11 54 24").Get();
-	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("48 8B 81 ? ? ? ? 48 63 89 ? ? ? ? 48 8D 0C C8 48 3B C1 74 ? 66 0F 1F 84 00 ? ? ? ? 4C 8B 00 49 39 90 ? ? ? ? 74 ? 48 83 C0 ? 48 3B C1 75 ? E9 ? ? ? ? 49 8B C0 C3 CC CC 40 53").Get();
+	
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"CANCEL").Get();
+	if (StringAddr) {
+		int CallCount = 0;
+
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr + i);
+
+			if (*Ptr == 0xE8)
+			{
+				CallCount++;
+				if (CallCount == 2)
+				{
+					int32_t Rel = *reinterpret_cast<int32_t*>(Ptr + 1);
+					Addr = reinterpret_cast<uintptr_t>(Ptr) + 5 + Rel;
+					break;
+				}
+			}
+		}
 	}
 
 	if (Addr) {
@@ -4040,9 +4129,26 @@ uintptr_t Finder::FindUWorld_FindCollectionByType() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::UWorld_FindCollectionByType)
 		return ServerOffsets::UWorld_FindCollectionByType;
-	Addr = Memcury::Scanner::FindPattern("48 8B 81 ? ? ? ? 48 63 89 ? ? ? ? 4C 6B C1 ? 4C 03 C0 49 3B C0 74 ? 66 0F 1F 44 00 ? 38 10 74 ? 48 83 C0 ? 49 3B C0 75 ? 33 C0").Get();
-	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("48 8B 81 ? ? ? ? 4C 63 81 ? ? ? ? 49 C1 E0 ? 4C 03 C0 49 3B C0 74 ? 66 0F 1F 44 00 ? 39 10").Get();
+
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"LevelPrefixOverride=").Get();
+	if (StringAddr) {
+		int CallCount = 0;
+
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr + i);
+			if (*Ptr == 0xE8)
+			{
+				CallCount++;
+
+				if (CallCount == 2)
+				{
+					int32_t Rel = *reinterpret_cast<int32_t*>(Ptr + 1);
+					Addr = reinterpret_cast<uintptr_t>(Ptr) + 5 + Rel;
+					break;
+				}
+			}
+		}
 	}
 
 	if (Addr) {
@@ -4129,21 +4235,12 @@ uintptr_t Finder::FindUWorld__NextSwitchCountdown() {
 			ServerOffsets::UWorld__NextSwitchCountdown = disp;
 			break;
 		}
-	}
 
-	if (!ServerOffsets::UWorld__NextSwitchCountdown) {
-		for (size_t i = 0; i + 7 <= scanSize; i++)
+		if (p[0] == 0x44 && p[1] == 0x89 && p[2] == 0xBB)
 		{
-			uint8_t* p = reinterpret_cast<uint8_t*>(func + i);
-
-			if (p[0] == 0x44 &&
-				p[1] == 0x89 &&
-				p[2] == 0xBB)
-			{
-				uint32_t disp = *reinterpret_cast<uint32_t*>(p + 3);
-				ServerOffsets::UWorld__NextSwitchCountdown = disp;
-				break;
-			}
+			uint32_t disp = *reinterpret_cast<uint32_t*>(p + 3);
+			ServerOffsets::UWorld__NextSwitchCountdown = disp;
+			break;
 		}
 	}
 
@@ -5675,10 +5772,45 @@ uintptr_t Finder::FindUEngine_CreateNetDriver_Local() {
 	static uintptr_t Addr = 0;
 	if (ServerOffsets::UEngine_CreateNetDriver_Local)
 		return ServerOffsets::UEngine_CreateNetDriver_Local;
-	Addr = Memcury::Scanner::FindPattern("4C 89 44 24 ? 53 56 57 41 56 41 57 48 81 EC ? ? ? ? 48 63 81").Get();
+	
+	static bool bInitialized = false;
+
+	if (!bInitialized)
+	{
+		bInitialized = true;
+
+		Addr = Memcury::Scanner::FindPattern("49 8B D8 48 8B F9 E8 ?? ?? ?? ?? 48 8B D0 4C 8B C3 48 8B CF 48 8B 5C 24 ?? 48 83 C4 ?? 5F E9 ?? ?? ?? ??").Get();
+		if (!Addr)
+		{
+			Addr = Memcury::Scanner::FindPattern("E8 ?? ?? ?? ?? 4C 8B 44 24 ?? 48 8B D0 48 8B CB E8 ?? ?? ?? ?? 48 83 C4 ?? 5B C3").Get();
+			if (!Addr)
+				Addr = Memcury::Scanner::FindPattern("33 D2 E8 ?? ?? ?? ?? 48 8B D0 4C 8B C3 48 8B CF E8 ?? ?? ?? ?? 48 8B 5C 24 ?? 48 83 C4 ?? 5F C3").Get();
+		}
+
+		if (Addr)
+		{
+			for (int i = 0; i < 0x200; i++)
+			{
+				auto Ptr = (uint8_t*)(Addr - i);
+
+				if (*Ptr == 0x48 && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x5c)
+				{
+					Addr = uint64_t(Ptr);
+					break;
+				}
+				else if (*Ptr == 0x4C && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x44)
+				{
+					Addr = uint64_t(Ptr);
+					break;
+				}
+			}
+		}
+	}
+	
 	if (Addr) {
 		ServerOffsets::UEngine_CreateNetDriver_Local = Addr - ImageBase;
 	}
+
 	Log("UEngine_CreateNetDriver_Local found at: 0x" + std::format("{:X}", ServerOffsets::UEngine_CreateNetDriver_Local));
 	return ServerOffsets::UEngine_CreateNetDriver_Local;
 }
