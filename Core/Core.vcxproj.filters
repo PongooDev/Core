@@ -633,6 +633,9 @@
     <ClInclude Include="FortniteGame\Public\FortGameMode\FortGameModeOutpost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortLoadout\FortAthenaLoadout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">

@@ -4,6 +4,8 @@
 #include "McpItemDefinitionBase.h"
 #include "FortniteGame/Public/FortEnums.h"
 
+class UFortWeaponMeleeItemDefinition;
+
 class UFortItemDefinition : public UMcpItemDefinitionBase {
 public:
 	DefineUnrealClass(UFortItemDefinition);
@@ -25,4 +27,16 @@ public:
 class UFortAccountItemDefinition : public UFortItemDefinition {
 public:
 	DefineUnrealClass(UFortAccountItemDefinition);
+};
+
+class UAthenaCosmeticItemDefinition : public UFortAccountItemDefinition {
+public:
+	DefineUnrealClass(UAthenaCosmeticItemDefinition);
+};
+
+class UAthenaPickaxeItemDefinition : public UAthenaCosmeticItemDefinition {
+public:
+	DefineUnrealClass(UAthenaPickaxeItemDefinition);
+
+	DefineUProperty(UFortWeaponMeleeItemDefinition*, WeaponDefinition);
 };

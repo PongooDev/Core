@@ -5,6 +5,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
 
 #include "FortPlayerControllerZone.h"
+#include "FortniteGame/Public/FortLoadout/FortAthenaLoadout.h"
 
 class AFortPlayerPawnAthena;
 class AFortBroadcastRemoteClientInfo;
@@ -32,6 +33,9 @@ public:
 	static inline void (*ClientOnPawnDiedOG)(AFortPlayerControllerAthena* This, FFortPlayerDeathReport& DeathReport);
 	static void ClientOnPawnDied(AFortPlayerControllerAthena* This, FFortPlayerDeathReport& DeathReport);
 
+	static inline void (*OnReadyToStartMatchOG)(AFortPlayerControllerAthena* This);
+	static void OnReadyToStartMatch(AFortPlayerControllerAthena* This);
+
 	static void Hook() {
 		UObject* AircraftComp = FUObjectArray::FindObject("Class FortniteGame.FortControllerComponent_Aircraft");
 		if (!AircraftComp) {
@@ -56,6 +60,15 @@ public:
 			(LPVOID*)&ClientOnPawnDiedOG
 		);*/
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerControllerZone_ClientOnPawnDied()), ClientOnPawnDied, (LPVOID*)&ClientOnPawnDiedOG);
+
+		MH_CreateHook(
+			(LPVOID)(GetOffsetFromVTable(
+				AFortPlayerControllerAthena::GetDefaultObj(),
+				Finder::FindAFortPlayerController_OnReadyToStartMatchVFT()
+			)),
+			OnReadyToStartMatch,
+			(LPVOID*)&OnReadyToStartMatchOG
+		);
 
 		Log("Hooked AFortPlayerControllerAthena");
 	}

@@ -102,7 +102,14 @@ public:
 			OnReadyToStartMatch,
 			(LPVOID*)&OnReadyToStartMatchOG
 		);*/
-		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_OnReadyToStartMatch()), OnReadyToStartMatch, (LPVOID*)&OnReadyToStartMatchOG);
+		MH_CreateHook(
+			(LPVOID)(GetOffsetFromVTable(
+				AFortPlayerController::GetDefaultObj(),
+				Finder::FindAFortPlayerController_OnReadyToStartMatchVFT()
+			)),
+			OnReadyToStartMatch,
+			(LPVOID*)&OnReadyToStartMatchOG
+		);
 
 		HookEveryVTable(
 			AFortPlayerController::StaticClass(),

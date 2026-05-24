@@ -4,6 +4,7 @@
 #include "FortniteGame/Public/FortInventory/FortQuickBarsAthena.h"
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
 #include "FortniteGame/Public/FortItemDefinition/FortWorldItemDefinition.h"
+#include "FortniteGame/Public/FortItemDefinition/FortWeaponItemDefinition.h"
 #include "FortniteGame/Public/FortPawn/FortPlayerPawnAthena.h"
 
 void AFortPlayerControllerAthena::EnterAircraft(AFortPlayerControllerAthena* This, AFortAircraft* InAircraft) {
@@ -22,4 +23,18 @@ void AFortPlayerControllerAthena::ClientOnPawnDied(AFortPlayerControllerAthena* 
 	}
 
 	ClientOnPawnDiedOG(This, DeathReport);
+}
+
+void AFortPlayerControllerAthena::OnReadyToStartMatch(AFortPlayerControllerAthena* This) {
+	OnReadyToStartMatchOG(This);
+
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPlayerControllerAthena::OnReadyToStartMatch: World is null!");
+		return;
+	}
+
+	if (This->CustomizationLoadout.Pickaxe) {
+		This->WorldInventory->AddItem(This->CustomizationLoadout.Pickaxe->WeaponDefinition);
+	}
 }

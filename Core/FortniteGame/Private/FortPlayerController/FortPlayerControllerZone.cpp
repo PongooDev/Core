@@ -10,6 +10,7 @@
 #include "FortniteGame/Public/FortHero/FortHeroSpecialization.h"
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
+#include "FortniteGame/Public/FortItemDefinition/FortItemDefinition.h"
 
 void AFortPlayerControllerZone::ServerAcknowledgePossession(AFortPlayerControllerZone* This, AFortPlayerPawnAthena* P) {
 	AFortPlayerController::ServerAcknowledgePossessionOG(This, P);
@@ -18,7 +19,18 @@ void AFortPlayerControllerZone::ServerAcknowledgePossession(AFortPlayerControlle
 void AFortPlayerControllerZone::OnReadyToStartMatch(AFortPlayerControllerZone* This) {
 	OnReadyToStartMatchOG(This);
 
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPlayerControllerZone::OnReadyToStartMatch: World is null!");
+		return;
+	}
+
 	AFortGameModeZone* GameMode = This->GetWorld()->AuthorityGameMode->Cast<AFortGameModeZone>();
+	if (!GameMode) {
+		Log("AFortPlayerControllerZone::OnReadyToStartMatch: GameMode is null or not a FortGameModeZone!");
+		return;
+	}
+
 	if (GameMode) {
 		if (GameMode->StartingItems.Num() > 0)
 		{
@@ -35,13 +47,7 @@ void AFortPlayerControllerZone::OnReadyToStartMatch(AFortPlayerControllerZone* T
 		else {
 			Log(" Warning: No StartingItems found!");
 
-			static UFortItemDefinition* DefaultPickaxe = nullptr;
-			if (!DefaultPickaxe && GameMode->IsA(AFortGameModeAthena::StaticClass())) {
-				DefaultPickaxe = (UFortItemDefinition*)StaticLoadObject("/Game/Athena/Items/Weapons/WID_Harvest_Pickaxe_Athena_C_T01.WID_Harvest_Pickaxe_Athena_C_T01");
-			}
-			else {
-				DefaultPickaxe = (UFortItemDefinition*)StaticLoadObject("/Game/Items/Weapons/Melee/Harvest/WID_Harvest_Pickaxe_C_T01.WID_Harvest_Pickaxe_C_T01");
-			}
+			static UFortItemDefinition* DefaultPickaxe = DefaultPickaxe = (UFortItemDefinition*)StaticLoadObject("/Game/Items/Weapons/Melee/Harvest/WID_Harvest_Pickaxe_C_T01.WID_Harvest_Pickaxe_C_T01");
 
 			static UFortItemDefinition* WallBuild = (UFortItemDefinition*)StaticLoadObject("/Game/Items/Weapons/BuildingTools/BuildingItemData_Wall.BuildingItemData_Wall");
 			static UFortItemDefinition* FloorBuild = (UFortItemDefinition*)StaticLoadObject("/Game/Items/Weapons/BuildingTools/BuildingItemData_Floor.BuildingItemData_Floor");

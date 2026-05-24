@@ -56,8 +56,8 @@ bool UObjectBase::IsA(UClass* TypeClass) const
 {
 	if (!this || !TypeClass)
 		return false;
-	/*if (!IsValidLowLevelFast())
-		return false;*/
+	if (!IsValidLowLevelFast())
+		return false;
 
 	if (!GetClass())
 		return false;

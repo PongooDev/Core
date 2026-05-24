@@ -60,6 +60,7 @@ void AFortPlayerController::SpawnQuickBars()
 				AActor* NewQuickBars = World->SpawnActor(AFortQuickBars::StaticClass(), FVector(), FRotator(), this);
 				if (NewQuickBars && NewQuickBars->Cast<AFortQuickBars>()) {
 					QuickBars = NewQuickBars->Cast<AFortQuickBars>();
+					Log("Spawned QuickBars: " + QuickBars->GetName().ToString());
 				}
 			}
 		}
@@ -69,6 +70,7 @@ void AFortPlayerController::SpawnQuickBars()
 				AActor* NewQuickBars = World->SpawnActor(AFortQuickBars::StaticClass(), FVector(), FRotator(), this);
 				if (NewQuickBars && NewQuickBars->Cast<AFortQuickBars>()) {
 					ClientQuickBars = NewQuickBars->Cast<AFortQuickBars>();
+					Log("Spawned ClientQuickBars: " + ClientQuickBars->GetName().ToString());
 				}
 			}
 		}
