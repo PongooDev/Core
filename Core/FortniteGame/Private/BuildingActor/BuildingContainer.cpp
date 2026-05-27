@@ -18,6 +18,8 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 		return false;
 	}
 
+	AFortGameModeAthena* FortGameModeAthena = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
+
 	FVector ContainerLocation = This->K2_GetActorLocation();
 	FVector LootSpawnLocation = This->LootSpawnLocation;
 	FVector FinalSpawnLocation = ContainerLocation + (This->GetActorForwardVector() * LootSpawnLocation.X) +
@@ -55,7 +57,12 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 			if (WeaponDef) {
 				int32 Level = Pickup->PrimaryPickupItemEntry.Level;
 				Pickup->PrimaryPickupItemEntry.LoadedAmmo = WeaponDef->GetClipSize(Level);
-				Pickup->PrimaryPickupItemEntry.Durability = WeaponDef->GetDurability(Level);
+				if (FortGameModeAthena) {
+					Pickup->PrimaryPickupItemEntry.Durability = FLT_MAX;
+				}
+				else {
+					Pickup->PrimaryPickupItemEntry.Durability = WeaponDef->GetDurability(Level);
+				}
 			}
 		}
 	}

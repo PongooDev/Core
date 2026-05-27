@@ -69,11 +69,7 @@ public:
 public:
 	int32 IsNetReady(bool Saturate);
 
-	UChildConnection* GetUChildConnection()
-	{
-		UChildConnection* (*&GetUChildConnectionInternal)(UNetConnection * This) = decltype(GetUChildConnectionInternal)(VTable[Finder::FindUNetConnection_GetUChildConnectionVFT()]);
-		return GetUChildConnectionInternal(this);
-	}
+	UChildConnection* GetUChildConnection();
 
 	UChannel* CreateChannel(EChannelType Type, bool bOpenedLocally, int32 ChannelIndex = INDEX_NONE);
 

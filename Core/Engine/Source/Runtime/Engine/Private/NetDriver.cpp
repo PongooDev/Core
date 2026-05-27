@@ -485,7 +485,9 @@ int32 UNetDriver::ServerReplicateActors_PrepConnections(const float DeltaSeconds
 			AActor* OwningActor = Connection->OwningActor;
 			if (OwningActor != NULL && Connection->State == USOCK_Open && (Connection->Driver->Time - Connection->LastReceiveTime < 1.5f))
 			{
-				check(World == OwningActor->GetWorld());
+				if (World != OwningActor->GetWorld()) {
+					continue;
+				}
 
 				bFoundReadyConnection = true;
 

@@ -621,4 +621,6 @@ namespace ServerOffsets {
 	inline uintptr_t AFortGameSessionDedicated_OnUpdateComplete = 0;
 
 	inline uintptr_t FFortBaseWeaponStats_GetDurability = 0;
+
+	inline uintptr_t UNavigationSystem_CreateNavigationSystem = 0;
 }

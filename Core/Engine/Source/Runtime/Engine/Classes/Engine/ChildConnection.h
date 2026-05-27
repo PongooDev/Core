@@ -5,6 +5,7 @@
 
 class UChildConnection : public UNetConnection
 {
+public:
 	DefineUnrealClass(UChildConnection);
 
 	DefineUProperty(UNetConnection*, Parent);

@@ -1012,6 +1012,8 @@ public:
 	static uintptr_t FindAFortPlayerState_ApplyCharacterCustomization();
 
 	static uintptr_t FindAFortGameSessionDedicated_OnUpdateComplete();
+
+	static uintptr_t FindUNavigationSystem_CreateNavigationSystem();
 public:
 	static void SetupOffsets();
 

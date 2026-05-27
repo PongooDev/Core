@@ -5,6 +5,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TransformNonVectorized.h"
+#include "Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavigationSystem.h"
 
 UWorld* UWorld::GetWorld() {
 	if (ServerOffsets::GWorld != 0)
@@ -60,78 +61,91 @@ bool UWorld::Listen(FURL& InURL)
 	UEngine* Engine = UEngine::GetEngine();
 	FName NAME_GameNetDriver = UKismetStringLibrary::Conv_StringToName(L"GameNetDriver");
 
-	if (NetDriver)
-	{
-		Engine->BroadcastNetworkFailure(this, NetDriver, ENetworkFailure::NetDriverAlreadyExists);
-		return false;
-	}
-
-	// Create net driver.
-	if (Engine->CreateNamedNetDriver(this, NAME_GameNetDriver, NAME_GameNetDriver)) {
-		NetDriver = Engine->FindNamedNetDriver(this, NAME_GameNetDriver);
-
-		NetDriver->SetWorld(this);
-		FLevelCollection* const SourceCollection = FindCollectionByType(ELevelCollectionType::DynamicSourceLevels);
-		if (SourceCollection)
+	if (Version::Engine_Version >= 4.0 && Version::Engine_Version <= 5.0) {
+		if (NetDriver)
 		{
-			SourceCollection->SetNetDriver(NetDriver);
+			Engine->BroadcastNetworkFailure(this, NetDriver, ENetworkFailure::NetDriverAlreadyExists);
+			return false;
 		}
-		FLevelCollection* const StaticCollection = FindCollectionByType(ELevelCollectionType::StaticLevels);
-		if (StaticCollection)
-		{
-			StaticCollection->SetNetDriver(NetDriver);
-		}
-	}
 
-	if (Version::Engine_Version == 4.16) {
+		if (Engine->CreateNamedNetDriver(this, NAME_GameNetDriver, NAME_GameNetDriver)) {
+			NetDriver = Engine->FindNamedNetDriver(this, NAME_GameNetDriver);
+
+			NetDriver->SetWorld(this);
+			
+			if (Version::Engine_Version >= 4.14) {
+				FLevelCollection* const SourceCollection = FindCollectionByType(ELevelCollectionType::DynamicSourceLevels);
+				if (SourceCollection)
+				{
+					SourceCollection->SetNetDriver(NetDriver);
+				}
+				if (Version::Engine_Version >= 4.15) {
+					FLevelCollection* const StaticCollection = FindCollectionByType(ELevelCollectionType::StaticLevels);
+					if (StaticCollection)
+					{
+						StaticCollection->SetNetDriver(NetDriver);
+					}
+				}
+			}
+		}
+
 		if (NetDriver == NULL)
 		{
 			Engine->BroadcastNetworkFailure(this, NULL, ENetworkFailure::NetDriverCreateFailure);
 			return false;
 		}
-	}
 
-	FString Error;
-	if (!NetDriver->InitListen(this, InURL, false, Error)) {
-		Engine->BroadcastNetworkFailure(this, NetDriver, ENetworkFailure::NetDriverListenFailure, Error);
-		Log("Failed to listen: " + Error.ToString());
-		if (Version::Engine_Version == 4.16) {
-			NetDriver->SetWorld(NULL);
+		FString Error;
+		if (!NetDriver->InitListen(this, InURL, false, Error)) {
+			Engine->BroadcastNetworkFailure(this, NetDriver, ENetworkFailure::NetDriverListenFailure, Error);
+			Log("Failed to listen: " + Error.ToString());
+			
+			if (Version::Engine_Version >= 4.23) {
+				Engine->DestroyNamedNetDriver(this, NetDriver->NetDriverName);
+			}
+			else {
+				NetDriver->SetWorld(NULL);
+			}
+
+			NetDriver = nullptr;
+			
+			if (Version::Engine_Version >= 4.14) {
+				FLevelCollection* SourceCollection = FindCollectionByType(ELevelCollectionType::DynamicSourceLevels);
+				if (SourceCollection)
+				{
+					SourceCollection->SetNetDriver(nullptr);
+				}
+				if (Version::Engine_Version >= 4.15) {
+					FLevelCollection* StaticCollection = FindCollectionByType(ELevelCollectionType::StaticLevels);
+					if (StaticCollection)
+					{
+						StaticCollection->SetNetDriver(nullptr);
+					}
+				}
+			}
+
+			return false;
 		}
-		else {
-			Engine->DestroyNamedNetDriver(this, NetDriver->NetDriverName);
-		}
-		NetDriver = nullptr;
-		FLevelCollection* SourceCollection = FindCollectionByType(ELevelCollectionType::DynamicSourceLevels);
-		if (SourceCollection)
-		{
-			SourceCollection->SetNetDriver(nullptr);
-		}
-		FLevelCollection* StaticCollection = FindCollectionByType(ELevelCollectionType::StaticLevels);
-		if (StaticCollection)
-		{
-			StaticCollection->SetNetDriver(nullptr);
-		}
-		return false;
-	}
-	NetDriver->SetWorld(this); // Fixes a crash after listening, not sure why because in unreal it doesent get called again
-	if (Version::Engine_Version == 4.16) {
-		static bool LanPlay = FParse::Param(GetCommandLineW(), TEXT("lanplay"));
-		if (!LanPlay && (NetDriver->MaxInternetClientRate < NetDriver->MaxClientRate) && (NetDriver->MaxInternetClientRate > 2500))
-		{
-			NetDriver->MaxClientRate = NetDriver->MaxInternetClientRate;
-		}
-	}
-	else {
+
+		NetDriver->SetWorld(this); // Fixes a crash after listening, not sure why because in unreal it doesent get called again
+
 		static const bool bLanPlay = FParse::Param(GetCommandLineW(), TEXT("lanplay"));
 		const bool bLanSpeed = bLanPlay || InURL.HasOption(TEXT("LAN"));
 		if (!bLanSpeed && (NetDriver->MaxInternetClientRate < NetDriver->MaxClientRate) && (NetDriver->MaxInternetClientRate > 2500))
 		{
 			NetDriver->MaxClientRate = NetDriver->MaxInternetClientRate;
 		}
-	}
 
-	NextSwitchCountdown = NetDriver->ServerTravelPause;
+		if (!NavigationSystem)
+		{
+			SetNavigationSystem(UNavigationSystem::CreateNavigationSystem(this));
+		}
+
+		NextSwitchCountdown = NetDriver->ServerTravelPause;
+	}
+	else {
+		return false;
+	}
 
 	SetConsoleTitleA((std::format("Core ({:.2f}) | Listening: ", Version::Fortnite_Version).c_str() + std::to_string(InURL.Port)).c_str());
 	return true;
@@ -169,4 +183,10 @@ bool UWorld::IsInSeamlessTravel()
 {
 	bool (*IsInSeamlessTravelInternal)(const UWorld*) = decltype(IsInSeamlessTravelInternal)(ImageBase + Finder::FindUWorld_IsInSeamlessTravel());
 	return IsInSeamlessTravelInternal(this);
+}
+
+void UWorld::SetNavigationSystem(UNavigationSystem* InNavigationSystem)
+{
+	void (*SetNavigationSystemInternal)(UWorld*, UNavigationSystem*) = decltype(SetNavigationSystemInternal)(ImageBase + Finder::FindUWorld_SetNavigationSystem());
+	SetNavigationSystemInternal(this, InNavigationSystem);
 }

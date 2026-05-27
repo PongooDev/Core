@@ -58,7 +58,7 @@ DWORD Main(LPVOID)
         *GIsClient = false;
         *GIsServer = true;
 
-        Sleep(1000);
+        Sleep(3000);
 
         Utils::SetLogVerbosity();
 

@@ -59,6 +59,8 @@ void AFortGameModeAthena::BeginPlay(AFortGameModeAthena* This) {
 		This->PlayerControllerClass = (UClass*)StaticLoadObject("/Game/Athena/Athena_PlayerController.Athena_PlayerController_C");
 		This->PlayerStateClass = AFortPlayerStateAthena::StaticClass();
 	}
+
+	This->bDisableGCOnServerDuringMatch = true;
 }
 
 void AFortGameModeAthena::AddToAlivePlayers(AFortPlayerControllerAthena* PC) {

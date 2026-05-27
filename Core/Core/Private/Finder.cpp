@@ -5892,51 +5892,61 @@ uintptr_t Finder::FindAFortInventory_GetOverflowFromAddingItemInNewStack() {
 uintptr_t Finder::FindAFortInventory_GetInventoryUsed() {
 	if (ServerOffsets::AFortInventory_GetInventoryUsed)
 		return ServerOffsets::AFortInventory_GetInventoryUsed;
-	
-	uintptr_t execGetBackpackItemCounts_ADDR = (uintptr_t)(((UFunction*)FUObjectArray::FindObject("Function /Script/FortniteUI.FortInventoryContext.GetBackpackItemCounts"))->Func);
-	uintptr_t GetBackpackItemCounts_Impl_ADDR = 0x0;
+	uintptr_t Addr = 0;
 
-	uintptr_t C3_Point = 0x0; //bro if this exec function didnt have 0xC3 at the end i would fucking die
-
-	for (int i = 0; i < 1000; i++)
-	{
-		uintptr_t CurrentAddr = execGetBackpackItemCounts_ADDR + i;
-
-		if (*(uint8*)(CurrentAddr) == 0xC3)
-		{
-			C3_Point = CurrentAddr;
-			break;
-		}
+	if (Version::Engine_Version == 4.16) {
+		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 83 EC ? 33 DB 8B EA 48 8B F1 8B FB 48 85 C9 74 ? ? ? ? FF 50 ? 4C 8B F0 E8 ? ? ? ? 49 8B 4E ? 48 05 ? ? ? ? 48 63 50 ? 3B 91 ? ? ? ? 7F ? 48 8B 89 ? ? ? ? ? ? ? ? 49 0F 44 FE 85 ED 74").Get();
 	}
 
-	for (int i = 0; i < 40; i++)
-	{
-		uintptr_t CurrentAddr2 = C3_Point - i;
+	if (!Addr) {
+		uintptr_t execGetBackpackItemCounts_ADDR = (uintptr_t)(((UFunction*)FUObjectArray::FindObject("Function /Script/FortniteUI.FortInventoryContext.GetBackpackItemCounts"))->Func);
+		uintptr_t GetBackpackItemCounts_Impl_ADDR = 0x0;
 
-		if (*(uint8*)(CurrentAddr2) == 0xE8) { //look for call
-			GetBackpackItemCounts_Impl_ADDR = Utils::GetCallDestination(CurrentAddr2);
-			break;
-		}
-	}
+		uintptr_t C3_Point = 0x0; //bro if this exec function didnt have 0xC3 at the end i would fucking die
 
-	uint8 Skipped = 0x0;
-
-	for (int i = 0; i < 70; i++)
-	{
-		//we looking for the second call instruction
-
-		uintptr_t CurrentAddress3 = GetBackpackItemCounts_Impl_ADDR + i;
-
-		if (*(uint8*)(CurrentAddress3) == 0xe8)
+		for (int i = 0; i < 1000; i++)
 		{
-			if (Skipped == 1)
+			uintptr_t CurrentAddr = execGetBackpackItemCounts_ADDR + i;
+
+			if (*(uint8*)(CurrentAddr) == 0xC3)
 			{
-				ServerOffsets::AFortInventory_GetInventoryUsed = Utils::GetCallDestination(CurrentAddress3) - ImageBase;
+				C3_Point = CurrentAddr;
 				break;
 			}
-			Skipped++;
 		}
 
+		for (int i = 0; i < 40; i++)
+		{
+			uintptr_t CurrentAddr2 = C3_Point - i;
+
+			if (*(uint8*)(CurrentAddr2) == 0xE8) { //look for call
+				GetBackpackItemCounts_Impl_ADDR = Utils::GetCallDestination(CurrentAddr2);
+				break;
+			}
+		}
+
+		uint8 Skipped = 0x0;
+
+		for (int i = 0; i < 70; i++)
+		{
+			//we looking for the second call instruction
+
+			uintptr_t CurrentAddress3 = GetBackpackItemCounts_Impl_ADDR + i;
+
+			if (*(uint8*)(CurrentAddress3) == 0xe8)
+			{
+				if (Skipped == 1)
+				{
+					Addr = Utils::GetCallDestination(CurrentAddress3);
+					break;
+				}
+				Skipped++;
+			}
+		}
+	}
+
+	if (Addr) {
+		ServerOffsets::AFortInventory_GetInventoryUsed = Addr - ImageBase;
 	}
 
 	Log("AFortInventory_GetInventoryUsed found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryUsed));
@@ -6327,6 +6337,12 @@ uintptr_t Finder::FindFNetViewer_Constructor() {
 				Addr = uint64_t(Ptr);
 				break;
 			}
+		}
+	}
+
+	if (!Addr) {
+		if (Version::Engine_Version == 4.16) {
+			Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? ? ? ? 48 8B D9 48 8B 42").Get();
 		}
 	}
 
@@ -7580,7 +7596,30 @@ uintptr_t Finder::FindCollectGarbageInternal() {
 	if (ServerOffsets::CollectGarbageInternal)
 		return ServerOffsets::CollectGarbageInternal;
 
-	Addr = Memcury::Scanner::FindPattern("48 8B C4 48 89 58 ? 88 50 ? 55 56 57 41 54 41 55 41 56 41 57 48 8D 68").Get();
+	auto sRef = Memcury::Scanner::FindStringRef(L"CollectGarbageInternal() is flushing async loading").Get();
+	if (sRef)
+	{
+		for (int i = 0; i < 1000; i++)
+		{
+			auto Ptr = (uint8_t*)(sRef - i);
+
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x5C)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+			else if (*Ptr == 0x40 && *(Ptr + 1) == 0x55)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+			else if (*Ptr == 0x48 && *(Ptr + 1) == 0x8B && *(Ptr + 2) == 0xC4)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
+	}
 
 	if (Addr) {
 		ServerOffsets::CollectGarbageInternal = Addr - ImageBase;
@@ -8304,6 +8343,22 @@ uintptr_t Finder::FindAFortInventory_GetInventoryCapacity()
 		
 	}
 
+	if (!ServerOffsets::AFortInventory_GetInventoryCapacity) {
+		uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"GetInventoryCapacity is returning an overridden value of %i").Get();
+		if (StringAddr)
+		{
+			for (int i = 0; i < 1024; i++)
+			{
+				auto Ptr = (uint8_t*)(StringAddr - i);
+				if (*Ptr == 0x40 && *(Ptr + 1) == 0x53)
+				{
+					ServerOffsets::AFortInventory_GetInventoryCapacity = uint64_t(Ptr) - ImageBase;
+					break;
+				}
+			}
+		}
+	}
+
 	Log("AFortInventory_GetInventoryCapacity found at: 0x" + std::format("{:X}", ServerOffsets::AFortInventory_GetInventoryCapacity));
 	return ServerOffsets::AFortInventory_GetInventoryCapacity;
 }
@@ -8735,10 +8790,12 @@ uintptr_t Finder::FindAFortGameModeAthena_AddToAlivePlayers() {
 				Addr = uint64_t(Ptr);
 				break;
 			}
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x85 && *(Ptr + 2) == 0xD2)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
 		}
-	}
-	else {
-		Log("Failed to find string reference for AFortGameModeAthena_AddToAlivePlayers");
 	}
 	
 	if (Addr) {
@@ -9315,6 +9372,21 @@ uintptr_t Finder::FindAFortGameSessionDedicated_OnUpdateComplete() {
 	return ServerOffsets::AFortGameSessionDedicated_OnUpdateComplete;
 }
 
+uintptr_t Finder::FindUNavigationSystem_CreateNavigationSystem() {
+	if (ServerOffsets::UNavigationSystem_CreateNavigationSystem)
+		return ServerOffsets::UNavigationSystem_CreateNavigationSystem;
+	uintptr_t Addr = 0;
+	
+	Addr = Memcury::Scanner::FindPattern("48 89 74 24 ? 57 48 83 EC ? 33 F6 48 8B F9 48 85 C9").Get();
+
+	if (Addr) {
+		ServerOffsets::UNavigationSystem_CreateNavigationSystem = Addr - ImageBase;
+	}
+
+	Log("UNavigationSystem_CreateNavigationSystem found at: 0x" + std::format("{:X}", ServerOffsets::UNavigationSystem_CreateNavigationSystem));
+	return ServerOffsets::UNavigationSystem_CreateNavigationSystem;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -9595,6 +9667,14 @@ void Finder::SetupOffsets() {
 	FindAFortPlayerController_CanAffordToPlaceBuildableClassVFT();
 	FindAFortPlayerController_PayBuildableClassPlacementCost();
 	FindAFortPlayerController_PayBuildableClassPlacementCostVFT();
+
+	FindUWorld_SetNavigationSystem();
+
+	FindUNavigationSystem_CreateNavigationSystem();
+
+	FindFURL_HasOption();
+
+	FindCollectGarbageInternal();
 
 	return;
 }

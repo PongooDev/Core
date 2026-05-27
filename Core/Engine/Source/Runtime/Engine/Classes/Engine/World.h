@@ -33,6 +33,7 @@ class UNetDriver;
 class AGameNetworkManager;
 class AGameModeBase;
 class UDemoNetDriver;
+class UNavigationSystem;
 
 struct FStreamingLevelsToConsider
 {
@@ -134,6 +135,8 @@ public:
 	DefineUProperty(AGameNetworkManager*, NetworkManager);
 
 	DefineCustomProperty(float, TimeSeconds, ServerOffsets::UWorld__TimeSeconds);
+
+	DefineUProperty(UNavigationSystem*, NavigationSystem);
 public:
 	static UWorld* GetWorld();
 	
@@ -159,6 +162,8 @@ public:
 	class ULevel* GetCurrentLevel() const;
 
 	bool IsInSeamlessTravel();
+
+	void SetNavigationSystem(UNavigationSystem* InNavigationSystem);
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUWorld_InternalGetNetMode()), InternalGetNetMode, nullptr);

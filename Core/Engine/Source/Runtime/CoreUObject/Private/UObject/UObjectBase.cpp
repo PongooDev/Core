@@ -54,13 +54,24 @@ bool UObjectBase::IsA(EClassCastFlags TypeFlags) const
 
 bool UObjectBase::IsA(UClass* TypeClass) const
 {
-	if (!this || !TypeClass)
+	if (!this) {
 		return false;
-	if (!IsValidLowLevelFast())
-		return false;
+	}
 
-	if (!GetClass())
+	if (!TypeClass) {
+		Log("IsA: TypeClass is null when checking: " + GetFullName());
 		return false;
+	}
+
+	if (!IsValidLowLevelFast()) {
+		Log("IsA: Object is not valid: " + GetFullName());
+		return false;
+	}
+
+	if (!GetClass()) {
+		Log("IsA: Object has no class: " + GetFullName());
+		return false;
+	}
 
 	return GetClass()->IsSubclassOf(TypeClass);
 }

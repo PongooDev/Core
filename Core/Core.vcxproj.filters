@@ -636,6 +636,9 @@
     <ClInclude Include="FortniteGame\Public\FortLoadout\FortAthenaLoadout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\AI\Navigation\NavigationSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -900,6 +903,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\FortGameMode\FortGameModeOutpost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\AI\Navigation\NavigationSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

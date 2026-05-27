@@ -165,6 +165,7 @@
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\Class.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\CoreNet.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\PersistentObjectPtr.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\AI\Navigation\NavigationSystem.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\NavigationObjectBase.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\MovementComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\PlayerStart.h" />
@@ -371,6 +372,7 @@
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Misc\Parse.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\UObject\UnrealNames.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Actor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\AI\Navigation\NavigationSystem.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Controller.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\DataBunch.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\DataChannel.cpp" />
