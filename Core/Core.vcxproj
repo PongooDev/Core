@@ -260,6 +260,7 @@
     <ClInclude Include="Engine\Source\Runtime\GameplayTasks\Classes\GameplayTasksComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Classes\Net\Serialization\FastArraySerializer.h" />
     <ClInclude Include="Engine\Source\Runtime\Net\Core\Public\Net\Core\Connection\NetEnums.h" />
+    <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingGameplayActor.h" />
     <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingTrap.h" />
     <ClInclude Include="FortniteGame\Public\FortAnalytics\AnalyticsProvider.h" />
     <ClInclude Include="FortniteGame\Public\AI\FortAIController.h" />
@@ -342,6 +343,7 @@
     <ClInclude Include="FortniteGame\Public\FortWorld\FortAthenaMapInfo.h" />
     <ClInclude Include="FortniteGame\Public\FortWorld\FortWorldManager.h" />
     <ClInclude Include="FortniteGame\Public\Info\FortRegisteredPlayerInfo.h" />
+    <ClInclude Include="FortniteGame\Public\Interaction\InteractionType.h" />
     <ClInclude Include="FortniteGame\Public\Interface\FortInventoryOwnerInterface.h" />
     <ClInclude Include="FortniteGame\Public\Kismet\FortKismetLibrary.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\McpProfileGroup.h" />
@@ -400,6 +402,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\World.cpp" />
     <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingActor.cpp" />
     <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingContainer.cpp" />
+    <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingGameplayActor.cpp" />
     <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingSMActor.cpp" />
     <ClCompile Include="FortniteGame\Private\Cheat\FortCheatManager.cpp" />
     <ClCompile Include="FortniteGame\Private\FortAnalytics\FortAnalytics.cpp" />

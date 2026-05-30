@@ -32,6 +32,7 @@ namespace ServerOffsets {
 
 	inline uintptr_t ABuildingActor_OnDamageServer = 0;
 	inline uintptr_t ABuildingActor_PostUpdateVFT = 0;
+	inline uintptr_t ABuildingActor_ServerOnAttemptInteractVFT = 0;
 
 	inline uintptr_t SpawnActor = 0;
 
@@ -446,6 +447,7 @@ namespace ServerOffsets {
 	inline uintptr_t AFortQuickBars_GetFocusedQuickBar = 0;
 
 	inline uintptr_t ABuildingContainer_SpawnLootVFT = 0;
+	inline uintptr_t ABuildingContainer_ServerOnAttemptInteract = 0;
 
 	inline uintptr_t AFortInventory_Destroyed = 0;
 	inline uintptr_t AFortInventory_DumpInventoryToLog = 0;

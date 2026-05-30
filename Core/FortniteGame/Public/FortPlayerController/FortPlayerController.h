@@ -95,6 +95,9 @@ public:
 	static inline void (*ServerEndEditingBuildingActorOG)(AFortPlayerController* This, ABuildingSMActor* BuildingActorToStopEditing);
 	static void ServerEndEditingBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToStopEditing);
 
+	static inline void (*ServerAttemptInteractOG)(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType);
+	static void ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType);
+
 	static void Hook() {
 		/*HookVTableIdx(
 			AFortPlayerController::GetDefaultObj(),
@@ -186,6 +189,13 @@ public:
 			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerEndEditingBuildingActor"),
 			ServerEndEditingBuildingActor,
 			(LPVOID*)&ServerEndEditingBuildingActorOG
+		);
+
+		HookEveryVTable(
+			AFortPlayerController::StaticClass(),
+			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInteract"),
+			ServerAttemptInteract,
+			(LPVOID*)&ServerAttemptInteractOG
 		);
 
 		Log("Hooked AFortPlayerController");

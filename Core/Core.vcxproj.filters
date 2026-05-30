@@ -639,6 +639,12 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\AI\Navigation\NavigationSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\BuildingActor\BuildingGameplayActor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Interaction\InteractionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -906,6 +912,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\AI\Navigation\NavigationSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\BuildingActor\BuildingGameplayActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

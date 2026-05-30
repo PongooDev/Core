@@ -1014,6 +1014,10 @@ public:
 	static uintptr_t FindAFortGameSessionDedicated_OnUpdateComplete();
 
 	static uintptr_t FindUNavigationSystem_CreateNavigationSystem();
+
+	static uintptr_t FindABuildingContainer_ServerOnAttemptInteract();
+
+	static uintptr_t FindABuildingActor_ServerOnAttemptInteractVFT();
 public:
 	static void SetupOffsets();
 

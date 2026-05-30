@@ -47,8 +47,8 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 			true,
 			false,
 			-1,
-			EFortPickupSourceTypeFlag::GetContainer(),
-			EFortPickupSpawnSource::GetUnset(),
+			InSourceTypeFlag,
+			InSpawnSource,
 			nullptr,
 			false
 		);
@@ -177,4 +177,16 @@ void ABuildingContainer::PostUpdate(ABuildingContainer* This)
 	if (This->bStartAlreadySearched_Athena == 1) {
 		SpawnLoot(This, nullptr, EFortPickupSourceTypeFlag::GetContainer(), EFortPickupSpawnSource::GetUnset());
 	}
+}
+
+bool ABuildingContainer::ServerOnAttemptInteract(ABuildingContainer* This, FInteractionType& InteractType) {
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("ABuildingContainer::ServerOnAttemptInteract: World is null!");
+		return ServerOnAttemptInteractOG(This, InteractType);
+	}
+
+	//Log("ABuildingContainer::ServerOnAttemptInteract: " + This->GetFullName());
+
+	return ServerOnAttemptInteractOG(This, InteractType);
 }

@@ -221,3 +221,16 @@ public:
 	DefineEnumProperty(UpdateFailure_NotLoggedIn);
 	DefineEnumProperty(EUpdateCompletionStatus_MAX);
 };
+
+class ETInteractionType {
+public:
+	DefineUnrealEnum(ETInteractionType);
+
+	DefineEnumProperty(IT_NoInteraction);
+	DefineEnumProperty(IT_Simple);
+	DefineEnumProperty(IT_LongPress);
+	DefineEnumProperty(IT_BuildingEdit);
+	DefineEnumProperty(IT_BuildingImprovement);
+	DefineEnumProperty(IT_TrapPlacement);
+	DefineEnumProperty(IT_MAX);
+};

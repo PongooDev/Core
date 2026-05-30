@@ -19,6 +19,7 @@
 #include "FortniteGame/Public/FortCharacter/CustomCharacterPart.h"
 #include "FortniteGame/Public/FortHero/FortHeroSpecialization.h"
 #include "FortniteGame/Public/BuildingActor/BuildingSMActor.h"
+#include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
 
 void AFortPlayerController::ClientForceProfileQuery()
 {
@@ -859,4 +860,16 @@ void AFortPlayerController::ServerEndEditingBuildingActor(AFortPlayerController*
 
 	EditingTool->ForceNetUpdate();
 	BuildingActorToStopEditing->ForceNetUpdate();
+}
+
+void AFortPlayerController::ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType) {
+	ServerAttemptInteractOG(This, ReceivingActor, InteractComponent, InteractType);
+
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPlayerController::ServerAttemptInteract: World is null!");
+		return;
+	}
+
+	//Log("ReceivingActor: " + ReceivingActor->GetFullName());
 }

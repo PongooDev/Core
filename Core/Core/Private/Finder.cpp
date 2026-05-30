@@ -9387,6 +9387,48 @@ uintptr_t Finder::FindUNavigationSystem_CreateNavigationSystem() {
 	return ServerOffsets::UNavigationSystem_CreateNavigationSystem;
 }
 
+uintptr_t Finder::FindABuildingContainer_ServerOnAttemptInteract() {
+	if (ServerOffsets::ABuildingContainer_ServerOnAttemptInteract)
+		return ServerOffsets::ABuildingContainer_ServerOnAttemptInteract;
+	uintptr_t Addr = 0;
+	
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"ABuildingContainer::ServerOnAttemptInteract %s failed for %s").Get();
+	if (StringAddr)
+	{
+		
+	}
+	else
+	{
+		Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 0F B6 02 48 8B D9 FE C8").Get();
+	}
+
+	if (Addr) {
+		ServerOffsets::ABuildingContainer_ServerOnAttemptInteract = Addr - ImageBase;
+	}
+
+	Log("ABuildingContainer_ServerOnAttemptInteract found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingContainer_ServerOnAttemptInteract));
+	return ServerOffsets::ABuildingContainer_ServerOnAttemptInteract;
+}
+
+uintptr_t Finder::FindABuildingActor_ServerOnAttemptInteractVFT() {
+	if (ServerOffsets::ABuildingActor_ServerOnAttemptInteractVFT)
+		return ServerOffsets::ABuildingActor_ServerOnAttemptInteractVFT;
+
+	void** VFT = ((UClass*)FUObjectArray::FindObject("Class /Script/FortniteGame.BuildingContainer"))->GetDefaultObject()->VTable;
+	
+	for (int i = 0; i < 2048; i++)
+	{
+		if (VFT[i] == (void*)(FindABuildingContainer_ServerOnAttemptInteract() + ImageBase))
+		{
+			ServerOffsets::ABuildingActor_ServerOnAttemptInteractVFT = i;
+			break;
+		}
+	}
+
+	Log("ABuildingContainer_ServerOnAttemptInteractVFT found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingActor_ServerOnAttemptInteractVFT));
+	return ServerOffsets::ABuildingActor_ServerOnAttemptInteractVFT;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -9675,6 +9717,10 @@ void Finder::SetupOffsets() {
 	FindFURL_HasOption();
 
 	FindCollectGarbageInternal();
+
+	FindABuildingActor_ServerOnAttemptInteractVFT();
+
+	FindStep();
 
 	return;
 }

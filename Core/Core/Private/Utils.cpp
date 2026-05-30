@@ -23,6 +23,7 @@
 #include "FortniteGame/Public/BuildingActor/BuildingActor.h"
 #include "FortniteGame/Public/BuildingActor/BuildingTrap.h"
 #include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
+#include "FortniteGame/Public/BuildingActor/BuildingGameplayActor.h"
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
 #include "FortniteGame/Public/FortPlayerState/FortPlayerStateAthena.h"
@@ -224,6 +225,7 @@ void Utils::Hook() {
 	AFortGameSessionDedicated::Hook();
 	AFortDecoTool::Hook();
 	AFortGameModeOutpost::Hook();
+	AB_SupplyDropPlacement_C::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {

@@ -7,6 +7,7 @@
 #include "BuildingAutoNav.h"
 #include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Data/FortSearchBounceData.h"
+#include "FortniteGame/Public/Interaction/InteractionType.h"
 
 class AFortPlayerPawn;
 
@@ -33,6 +34,9 @@ public:
 	static inline void (*PostUpdateOG)(ABuildingContainer* This);
 	static void PostUpdate(ABuildingContainer* This);
 
+	static inline bool (*ServerOnAttemptInteractOG)(ABuildingContainer* This, FInteractionType& InteractType);
+	static bool ServerOnAttemptInteract(ABuildingContainer* This, FInteractionType& InteractType);
+
 	static void Hook() {
 		HookEveryVTableIdx(
 			ABuildingContainer::StaticClass(),
@@ -45,6 +49,13 @@ public:
 			Finder::FindABuildingActor_PostUpdateVFT(),
 			PostUpdate,
 			(LPVOID*)&PostUpdateOG
+		);
+
+		HookEveryVTableIdx(
+			ABuildingContainer::StaticClass(),
+			Finder::FindABuildingActor_ServerOnAttemptInteractVFT(),
+			ServerOnAttemptInteract,
+			(LPVOID*)&ServerOnAttemptInteractOG
 		);
 
 		Log("ABuildingContainer Hooked!");
