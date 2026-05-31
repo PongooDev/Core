@@ -123,4 +123,7 @@ public:
 
 	AFortPickup* SpawnPickupFromDefinition(UFortItemDefinition* Def, int32 Count = 1);
 	AFortPickup* SpawnPickupFromEntry(const FFortItemEntry& ItemEntry);
+
+	bool SetStateValues(FFortItemEntry* ItemEntry);
+	bool SetNewItemCountStateValue(FFortItemEntry* ItemEntry, int32 NewCount);
 };

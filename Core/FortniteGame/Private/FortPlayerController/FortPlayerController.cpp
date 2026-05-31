@@ -873,3 +873,41 @@ void AFortPlayerController::ServerAttemptInteract(AFortPlayerController* This, A
 
 	//Log("ReceivingActor: " + ReceivingActor->GetFullName());
 }
+
+void AFortPlayerController::ServerRemoveInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, uint8 StateValueType) {
+	if (!This->WorldInventory) {
+		Log("ServerRemoveInventoryStateValue: WorldInventory is null!");
+		return;
+	}
+
+	FFortItemEntry* ItemEntry = This->FindItemEntry(ItemGuid);
+	if (!ItemEntry) {
+		Log("ServerRemoveInventoryStateValue: ItemEntry not found for GUID: " + ItemGuid.FormatGuid());
+		return;
+	}
+
+	for (int32 i = 0; i < ItemEntry->StateValues.Num(); i++) {
+		FFortItemEntryStateValue& StateValue = ItemEntry->StateValues.GetWithSize(i, FFortItemEntryStateValue::GetSize());
+		if (StateValue.StateType == StateValueType) {
+			ItemEntry->StateValues.RemoveAt(i);
+		}
+	}
+}
+
+void AFortPlayerController::ServerSetInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, FFortItemEntryStateValue& StateValue) {
+	Log("AFortPlayerController::ServerSetInventoryStateValue Called!");
+	Log("PlayerController: " + This->GetFullName());
+
+	if (!This->WorldInventory) {
+		Log("ServerRemoveInventoryStateValue: WorldInventory is null!");
+		return;
+	}
+
+	FFortItemEntry* ItemEntry = This->FindItemEntry(ItemGuid);
+	if (!ItemEntry) {
+		Log("ServerRemoveInventoryStateValue: ItemEntry not found for GUID: " + ItemGuid.FormatGuid());
+		return;
+	}
+
+	ItemEntry->StateValues.Add(StateValue);
+}

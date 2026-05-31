@@ -55,6 +55,9 @@ void AFortInventory::InitializeExistingItem(UFortWorldItem* ExistingItem) {
 
 FFortItemEntry* AFortInventory::FindItemEntry(FGuid Guid)
 {
+	if (!this)
+		return nullptr;
+
 	if (!Guid.IsValid())
 		return nullptr;
 
@@ -263,24 +266,29 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item)
 
 	Item->SetOwningControllerForTemporaryItem(PC);
 
-	if (UFortWorldItemDefinition* ItemDef = Item->ItemEntry.ItemDefinition->Cast<UFortWorldItemDefinition>())
+	for (int i = 0; i < Inventory.ReplicatedEntries.Num(); i++)
 	{
-		if (ItemDef->bShouldShowItemToast)
-		{
-			Item->ItemEntry.SetStateValue(EFortItemEntryState::GetShouldShowItemToast(), 1);
-		}
+		FFortItemEntry& Entry = Inventory.ReplicatedEntries.GetWithSize(i, FFortItemEntry::GetSize());
+		Entry.SetStateValue(EFortItemEntryState::GetNewItemCount(), 0);
+		Update(&Entry);
 	}
-
-	Item->ItemEntry.SetStateValue(EFortItemEntryState::GetNewItemCount(), Item->ItemEntry.Count);
 
 	InitializeExistingItem(Item);
 
+	FGuid ItemGuid = Item->ItemEntry.ItemGuid;
+
 	if (PC->IsUsingOldQuickBars())
 	{
-		PC->QuickBars->AddItemToQuickBar(Item->ItemEntry.ItemGuid, Item->ItemEntry.ItemDefinition->GetQuickBarForItem());
+		PC->QuickBars->AddItemToQuickBar(ItemGuid, Item->ItemEntry.ItemDefinition->GetQuickBarForItem());
 	}
 
-	FFortItemEntry* RepEntry = FindItemEntry(Item->ItemEntry.ItemGuid);
+	FFortItemEntry* RepEntry = FindItemEntry(ItemGuid);
+	if (!RepEntry)
+	{
+		return nullptr;
+	}
+
+	SetStateValues(RepEntry);
 	if (Update(RepEntry))
 	{
 		return RepEntry;
@@ -822,4 +830,44 @@ AFortPickup* AFortInventory::SpawnPickupFromEntry(const FFortItemEntry& ItemEntr
 	AFortPickup* Pickup = SpawnPickupFromDefinition(ItemEntry.ItemDefinition, ItemEntry.Count);
 	Pickup->PrimaryPickupItemEntry.CopyGenericValuesFrom(&ItemEntry);
 	return Pickup;
+}
+
+bool AFortInventory::SetStateValues(FFortItemEntry* ItemEntry) {
+	if (!ItemEntry)
+		return false;
+
+	FGuid ItemGuid = ItemEntry->ItemGuid;
+
+	if (UFortWorldItemDefinition* ItemDef = ItemEntry->ItemDefinition->Cast<UFortWorldItemDefinition>())
+	{
+		if (ItemDef->bShouldShowItemToast)
+		{
+			ItemEntry->SetStateValue(EFortItemEntryState::GetShouldShowItemToast(), 1);
+		}
+	}
+
+	SetNewItemCountStateValue(ItemEntry, ItemEntry->Count);
+
+	return true;
+}
+
+bool AFortInventory::SetNewItemCountStateValue(FFortItemEntry* ItemEntry, int32 Count) {
+	if (!ItemEntry)
+		return false;
+
+	FGuid ItemGuid = ItemEntry->ItemGuid;
+
+	ItemEntry->SetStateValue(EFortItemEntryState::GetNewItemCount(), Count);
+
+	/*std::thread([this, ItemGuid]()
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		FFortItemEntry* Entry = FindItemEntry(ItemGuid);
+		if (Entry)
+		{
+			Entry->SetStateValue(EFortItemEntryState::GetNewItemCount(), 0);
+		}
+	}).detach();*/
+
+	return true;
 }

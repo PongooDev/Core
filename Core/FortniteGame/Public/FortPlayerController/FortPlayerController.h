@@ -21,6 +21,7 @@ class UFortItemDefinition;
 class UFortRegisteredPlayerInfo;
 class UFortMcpProfileWorld;
 struct FBuildingClassData;
+struct FFortItemEntryStateValue;
 
 class AFortPlayerController : public APlayerController {
 public:
@@ -97,6 +98,10 @@ public:
 
 	static inline void (*ServerAttemptInteractOG)(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType);
 	static void ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType);
+
+	static void ServerRemoveInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, uint8 StateValueType);
+
+	static void ServerSetInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, FFortItemEntryStateValue& StateValue);
 
 	static void Hook() {
 		/*HookVTableIdx(
@@ -196,6 +201,18 @@ public:
 			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInteract"),
 			ServerAttemptInteract,
 			(LPVOID*)&ServerAttemptInteractOG
+		);
+
+		HookEveryVTable(
+			AFortPlayerController::StaticClass(),
+			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRemoveInventoryStateValue"),
+			ServerRemoveInventoryStateValue
+		);
+
+		HookEveryVTable(
+			AFortPlayerController::StaticClass(),
+			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerSetInventoryStateValue"),
+			ServerSetInventoryStateValue
 		);
 
 		Log("Hooked AFortPlayerController");
