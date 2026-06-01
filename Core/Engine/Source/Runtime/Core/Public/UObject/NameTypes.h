@@ -88,4 +88,6 @@ public:
 	FName(std::string& Name);
 
 	FName(FString& Name);
+
+	operator std::string() const;
 };

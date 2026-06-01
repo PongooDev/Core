@@ -59,3 +59,7 @@ FName::FName(std::string& Name) {
 FName::FName(FString& Name) {
 	*this = UKismetStringLibrary::Conv_StringToName(Name);
 }
+
+FName::operator std::string() const {
+	return ToString().ToString();
+}
