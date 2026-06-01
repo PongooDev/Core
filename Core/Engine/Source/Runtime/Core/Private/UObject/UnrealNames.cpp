@@ -55,3 +55,7 @@ int32 FName::Compare(const FName& Other) const
 FName::FName(std::string& Name) {
 	*this = UKismetStringLibrary::Conv_StringToName(Name);
 }
+
+FName::FName(FString& Name) {
+	*this = UKismetStringLibrary::Conv_StringToName(Name);
+}

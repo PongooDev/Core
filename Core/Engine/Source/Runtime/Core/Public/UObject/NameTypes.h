@@ -86,4 +86,6 @@ public:
 public:
 	// Custom
 	FName(std::string& Name);
+
+	FName(FString& Name);
 };
