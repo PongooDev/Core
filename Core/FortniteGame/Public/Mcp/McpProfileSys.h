@@ -6,8 +6,8 @@
 struct FBaseUrlContext {
 public:
 	DefineUnrealStruct(FBaseUrlContext);
-
-	uint8 Padding[0x70];
+public:
+	uint8 Padding[0x90];
 };
 
 struct FPublicUrlContext : public FBaseUrlContext

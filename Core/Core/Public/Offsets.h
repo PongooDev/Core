@@ -626,4 +626,6 @@ namespace ServerOffsets {
 	inline uintptr_t FFortBaseWeaponStats_GetDurability = 0;
 
 	inline uintptr_t UNavigationSystem_CreateNavigationSystem = 0;
+
+	inline uintptr_t FDedicatedServerUrlContext_Constructor = 0;
 }

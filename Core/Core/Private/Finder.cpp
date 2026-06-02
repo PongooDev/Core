@@ -9461,6 +9461,21 @@ uintptr_t Finder::FindUWorld_ListenPatch() {
 	return ServerOffsets::UWorld_ListenPatch;
 }
 
+uintptr_t Finder::FindFDedicatedServerUrlContext_Constructor() {
+	if (ServerOffsets::FDedicatedServerUrlContext_Constructor)
+		return ServerOffsets::FDedicatedServerUrlContext_Constructor;
+	uintptr_t Addr = 0;
+
+	// idk
+	
+	if (Addr) {
+		ServerOffsets::FDedicatedServerUrlContext_Constructor = Addr - ImageBase;
+	}
+
+	Log("FDedicatedServerUrlContext_Constructor found at: 0x" + std::format("{:X}", ServerOffsets::FDedicatedServerUrlContext_Constructor));
+	return ServerOffsets::FDedicatedServerUrlContext_Constructor;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -9755,6 +9770,8 @@ void Finder::SetupOffsets() {
 	FindStep();
 
 	FindUWorld_ListenPatch();
+
+	FindFDedicatedServerUrlContext_Constructor();
 
 	return;
 }

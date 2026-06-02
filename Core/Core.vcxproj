@@ -346,8 +346,12 @@
     <ClInclude Include="FortniteGame\Public\Interaction\InteractionType.h" />
     <ClInclude Include="FortniteGame\Public\Interface\FortInventoryOwnerInterface.h" />
     <ClInclude Include="FortniteGame\Public\Kismet\FortKismetLibrary.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfile.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfileAccount.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfile.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\McpProfileGroup.h" />
     <ClInclude Include="FortniteGame\Public\Data\BuildingEditModeMetadata.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileSys.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -440,6 +444,7 @@
     <ClCompile Include="FortniteGame\Private\FortWeapon\FortWeapon.cpp" />
     <ClCompile Include="FortniteGame\Private\FortWeapon\FortWeaponStats.cpp" />
     <ClCompile Include="FortniteGame\Private\Kismet\FortKismetLibrary.cpp" />
+    <ClCompile Include="FortniteGame\Private\Mcp\FortMcpProfileAccount.cpp" />
     <ClCompile Include="FortniteGame\Private\Mcp\McpProfileGroup.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

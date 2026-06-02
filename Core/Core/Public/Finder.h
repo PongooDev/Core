@@ -1020,6 +1020,8 @@ public:
 	static uintptr_t FindABuildingActor_ServerOnAttemptInteractVFT();
 
 	static uintptr_t FindUWorld_ListenPatch();
+
+	static uintptr_t FindFDedicatedServerUrlContext_Constructor();
 public:
 	static void SetupOffsets();
 
