@@ -22,6 +22,7 @@ class UFortRegisteredPlayerInfo;
 class UFortMcpProfileWorld;
 struct FBuildingClassData;
 struct FFortItemEntryStateValue;
+class UFortMcpProfileAccount;
 
 class AFortPlayerController : public APlayerController {
 public:
@@ -42,6 +43,8 @@ public:
 	DefineUProperty(bool, bHasServerFinishedLoading);
 
 	DefineUProperty(UFortRegisteredPlayerInfo*, MyPlayerInfo);
+
+	DefineUProperty(UFortMcpProfileAccount*, MainMcpProfile);
 public:
 	void ClientForceProfileQuery();
 

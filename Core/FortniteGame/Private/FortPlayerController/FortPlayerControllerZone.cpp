@@ -11,6 +11,7 @@
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
 #include "FortniteGame/Public/FortItemDefinition/FortItemDefinition.h"
+#include "FortniteGame/Public/Mcp/FortMcpProfileAccount.h"
 
 void AFortPlayerControllerZone::ServerAcknowledgePossession(AFortPlayerControllerZone* This, AFortPlayerPawnAthena* P) {
 	AFortPlayerController::ServerAcknowledgePossessionOG(This, P);

@@ -20,6 +20,7 @@
 #include "FortniteGame/Public/FortHero/FortHeroSpecialization.h"
 #include "FortniteGame/Public/BuildingActor/BuildingSMActor.h"
 #include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
+#include "FortniteGame/Public/Mcp/FortMcpProfileAccount.h"
 
 void AFortPlayerController::ClientForceProfileQuery()
 {
