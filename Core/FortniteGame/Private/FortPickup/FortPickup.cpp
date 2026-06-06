@@ -123,8 +123,6 @@ void AFortPickup::SetPickupItems(FFortItemEntry* PrimaryEntry, TArray<FFortItemE
 }
 
 void AFortPickup::GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup) {
-	This->ForceNetUpdate();
-	
 	GivePickupToOG(This, InventoryOwner, DestroyAfterPickup);
 
 	if (This->PickupLocationData.PickupTarget || This->PickupLocationData.ItemOwner) {
@@ -141,5 +139,8 @@ void AFortPickup::GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* 
 		}
 
 		PickupTargetController->WorldInventory->AddItemAndHandleOverflow(This->PrimaryPickupItemEntry);
+	}
+	else {
+		Log("AFortPickup::GivePickupTo: No valid inventory owner found for pickup!");
 	}
 }

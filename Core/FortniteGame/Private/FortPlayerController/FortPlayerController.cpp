@@ -880,13 +880,13 @@ void AFortPlayerController::ServerSetInventoryStateValue(AFortPlayerController* 
 	Log("PlayerController: " + This->GetFullName());
 
 	if (!This->WorldInventory) {
-		Log("ServerRemoveInventoryStateValue: WorldInventory is null!");
+		Log("ServerSetInventoryStateValue: WorldInventory is null!");
 		return;
 	}
 
 	FFortItemEntry* ItemEntry = This->FindItemEntry(ItemGuid);
 	if (!ItemEntry) {
-		Log("ServerRemoveInventoryStateValue: ItemEntry not found for GUID: " + ItemGuid.FormatGuid());
+		Log("ServerSetInventoryStateValue: ItemEntry not found for GUID: " + ItemGuid.FormatGuid());
 		return;
 	}
 
