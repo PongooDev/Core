@@ -628,4 +628,8 @@ namespace ServerOffsets {
 	inline uintptr_t UNavigationSystem_CreateNavigationSystem = 0;
 
 	inline uintptr_t FDedicatedServerUrlContext_Constructor = 0;
+
+	inline uintptr_t UFortQuestManager_SendCustomStatEvent = 0;
+	inline uintptr_t UFortQuestManager_QueueStatEvent = 0;
+	inline uintptr_t UFortQuestManager_SendStatEvent = 0;
 }

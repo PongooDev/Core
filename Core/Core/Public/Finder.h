@@ -1022,6 +1022,12 @@ public:
 	static uintptr_t FindUWorld_ListenPatch();
 
 	static uintptr_t FindFDedicatedServerUrlContext_Constructor();
+
+	static uintptr_t FindUFortQuestManager_SendCustomStatEvent();
+
+	static uintptr_t FindUFortQuestManager_QueueStatEvent();
+
+	static uintptr_t FindUFortQuestManager_SendStatEvent();
 public:
 	static void SetupOffsets();
 

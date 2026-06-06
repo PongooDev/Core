@@ -282,6 +282,7 @@
     <ClInclude Include="FortniteGame\Public\FortManager\FortMissionManager.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerStart\FortPlayerStart.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerStart\FortPlayerStartWarmup.h" />
+    <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestManager.h" />
     <ClInclude Include="FortniteGame\Public\FortSet\FortAttributeSet.h" />
     <ClInclude Include="FortniteGame\Public\FortSet\FortBuildingActorSet.h" />
     <ClInclude Include="FortniteGame\Public\FortManager\FortCheatManager.h" />
@@ -444,6 +445,7 @@
     <ClCompile Include="FortniteGame\Private\FortPlayerController\FortPlayerControllerZone.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPlayerState\FortPlayerState.cpp" />
     <ClCompile Include="FortniteGame\Private\FortPlayerState\FortPlayerStateAthena.cpp" />
+    <ClCompile Include="FortniteGame\Private\FortQuest\FortQuestManager.cpp" />
     <ClCompile Include="FortniteGame\Private\FortSet\FortHealthSet.cpp" />
     <ClCompile Include="FortniteGame\Private\FortWeapon\FortDecoTool.cpp" />
     <ClCompile Include="FortniteGame\Private\FortWeapon\FortWeapon.cpp" />

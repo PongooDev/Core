@@ -82,9 +82,6 @@ public:
 
 static inline void* _NpFH = nullptr;
 
-#define callOG(_Tr, _Fn, _Th, ...) ([&](){ _Fn->Func = _Th##_OG; _Tr->_Th(##__VA_ARGS__); _Fn->Func = _Th##_; })()
-#define callOGWithRet(_Tr, _Fn, _Th, ...) ([&](){ _Fn->Func = _Th##_OG; auto _Rt = _Tr->_Th(##__VA_ARGS__); _Fn->Func = _Th##_; return _Rt; })()
-
 template <typename _Ot = void*>
 __forceinline static void ExecHook(UFunction* _Fn, void* _Detour, _Ot& _Orig = _NpFH)
 {

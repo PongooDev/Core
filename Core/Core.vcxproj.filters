@@ -669,6 +669,9 @@
     <ClInclude Include="FortniteGame\Public\Kismet\FortMissionLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -948,6 +951,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\AI\FortAIDirector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\FortQuest\FortQuestManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

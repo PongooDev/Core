@@ -33,6 +33,7 @@
 #include "FortniteGame/Public/FortGameInstance/FortGameInstance.h"
 #include "FortniteGame/Public/FortGameSession/FortGameSessionDedicated.h"
 #include "FortniteGame/Public/FortWeapon/FortDecoTool.h"
+#include "FortniteGame/Public/FortQuest/FortQuestManager.h"
 
 void Utils::InitConsole(FCoreConfig& Config)
 {
@@ -226,6 +227,7 @@ void Utils::Hook() {
 	AFortDecoTool::Hook();
 	AFortGameModeOutpost::Hook();
 	AB_SupplyDropPlacement_C::Hook();
+	UFortQuestManager::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {

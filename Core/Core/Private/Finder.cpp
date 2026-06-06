@@ -9455,6 +9455,112 @@ uintptr_t Finder::FindFDedicatedServerUrlContext_Constructor() {
 	return ServerOffsets::FDedicatedServerUrlContext_Constructor;
 }
 
+uintptr_t Finder::FindUFortQuestManager_SendCustomStatEvent() {
+	if (ServerOffsets::UFortQuestManager_SendCustomStatEvent)
+		return ServerOffsets::UFortQuestManager_SendCustomStatEvent;
+	uintptr_t Addr = 0;
+
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"SendCustomStatEvent: Called with invalid or non custom stat %s!").Get();
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"UFortQuestManager::SendCustomStatEven: Called with invalid or non custom stat %s!").Get();
+	}
+	if (StringAddr) {
+		for (int i = 0; i < 1024; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x5C)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
+	}
+
+	if (Addr) {
+		ServerOffsets::UFortQuestManager_SendCustomStatEvent = Addr - ImageBase;
+	}
+
+	Log("UFortQuestManager_SendCustomStatEvent found at: 0x" + std::format("{:X}", ServerOffsets::UFortQuestManager_SendCustomStatEvent));
+	return ServerOffsets::UFortQuestManager_SendCustomStatEvent;
+}
+
+uintptr_t Finder::FindUFortQuestManager_QueueStatEvent() {
+	if (ServerOffsets::UFortQuestManager_QueueStatEvent)
+		return ServerOffsets::UFortQuestManager_QueueStatEvent;
+	uintptr_t Addr = 0;
+
+	auto sRef = Memcury::Scanner::FindStringRef(L"UFortQuestManager::QueueStatEvent: %s tried to queue a stat event, but the player controller is null. \n\t Event: %s", false, 0,Version::Fortnite_Version >= 19, false);
+	if (!sRef.IsValid())
+		return 0;
+
+	for (int i = 0; i < 2000; i++)
+	{
+		auto Ptr = (uint8_t*)(sRef.Get() - i);
+
+		if (*Ptr == 0x48 && *(Ptr + 1) == 0x8B && *(Ptr + 2) == 0xC4) {
+			Addr = uint64_t(Ptr);
+			break;
+		}
+		else if (*Ptr == 0x48 && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x5C) {
+			Addr = uint64_t(Ptr);
+			break;
+		}
+		else if (*Ptr == 0x40 && *(Ptr + 1) == 0x55) {
+			Addr = uint64_t(Ptr);
+			break;
+		}
+	}
+
+	if (Addr) {
+		ServerOffsets::UFortQuestManager_QueueStatEvent = Addr - ImageBase;
+	}
+
+	Log("UFortQuestManager_QueueStatEvent found at: 0x" + std::format("{:X}", ServerOffsets::UFortQuestManager_QueueStatEvent));
+	return ServerOffsets::UFortQuestManager_QueueStatEvent;
+}
+
+uintptr_t Finder::FindUFortQuestManager_SendStatEvent() {
+	if (ServerOffsets::UFortQuestManager_SendStatEvent)
+		return ServerOffsets::UFortQuestManager_SendStatEvent;
+	uintptr_t Addr = 0;
+
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"SendStatEventWithTags: Cannot be called on the client!").Get();
+	if (!StringAddr) {
+		StringAddr = StringAddr = Memcury::Scanner::FindStringRef(L"SendStatEventWithTags: Cannot be called, %s is no longer registered!").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"SendStatEventWithTags: Cannot be called with stat type %s!").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Failed to parse quest condition %s: %s!").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"SendStatEvent for %s: %d quests listening to event %s %s TargetTags:%s SourceTags:%s ContextTags:%s").Get();
+	}
+	if (!StringAddr) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"SendStatEvent for %s: %d quests listening to flushed event %s %s %s %s %s").Get();
+	}
+
+	if (StringAddr) {
+		for (int i = 0; i < 4096; i++)
+		{
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x40 && *(Ptr + 1) == 0x55)
+			{
+				Addr = uint64_t(Ptr);
+				break;
+			}
+		}
+	}
+
+	if (Addr) {
+		ServerOffsets::UFortQuestManager_SendStatEvent = Addr - ImageBase;
+	}
+
+	Log("UFortQuestManager_SendStatEvent found at: 0x" + std::format("{:X}", ServerOffsets::UFortQuestManager_SendStatEvent));
+	return ServerOffsets::UFortQuestManager_SendStatEvent;
+}
+
 void Finder::SetupOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -9754,6 +9860,10 @@ void Finder::SetupOffsets() {
 
 	FindABuildingSMActor_SetEditingPlayer();
 	FindABuildingSMActor_ReplaceBuildingActor();
+
+	FindUFortQuestManager_QueueStatEvent();
+	FindUFortQuestManager_SendCustomStatEvent();
+	FindUFortQuestManager_SendStatEvent();
 
 	return;
 }
