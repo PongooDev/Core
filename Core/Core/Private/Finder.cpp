@@ -48,24 +48,17 @@ uintptr_t Finder::FindGEngine()
 	if (ServerOffsets::GEngine)
 		return ServerOffsets::GEngine;
 
-	static std::vector<std::string> Signatures = {
-		"74 ? 48 8B 01 FF 90 ? ? ? ? 84 C0 74 ? 48 8B 0D ? ? ? ? 41 B0 ? 48 8B D3 E8 ? ? ? ? 48 85 C0 74 ? 48 8B C8"
-	};
-
-	for (const auto& Sig : Signatures)
-	{
-		auto Pattern = Memcury::Scanner::FindPattern(Sig.c_str(), false);
-
-		if (Pattern.IsValid())
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"Initializing Game Engine...").Get();
+	if (StringAddr) {
+		for (int i = 0; i < 512; i++)
 		{
-			uintptr_t Base = Pattern.Get();
-
-			uintptr_t Instr = Base + 15;
-
-			int32_t RipOffset = *(int32_t*)(Instr + 3);
-			Addr = Instr + 7 + RipOffset;
-
-			break;
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x89 && *(Ptr + 2) == 0x05) {
+				int32_t disp = *reinterpret_cast<int32_t*>(Ptr + 3);
+				uintptr_t absAddr = (uintptr_t)(Ptr + 7) + disp;
+				Addr = absAddr;
+				break;
+			}
 		}
 	}
 
@@ -84,30 +77,15 @@ uintptr_t Finder::FindGWorld() {
 	if (ServerOffsets::GWorld)
 		return ServerOffsets::GWorld;
 
-	auto Pattern = Memcury::Scanner::FindPattern(
-		"74 ? 48 8B 40 ? 48 85 C0 75 ? 48 8B 05 ? ? ? ?",
-		false
-	);
-
-	if (!Pattern.IsValid())
-		return 0;
-
-	uintptr_t Start = Pattern.Get();
-
-	for (int i = 0; i < 0x20; i++)
-	{
-		uintptr_t Instr = Start + i;
-
-		if (*(uint8_t*)Instr == 0x48 &&
-			*(uint8_t*)(Instr + 1) == 0x8B &&
-			*(uint8_t*)(Instr + 2) == 0x05)
+	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"Please restart your client. Error %d").Get();
+	if (StringAddr) {
+		for (int i = 0; i < 512; i++)
 		{
-			int32_t Rel = *reinterpret_cast<int32_t*>(Instr + 3);
-			uintptr_t Resolved = Instr + 7 + Rel;
-
-			if (Resolved > 0x7FF000000000 && Resolved < 0x7FFFFFFFFFFF)
-			{
-				Addr = Resolved;
+			auto Ptr = (uint8_t*)(StringAddr - i);
+			if (*Ptr == 0x48 && *(Ptr + 1) == 0x8B && *(Ptr + 2) == 0x05) {
+				int32_t disp = *reinterpret_cast<int32_t*>(Ptr + 3);
+				uintptr_t absAddr = (uintptr_t)(Ptr + 7) + disp;
+				Addr = absAddr;
 				break;
 			}
 		}
