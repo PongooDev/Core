@@ -23,28 +23,23 @@ class UFortMcpProfileWorld;
 struct FBuildingClassData;
 struct FFortItemEntryStateValue;
 class UFortMcpProfileAccount;
+class UFortMcpProfileAthena;
+class UFortQuestManager;
 
 class AFortPlayerController : public APlayerController {
 public:
 	DefineUnrealClass(AFortPlayerController);
 
 	DefineUProperty(AFortPlayerPawn*, MyFortPawn);
-
 	DefineUProperty(AFortInventory*, WorldInventory);
-
 	DefineBitfieldUProperty(bBuildFree);
-
 	DefineUProperty(AFortQuickBars*, ClientQuickBars);
-
 	DefineUProperty(AFortQuickBars*, QuickBars);
-
 	DefineUProperty(bool, bHasClientFinishedLoading);
-
 	DefineUProperty(bool, bHasServerFinishedLoading);
-
 	DefineUProperty(UFortRegisteredPlayerInfo*, MyPlayerInfo);
-
 	DefineUProperty(UFortMcpProfileAccount*, MainMcpProfile);
+	DefineUProperty(UFortMcpProfileAthena*, AthenaProfile);
 public:
 	void ClientForceProfileQuery();
 
@@ -107,6 +102,8 @@ public:
 	static void ServerSetInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, FFortItemEntryStateValue& StateValue);
 
 	UFortRegisteredPlayerInfo* GetRegisteredPlayerInfo() const;
+
+	UFortQuestManager* GetQuestManager(uint8 SubGame) const;
 
 	static void Hook() {
 		/*HookVTableIdx(

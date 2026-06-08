@@ -16,6 +16,10 @@ public:
 	DefineUnrealClass(AFortPlayerStateAthena);
 
 	DefineUProperty(uint8, TeamIndex);
+	DefineUProperty(int32, SecondsAlive);
+	DefineUProperty(int32, KillScore);
+	DefineUProperty(int32, TeamKillScore);
+	DefineUProperty(int32, Place);
 public:
 	static void Hook() {
 		Log("AFortPlayerStateAthena Hooked!");

@@ -681,6 +681,18 @@
     <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestObjectiveStatTableRow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestObjectiveInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestObjectiveCompletion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfileQuest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfileAthena.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -966,6 +978,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\FortItem\FortQuestItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\Mcp\FortMcpProfileQuest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\Mcp\FortMcpProfileAthena.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -284,6 +284,8 @@
     <ClInclude Include="FortniteGame\Public\FortPlayerStart\FortPlayerStart.h" />
     <ClInclude Include="FortniteGame\Public\FortPlayerStart\FortPlayerStartWarmup.h" />
     <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestManager.h" />
+    <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestObjectiveCompletion.h" />
+    <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestObjectiveInfo.h" />
     <ClInclude Include="FortniteGame\Public\FortQuest\FortQuestObjectiveStatTableRow.h" />
     <ClInclude Include="FortniteGame\Public\FortSet\FortAttributeSet.h" />
     <ClInclude Include="FortniteGame\Public\FortSet\FortBuildingActorSet.h" />
@@ -355,6 +357,8 @@
     <ClInclude Include="FortniteGame\Public\Kismet\FortMissionLibrary.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfile.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfileAccount.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfileAthena.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\FortMcpProfileQuest.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\FortMcpQuestObjectiveInfo.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\McpProfile.h" />
     <ClInclude Include="FortniteGame\Public\Mcp\McpProfileGroup.h" />
@@ -457,6 +461,8 @@
     <ClCompile Include="FortniteGame\Private\Kismet\FortKismetLibrary.cpp" />
     <ClCompile Include="FortniteGame\Private\Kismet\FortMissionLibrary.cpp" />
     <ClCompile Include="FortniteGame\Private\Mcp\FortMcpProfileAccount.cpp" />
+    <ClCompile Include="FortniteGame\Private\Mcp\FortMcpProfileAthena.cpp" />
+    <ClCompile Include="FortniteGame\Private\Mcp\FortMcpProfileQuest.cpp" />
     <ClCompile Include="FortniteGame\Private\Mcp\McpProfileGroup.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

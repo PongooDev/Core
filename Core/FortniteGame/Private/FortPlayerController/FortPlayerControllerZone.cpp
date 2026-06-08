@@ -3,7 +3,7 @@
 
 #include "FortniteGame/Public/FortPlayerController/FortPlayerControllerAthena.h"
 #include "FortniteGame/Public/FortPawn/FortPlayerPawnAthena.h"
-#include "FortniteGame/Public/FortPlayerState/FortPlayerStateZone.h"
+#include "FortniteGame/Public/FortPlayerState/FortPlayerStateAthena.h"
 #include "FortniteGame/Public/FortHero/FortHeroType.h"
 #include "FortniteGame/Public/FortHero/FortHero.h"
 #include "FortniteGame/Public/FortCharacter/CustomCharacterPart.h"
@@ -12,7 +12,10 @@
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
 #include "FortniteGame/Public/FortItemDefinition/FortItemDefinition.h"
 #include "FortniteGame/Public/Mcp/FortMcpProfileAccount.h"
+#include "FortniteGame/Public/Mcp/FortMcpProfileAthena.h"
 #include "FortniteGame/Public/Mcp/McpProfileSys.h"
+#include "FortniteGame/Public/FortGameState/FortGameStateAthena.h"
+#include "FortniteGame/Public/FortQuest/FortQuestManager.h"
 
 void AFortPlayerControllerZone::ServerAcknowledgePossession(AFortPlayerControllerZone* This, AFortPlayerPawnAthena* P) {
 	AFortPlayerController::ServerAcknowledgePossessionOG(This, P);
@@ -33,10 +36,24 @@ void AFortPlayerControllerZone::OnReadyToStartMatch(AFortPlayerControllerZone* T
 		return;
 	}
 
+	AFortGameStateZone* FortGameStateZone = World->GameState->Cast<AFortGameStateZone>();
+	if (!FortGameStateZone) {
+		Log("AFortPlayerControllerZone::OnReadyToStartMatch: GameState is null or not a FortGameStateZone!");
+		return;
+	}
+
 	AFortGameModeAthena* FortGameModeAthena = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
-	if (!FortGameModeAthena && This->MainMcpProfile) {
-		FDedicatedServerUrlContext Context;
-		This->MainMcpProfile->ServerQuestLogin(FString(), &Context);
+	if (Version::Fortnite_Version < 1.8) {
+		if (This->MainMcpProfile) {
+			FDedicatedServerUrlContext Context;
+			This->MainMcpProfile->ServerQuestLogin(FortGameStateZone->GameSessionID, &Context);
+		}
+	}
+	else {
+		if (This->AthenaProfile) {
+			FDedicatedServerUrlContext Context;
+			This->AthenaProfile->ServerQuestLogin(FortGameStateZone->GameSessionID, &Context);
+		}
 	}
 
 	if (FortGameModeZone->StartingItems.Num() > 0)

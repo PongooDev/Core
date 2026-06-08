@@ -18,15 +18,19 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 
+#include "FortniteGame/Public/FortQuest/FortQuestObjectiveCompletion.h"
+
 class UFortQuestItem;
 struct FScriptContainerElement;
 class AFortPlayerController;
+struct FFortQuestObjectiveCompletion;
 
 class UFortQuestManager : public UObject {
 public:
 	DefineUnrealClass(UFortQuestManager);
 
 	DefineUProperty(TArray<UFortQuestItem*>, CurrentQuests);
+	DefineUProperty(TArray<FFortQuestObjectiveCompletion>, PendingChanges);
 	DefineUProperty(TArray<FString>, ActiveEventFlags);
 public:
 	static inline void (*SendCustomStatEventOG)(UFortQuestManager* This, FDataTableRowHandle& ObjectiveStat, int32 Count, bool bForceFlush);
@@ -59,7 +63,9 @@ public:
 
 	AFortPlayerController* GetPlayerControllerBP();
 
-	//void ProgressQuest(UFortQuestItem* QuestItem, )
+	void ProgressQuest(UFortQuestItem* QuestItem, FName ObjectiveBackendName, int32 InCount = 1);
+
+	void ForceTriggerQuestsUpdated();
 
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUFortQuestManager_SendCustomStatEvent()), (LPVOID)SendCustomStatEvent, (LPVOID*)&SendCustomStatEventOG);

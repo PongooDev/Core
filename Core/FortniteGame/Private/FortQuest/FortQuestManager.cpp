@@ -4,8 +4,12 @@
 #include "FortniteGame/Public/FortItem/FortQuestItem.h"
 #include "FortniteGame/Public/FortItemDefinition/FortItemDefinition.h"
 #include "FortniteGame/Public/FortQuest/FortQuestObjectiveStatTableRow.h"
+#include "FortniteGame/Public/FortQuest/FortQuestObjectiveInfo.h"
+#include "FortniteGame/Public/FortQuest/FortQuestObjectiveCompletion.h"
 #include "FortniteGame/Public/Info/FortRegisteredPlayerInfo.h"
 #include "FortniteGame/Public/FortPlayerController/FortPlayerControllerAthena.h"
+#include "FortniteGame/Public/Mcp/FortMcpProfileAthena.h"
+#include "FortniteGame/Public/Mcp/McpProfileSys.h"
 
 void UFortQuestManager::SendCustomStatEvent(UFortQuestManager* This, FDataTableRowHandle& ObjectiveStat, int32 Count, bool bForceFlush) {
 	return SendCustomStatEventOG(This, ObjectiveStat, Count, bForceFlush);
@@ -86,7 +90,7 @@ void UFortQuestManager::SendStatEvent(
 						continue;
 					}*/
 
-					Log("ObjectiveStatHandle Row: " + Row.Key().ToString().ToString());
+					This->ProgressQuest(QuestItem, Objective.BackendName, InCount);
 				}
 			}
 		}
@@ -133,4 +137,92 @@ AFortPlayerController* UFortQuestManager::GetPlayerControllerBP() {
 	}
 
 	return nullptr;
+}
+
+void UFortQuestManager::ProgressQuest(UFortQuestItem* QuestItem, FName ObjectiveBackendName, int32 InCount) {
+	if (QuestItem->HasCompletedQuest())
+		return;
+
+	AFortPlayerController* PlayerController = GetPlayerControllerBP();
+	if (!PlayerController) {
+		Log("UFortQuestManager::ProgressQuest: PlayerController is null!");
+		return;
+	}
+
+	UFortQuestItemDefinition* QuestDefinition = QuestItem->ItemDefinition->Cast<UFortQuestItemDefinition>();
+	if (!QuestDefinition) {
+		Log("UFortQuestManager::ProgressQuest: QuestDefinition is null!");
+		return;
+	}
+
+	UFortQuestObjectiveInfo* ObjectiveInfo = nullptr;
+	for (UFortQuestObjectiveInfo* Info : QuestItem->Objectives) {
+		if (Info->BackendName == ObjectiveBackendName) {
+			ObjectiveInfo = Info;
+			break;
+		}
+	}
+
+	if (!ObjectiveInfo) {
+		Log("UFortQuestManager::ProgressQuest: ObjectiveInfo not found for backend name: " + ObjectiveBackendName.ToString().ToString());
+		return;
+	}
+
+	int32 AchievedCount = ObjectiveInfo->AchievedCount;
+	int32 NewCount = AchievedCount + InCount;
+	bool bCompletedObjective = NewCount >= ObjectiveInfo->RequiredCount;
+	bool bCompletedAllObjectives = bCompletedObjective;
+	if (bCompletedAllObjectives) {
+		for (UFortQuestObjectiveInfo* Info : QuestItem->Objectives) {
+			if (Info->BackendName == ObjectiveBackendName)
+				continue;
+
+			if (Info->AchievedCount < Info->RequiredCount) {
+				bCompletedAllObjectives = false;
+				break;
+			}
+		}
+	}
+
+	if (bCompletedObjective) {
+		ObjectiveInfo->AchievedCount = ObjectiveInfo->RequiredCount;
+	}
+	else {
+		ObjectiveInfo->AchievedCount = NewCount;
+	}
+
+	Log("UFortQuestManager::ProgressQuest: Quest: " + QuestItem->GetName().ToString() + ", Objective: " + ObjectiveInfo->GetName().ToString() + ", InCount: " + std::to_string(InCount) + ", AchievedCount: " + std::to_string(ObjectiveInfo->AchievedCount));
+
+	FFortQuestObjectiveCompletion NewCompletion{};
+	NewCompletion.StatName = QuestItem->TemplateId; // idk if this is right tbh, i dont think it is
+	NewCompletion.Count = InCount;
+
+	PendingChanges.Add(NewCompletion);
+
+	// idrk exactly how these work so if somebody could figure this out that would be fire
+	if (PlayerController && PlayerController->AthenaProfile) {
+		TArray<FFortQuestObjectiveCompletion> Advanced;
+
+		Advanced.Add(NewCompletion);
+
+		FDedicatedServerUrlContext Context;
+		PlayerController->AthenaProfile->UpdateQuests(Advanced, &Context);
+	}
+
+	ForceTriggerQuestsUpdated();
+}
+
+void UFortQuestManager::ForceTriggerQuestsUpdated()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("ForceTriggerQuestsUpdated");
+
+	if (!Func) {
+		Log("UFortQuestManager::ForceTriggerQuestsUpdated: Function not found!");
+		return;
+	}
+
+	ProcessEvent(Func, nullptr);
 }

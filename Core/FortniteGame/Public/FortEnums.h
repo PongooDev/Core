@@ -243,3 +243,13 @@ public:
 	DefineEnumProperty(IT_TrapPlacement);
 	DefineEnumProperty(IT_MAX);
 };
+
+class ESubGame {
+public:
+	DefineUnrealEnum(ESubGame);
+
+	DefineEnumProperty(Campaign);
+	DefineEnumProperty(Athena);
+	DefineEnumProperty(Invalid);
+	DefineEnumProperty(ESubGame_MAX);
+};

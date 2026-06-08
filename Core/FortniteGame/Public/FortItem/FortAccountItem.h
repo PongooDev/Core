@@ -10,4 +10,5 @@ public:
 	DefineUnrealClass(UFortAccountItem);
 
 	DefineUProperty(UFortAccountItemDefinition*, ItemDefinition);
+	DefineUProperty(FString, TemplateId);
 };

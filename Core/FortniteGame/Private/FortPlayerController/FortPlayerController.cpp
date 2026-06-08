@@ -912,3 +912,27 @@ UFortRegisteredPlayerInfo* AFortPlayerController::GetRegisteredPlayerInfo() cons
 
 	return Parms.ReturnValue;
 }
+
+UFortQuestManager* AFortPlayerController::GetQuestManager(uint8 SubGame) const
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("GetQuestManager");
+
+	struct FortPlayerController_GetQuestManager
+	{
+	public:
+		uint8 SubGame;
+		uint8 Pad_1[0x7];
+		UFortQuestManager* ReturnValue;
+	};
+
+	FortPlayerController_GetQuestManager Parms{};
+
+	Parms.SubGame = SubGame;
+
+	const_cast<AFortPlayerController*>(this)->ProcessEvent(Func, &Parms);
+
+	return Parms.ReturnValue;
+}

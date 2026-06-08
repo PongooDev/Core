@@ -20,6 +20,7 @@ public:
 	DefineUProperty(TArray<FAdditionalLevelStreamed>, AdditionalPlaylistLevelsStreamed);
 	DefineUProperty(AFortFeedbackManager*, FeedbackManager);
 	DefineUProperty(AFortMissionManager*, MissionManager);
+	DefineUProperty(FString, GameSessionID);
 public:
 	void OnRep_AdditionalPlaylistLevelsStreamed();
 	void OnFinishedStreamingAdditionalPlaylistLevel();
