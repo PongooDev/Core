@@ -78,7 +78,7 @@ FFortItemEntry* AFortInventory::FindItemEntry(FGuid Guid)
 	return nullptr;
 }
 
-FFortItemEntry* AFortInventory::FindItemEntry(UFortItemDefinition* ItemDefinition)
+FFortItemEntry* AFortInventory::FindItemEntry(UFortItemDefinition* ItemDefinition, bool bFindFirstNotFull)
 {
 	if (!ItemDefinition)
 		return nullptr;
@@ -86,12 +86,14 @@ FFortItemEntry* AFortInventory::FindItemEntry(UFortItemDefinition* ItemDefinitio
 	if (!Inventory.ReplicatedEntries.IsValid())
 		return nullptr;
 
+	int32 MaxStackSize = ItemDefinition->GetMaxStackSize();
+
 	for (int i = 0; i < Inventory.ReplicatedEntries.Num(); i++)
 	{
 		if (!Inventory.ReplicatedEntries.IsValidIndex(i)) continue;
 
 		auto& Entry = Inventory.ReplicatedEntries.GetWithSize(i, FFortItemEntry::GetSize());
-		if (Entry.ItemDefinition == ItemDefinition)
+		if (Entry.ItemDefinition == ItemDefinition && (!bFindFirstNotFull || Entry.Count < MaxStackSize))
 		{
 			return &Entry;
 		}
@@ -737,6 +739,29 @@ bool AFortInventory::DropAllItems(bool bSpawnPickups)
 	return true;
 }
 
+bool AFortInventory::CanAddItemWithStacking(UFortItemDefinition* Def, int32 Count) {
+	if (!Def)
+	{
+		Log("AFortInventory::CanAddItem: ItemDefinition is null!");
+		return false;
+	}
+
+	if (!IsInventoryFull()) {
+		return true;
+	}
+
+	TArray<FFortItemEntry*> ExistingEntries = FindItemEntries(Def);
+	for (FFortItemEntry* Entry : ExistingEntries)
+	{
+		if (!Entry)
+			continue;
+		if (Entry->Count < Def->GetMaxStackSize() && (Count == -1 || Count <= Def->GetMaxStackSize() - Entry->Count))
+			return true;
+	}
+
+	return Owner != nullptr;
+}
+
 bool AFortInventory::CanAddItem(UFortItemDefinition* Def, int32 Count) const
 {
 	return Owner && Def && Count > 0;
@@ -816,7 +841,7 @@ AFortPickup* AFortInventory::SpawnPickupFromDefinition(UFortItemDefinition* Def,
 		-1,
 		true,
 		true,
-		false,
+		true,
 		-1,
 		EFortPickupSourceTypeFlag::GetPlayer(),
 		EFortPickupSpawnSource::GetUnset(),

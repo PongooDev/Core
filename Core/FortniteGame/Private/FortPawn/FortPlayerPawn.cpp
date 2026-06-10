@@ -89,3 +89,109 @@ void AFortPlayerPawn::ServerHandlePickup(AFortPlayerPawn* This, AFortPickup* Pic
 
 	Pickup->SetPickupTarget(This, InFlyTime / This->PickupSpeedMultiplier, InStartDirection, bPlayPickupSound);
 }
+
+void AFortPlayerPawn::execOnCapsuleBeginOverlap(AFortPlayerPawn* Context, FFrame& Stack) {
+	static UFunction* execOnCapsuleBeginOverlapFn = StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerPawnAthena.OnCapsuleBeginOverlap");
+	if (!execOnCapsuleBeginOverlapFn) {
+		Log("AFortPlayerPawn::execOnCapsuleBeginOverlap: Failed to find function!");
+		return;
+	}
+
+	UPrimitiveComponent* OverlappedComp = nullptr;
+	AFortPickup* OtherActor = nullptr;
+	UPrimitiveComponent* OtherComp = nullptr;
+	int32 OtherBodyIndex = 0;
+	bool bFromSweep = false;
+	FHitResult SweepResult;
+
+	for (auto& Param : execOnCapsuleBeginOverlapFn->GetParams().NameOffsetMap)
+	{
+		std::string Name = Param.Name.ToString();
+		if (Name == "OverlappedComp") {
+			Stack.StepCompiledIn(&OverlappedComp);
+		}
+		else if (Name == "OtherActor") {
+			Stack.StepCompiledIn(&OtherActor);
+		}
+		else if (Name == "OtherComp") {
+			Stack.StepCompiledIn(&OtherComp);
+		}
+		else if (Name == "OtherBodyIndex") {
+			Stack.StepCompiledIn(&OtherBodyIndex);
+		}
+		else if (Name == "bFromSweep") {
+			Stack.StepCompiledIn(&bFromSweep);
+		}
+		else if (Name == "SweepResult") {
+			Stack.StepCompiledIn(&SweepResult);
+		}
+		else {
+			Log("AFortPlayerPawn::execOnCapsuleBeginOverlap: Unhandled parameter: " + Name);
+		}
+	}
+	Stack.IncrementCode();
+
+	Context->OnCapsuleBeginOverlap(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+}
+
+void AFortPlayerPawn::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AFortPickup* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, FHitResult& SweepResult) {
+	if (OtherActor && OtherActor->Cast<AFortPickup>()) {
+		TryToAutoPickup(OtherActor);
+	}
+}
+
+void AFortPlayerPawn::TryToAutoPickup(AFortPickup* Pickup) {
+	if (!Pickup) {
+		return;
+	}
+
+	if (Pickup->IsPendingKillPending()) {
+		return;
+	}
+
+	if (!Pickup->CheckForRePickup(this))
+		return;
+
+	TryToAutoPickupWeapon(Pickup);
+}
+
+void AFortPlayerPawn::TryToAutoPickupWeapon(AFortPickup* Pickup) {
+	if (!Pickup) {
+		Log("TryToAutoPickupWeapon: Pickup is null!");
+		return;
+	}
+
+	UFortWorldItemDefinition* ItemDefinition = Pickup->PrimaryPickupItemEntry.ItemDefinition->Cast<UFortWorldItemDefinition>();
+	if (!ItemDefinition) {
+		Log("TryToAutoPickupWeapon: ItemDefinition is null!");
+		return;
+	}
+
+	uint8 ItemType = ItemDefinition->ItemType;
+	bool isAutoPickupType = ItemType >= EFortItemType::GetWorldResource() || ItemType <= EFortItemType::GetTrap()
+		|| ItemType == EFortItemType::GetConsumable();
+	if (!isAutoPickupType)
+		return;
+
+	AFortPlayerController* FortPlayerController = Controller->Cast<AFortPlayerController>();
+	if (!FortPlayerController)
+		return;
+
+	AFortInventory* Inventory = FortPlayerController->WorldInventory;
+	if (!Inventory)
+		return;
+
+	if (ItemDefinition->GetQuickBarForItem() == EFortQuickBars::GetPrimary()) {
+		FFortItemEntry* ItemEntry = Inventory->FindItemEntry(ItemDefinition);
+		if (!ItemEntry) {
+			return;
+		}
+	}
+
+	if (!Inventory->CanAddItemWithStacking(ItemDefinition)) {
+		return;
+	}
+
+	FVector ZeroVector(0, 0, 0);
+	ServerHandlePickup(this, Pickup, 1.0f, ZeroVector, true);
+}

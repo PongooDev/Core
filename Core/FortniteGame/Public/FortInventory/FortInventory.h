@@ -42,7 +42,7 @@ public:
 	// =================================================================
 
 	FFortItemEntry* FindItemEntry(FGuid Guid);
-	FFortItemEntry* FindItemEntry(UFortItemDefinition* ItemDefinition);
+	FFortItemEntry* FindItemEntry(UFortItemDefinition* ItemDefinition, bool bFindFirstNotFull = false);
 	FFortItemEntry* FindItemEntry(int32 ItemType);
 	FFortItemEntry* FindItemEntry(UClass* ItemDefinitionClass);
 
@@ -110,6 +110,8 @@ public:
 	// =================================================================
 	// Internal Helpers
 	// =================================================================
+
+	bool CanAddItemWithStacking(UFortItemDefinition* Def, int32 Count = -1);
 
 	bool CanAddItem(UFortItemDefinition* Def, int32 Count = 1) const;
 	bool CanAddItem(const FFortItemEntry& ItemEntry) const;

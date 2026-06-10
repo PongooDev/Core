@@ -32,6 +32,8 @@ public:
 
 	DefineUProperty(uint8, ItemType);
 	DefineUProperty(uint8, Rarity);
+
+	DefineBitfieldUProperty(bForceAutoPickup);
 public:
 	UFortItem* CreateTemporaryItemInstanceBP(int32 Count, int32 Level) const;
 

@@ -130,6 +130,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 	{
 		This->ClientMessage("=== Available Commands ===");
 		This->ClientMessage("GiveItem <ItemDefinitionName> [Count] - Gives an item to the player's inventory.");
+		This->ClientMessage("SpawnPickup <ItemDefinitionName> [Count] - Spawns a pickup at the player's location.");
 		This->ClientMessage("SetLoadedAmmo <LoadedAmmo> - Sets the loaded ammo of the currently equipped weapon.");
 		This->ClientMessage("GiveAmmo [Amount] - Gives ammo for the currently equipped weapon.");
 		This->ClientMessage("DumpInventory - Dump Inventory Stats");
@@ -209,6 +210,92 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		}
 
 		This->WorldInventory->AddItemAndHandleOverflow(ItemDef, Count);
+	}
+	else if (Parser.IsCommand("SpawnPickup")) {
+		if (Parser.GetArgCount() < 1)
+		{
+			This->ClientMessage("Usage: SpawnPickup <ItemDefinitionName> [Count]");
+			return;
+		}
+
+		if (!This->WorldInventory) {
+			This->ClientMessage("WorldInventory is null!");
+			return;
+		}
+
+		std::string ItemDefName = Parser.GetArg(0);
+		int32 Count = Parser.GetArgInt(1, 1);
+
+		UObject* ItemObj;
+		if (ItemDefName.contains("/")) {
+			if (ItemDefName.starts_with("FortniteGame/"))
+			{
+				ItemDefName = "/Game/" + ItemDefName.substr(strlen("FortniteGame/"));
+			}
+
+			size_t contentPos = ItemDefName.find("/Content/");
+			if (contentPos != std::string::npos)
+			{
+				if (ItemDefName.contains("/Game/Content/"))
+				{
+					ItemDefName.replace(ItemDefName.find("/Game/Content/"), strlen("/Game/Content/"), "/Game/");
+				}
+				else
+				{
+					size_t contentPos = ItemDefName.find("/Content/");
+					ItemDefName = ItemDefName.substr(0, contentPos)
+						+ "/Game/"
+						+ ItemDefName.substr(contentPos + strlen("/Content/"));
+				}
+			}
+
+			if (!ItemDefName.contains("."))
+			{
+				size_t lastSlash = ItemDefName.find_last_of('/');
+				if (lastSlash != std::string::npos)
+				{
+					std::string className = ItemDefName.substr(lastSlash + 1);
+					ItemDefName += "." + className;
+				}
+				else
+				{
+					This->ClientMessage("Invalid ItemDefinition path: " + ItemDefName);
+					return;
+				}
+			}
+
+			ItemObj = StaticLoadObject(ItemDefName);
+		}
+		else {
+			ItemObj = FUObjectArray::FindObjectFast(ItemDefName);
+		}
+		if (!ItemObj) {
+			This->ClientMessage("ItemDefinition not found: " + ItemDefName);
+			return;
+		}
+
+		UFortItemDefinition* ItemDef = ItemObj->Cast<UFortItemDefinition>();
+		if (!ItemDef) {
+			This->ClientMessage("Object is not a UFortItemDefinition: " + ItemObj->GetName().ToString());
+			return;
+		}
+
+		UFortKismetLibrary::K2_SpawnPickupInWorld(
+			World,
+			ItemDef,
+			Count,
+			This->Pawn->K2_GetActorLocation(),
+			FVector(),
+			-1,
+			true,
+			true,
+			false,
+			-1,
+			EFortPickupSourceTypeFlag::GetPlayer(),
+			EFortPickupSpawnSource::GetUnset(),
+			nullptr,
+			false
+		);
 	}
 	else if (Parser.IsCommand("SetLoadedAmmo")) {
 		if (Parser.GetArgCount() < 1)

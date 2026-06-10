@@ -180,7 +180,7 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	if (OptionalOwnerPC) {
 		ItemOwner = OptionalOwnerPC->Pawn->Cast<AFortPawn>();
 	}
-	if (ItemOwner) {
+	if (ItemOwner && bBlockedFromAutoPickup) {
 		Pickup->PawnWhoDroppedPickup = ItemOwner;
 	}
 

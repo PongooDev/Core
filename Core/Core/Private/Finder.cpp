@@ -9898,6 +9898,7 @@ void Finder::SetupOffsets() {
 	FindABuildingActor_ServerOnAttemptInteractVFT();
 
 	FindStep();
+	FindStepExplicitProperty();
 
 	FindUWorld_ListenPatch();
 

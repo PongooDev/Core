@@ -18,6 +18,7 @@ class UFortItemDefinition;
 class AFortPawn;
 class AFortPickupEffect;
 class IFortInventoryOwnerInterface;
+class AFortPlayerPawn;
 
 class AFortPickup : public AActor {
 public:
@@ -69,6 +70,8 @@ public:
 
 	static inline void (*GivePickupToOG)(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup);
 	static void GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup);
+
+	bool CheckForRePickup(AFortPlayerPawn* FortPlayerPawn);
 
 	static void Hook() {
 		HookEveryVTableIdx(

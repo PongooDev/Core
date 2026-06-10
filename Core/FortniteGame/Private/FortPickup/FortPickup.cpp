@@ -144,3 +144,31 @@ void AFortPickup::GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* 
 		Log("AFortPickup::GivePickupTo: No valid inventory owner found for pickup!");
 	}
 }
+
+bool AFortPickup::CheckForRePickup(AFortPlayerPawn* FortPlayerPawn) {
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPickup::CheckForRePickup: World is null!");
+		return false;
+	}
+
+	UFortItemDefinition* ItemDef = PrimaryPickupItemEntry.ItemDefinition;
+	if (!ItemDef) {
+		Log("AFortPickup::CheckForRePickup: ItemDefinition is null!");
+		return true;
+	}
+
+	if (ItemDef->bForceAutoPickup) {
+		return true;
+	}
+
+	AFortPlayerPawn* PawnWhoDropped = PawnWhoDroppedPickup->Cast<AFortPlayerPawn>();
+	if (!PawnWhoDropped) {
+		return true;
+	}
+
+	if (PawnWhoDropped == FortPlayerPawn)
+		return false;
+
+	return true;
+}
