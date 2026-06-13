@@ -44,7 +44,7 @@ DWORD Main(LPVOID)
         Log(std::format("Engine Version: {}", Version::Engine_Version));
 
         if (Version::Fortnite_Version) {
-            Log(std::format("Fortnite Build: {:.2f}", Version::Fortnite_Version));
+            Log(std::format("Fortnite User Build: {:.2f}", Version::Fortnite_Version));
             SetConsoleTitleA(std::format("Core ({:.2f}) | Starting...", Version::Fortnite_Version).c_str());
         }
         Log(std::format("Fortnite CL: {}", Version::Fortnite_CL));
