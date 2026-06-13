@@ -12,12 +12,67 @@
 #include "FortniteGame/Public/Mcp/McpProfileSys.h"
 
 void UFortQuestManager::SendCustomStatEvent(UFortQuestManager* This, FDataTableRowHandle& ObjectiveStat, int32 Count, bool bForceFlush) {
+	Log("SendCustomStatEvent Called!");
+
+	for (UFortQuestItem* QuestItem : This->CurrentQuests) {
+		if (QuestItem->HasCompletedQuest())
+			continue;
+
+		UFortQuestItemDefinition* QuestDefinition = QuestItem->ItemDefinition->Cast<UFortQuestItemDefinition>();
+		if (!QuestDefinition)
+			continue;
+
+		UDataTable* ObjectiveStatTable = ObjectiveStat.DataTable;
+		FName& ObjectiveStatRowName = ObjectiveStat.RowName;
+
+		FGameplayTagContainer SourceTags;
+		FGameplayTagContainer ContextTags;
+		This->GetSourceAndContextTags(&SourceTags, &ContextTags);
+
+		UFortQuestObjectiveInfo* ObjectiveInfo = QuestItem->GetObjectiveInfo(ObjectiveStat);
+		if (!ObjectiveInfo) {
+			continue;
+		}
+
+		for (int32 i = 0; i < QuestDefinition->Objectives.Num(); i++) {
+			FFortMcpQuestObjectiveInfo& Objective = QuestDefinition->Objectives.GetWithSize(i, FFortMcpQuestObjectiveInfo::GetSize());
+			if (QuestItem->HasCompletedObjectiveWithName(Objective.BackendName))
+				continue;
+
+			FDataTableRowHandle ObjectiveStatHandle = Objective.ObjectiveStatHandle;
+			if (!Objective.ObjectiveStatHandle.RowName.IsNone()
+				&& ObjectiveStatTable == ObjectiveStatHandle.DataTable
+				&& ObjectiveStatRowName == ObjectiveStatHandle.RowName) {
+				for (int32 j = 0; j < ObjectiveStatHandle.DataTable->RowMap.Num(); j++) {
+					auto& Row = ObjectiveStatHandle.DataTable->RowMap[j];
+
+					FName& Key = Row.Key();
+					if (Key != ObjectiveStatHandle.RowName) {
+						continue;
+					}
+
+					FFortQuestObjectiveStatTableRow* Value = (FFortQuestObjectiveStatTableRow*)Row.Value();
+
+					if (!SourceTags.HasAll(Value->SourceTagContainer)) {
+						continue;
+					}
+
+					if (!ContextTags.HasAll(Value->ContextTagContainer)) {
+						continue;
+					}
+
+					This->ProgressQuest(QuestItem, Objective.BackendName, Count);
+				}
+			}
+		}
+	}
+
 	return SendCustomStatEventOG(This, ObjectiveStat, Count, bForceFlush);
 }
 
 void UFortQuestManager::SendStatEvent(
 	UFortQuestManager* This,
-	FScriptContainerElement* InObjectiveStat,
+	FDataTableRowHandle* InObjectiveStat,
 	uint8 InType,
 	UObject* InTargetObject,
 	FGameplayTagContainer* InTargetTags,
@@ -225,4 +280,29 @@ void UFortQuestManager::ForceTriggerQuestsUpdated()
 	}
 
 	ProcessEvent(Func, nullptr);
+}
+
+void UFortQuestManager::GetSourceAndContextTags(FGameplayTagContainer* OutSourceTags, FGameplayTagContainer* OutContextTags) const
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("GetSourceAndContextTags");
+
+	struct FortQuestManager_GetSourceAndContextTags
+	{
+	public:
+		FGameplayTagContainer OutSourceTags;
+		FGameplayTagContainer OutContextTags;
+	};
+
+	FortQuestManager_GetSourceAndContextTags Parms{};
+
+	const_cast<UFortQuestManager*>(this)->ProcessEvent(Func, &Parms);
+
+	if (OutSourceTags != nullptr)
+		*OutSourceTags = std::move(Parms.OutSourceTags);
+
+	if (OutContextTags != nullptr)
+		*OutContextTags = std::move(Parms.OutContextTags);
 }

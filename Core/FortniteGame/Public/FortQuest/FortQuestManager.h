@@ -38,7 +38,7 @@ public:
 
 	static inline void (*SendStatEventOG)(
 		UFortQuestManager* This,
-		FScriptContainerElement* InObjectiveStat,
+		FDataTableRowHandle* InObjectiveStat,
 		uint8 InType,
 		UObject* InTargetObject,
 		FGameplayTagContainer* InTargetTags,
@@ -49,7 +49,7 @@ public:
 	);
 	static void SendStatEvent(
 		UFortQuestManager* This,
-		FScriptContainerElement* InObjectiveStat,
+		FDataTableRowHandle* InObjectiveStat,
 		uint8 InType,
 		UObject* InTargetObject,
 		FGameplayTagContainer* InTargetTags,
@@ -67,10 +67,14 @@ public:
 
 	void ForceTriggerQuestsUpdated();
 
+	void GetSourceAndContextTags(FGameplayTagContainer* OutSourceTags, FGameplayTagContainer* OutContextTags) const;
+
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUFortQuestManager_SendCustomStatEvent()), (LPVOID)SendCustomStatEvent, (LPVOID*)&SendCustomStatEventOG);
 		
-		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUFortQuestManager_SendStatEvent()), (LPVOID)SendStatEvent, (LPVOID*)&SendStatEventOG);
+		if (Finder::FindUFortQuestManager_SendStatEvent()) {
+			MH_CreateHook((LPVOID)(ImageBase + Finder::FindUFortQuestManager_SendStatEvent()), (LPVOID)SendStatEvent, (LPVOID*)&SendStatEventOG);
+		}
 
 		Log("UFortQuestManager Hooked!");
 	}

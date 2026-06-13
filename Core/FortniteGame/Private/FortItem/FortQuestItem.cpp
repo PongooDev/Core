@@ -43,3 +43,26 @@ bool UFortQuestItem::HasCompletedObjectiveWithName(class FName BackendName) cons
 
 	return Parms.ReturnValue;
 }
+
+UFortQuestObjectiveInfo* UFortQuestItem::GetObjectiveInfo(const FDataTableRowHandle& ObjectiveStatHandle) const
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("GetObjectiveInfo");
+
+	struct FortQuestItem_GetObjectiveInfo
+	{
+	public:
+		FDataTableRowHandle ObjectiveStatHandle;
+		UFortQuestObjectiveInfo* ReturnValue;
+	};
+
+	FortQuestItem_GetObjectiveInfo Parms{};
+
+	Parms.ObjectiveStatHandle = std::move(ObjectiveStatHandle);
+
+	const_cast<UFortQuestItem*>(this)->ProcessEvent(Func, &Parms);
+
+	return Parms.ReturnValue;
+}
