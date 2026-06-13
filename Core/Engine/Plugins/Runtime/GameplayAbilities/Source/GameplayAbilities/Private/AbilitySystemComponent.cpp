@@ -20,35 +20,40 @@ FGameplayAbilitySpec* UAbilitySystemComponent::FindAbilitySpecFromHandle(FGamepl
 }
 
 void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemComponent* This, FGameplayAbilitySpecHandle Handle, bool InputPressed, const FPredictionKey& PredictionKey, FGameplayEventData* TriggerEventData) {
-	if (Version::Engine_Version >= 4.16 && Version::Engine_Version <= 4.19) {
-		FGameplayAbilitySpec* Spec = This->FindAbilitySpecFromHandle(Handle);
-		if (!Spec)
-		{
-			This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
-			return;
-		}
+	FGameplayAbilitySpec* Spec = This->FindAbilitySpecFromHandle(Handle);
+	if (!Spec)
+	{
+		This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
+		return;
+	}
 
-		This->ConsumeAllReplicatedData(Handle, PredictionKey);
+	This->ConsumeAllReplicatedData(Handle, PredictionKey);
 
-		const UGameplayAbility* AbilityToActivate = Spec->Ability;
-		if (!AbilityToActivate)
-		{
-			return;
-		}
+	const UGameplayAbility* AbilityToActivate = Spec->Ability;
+	if (!AbilityToActivate)
+	{
+		This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
+		return;
+	}
 
-		UGameplayAbility* InstancedAbility = nullptr;
-		Spec->InputPressed = true;
+	UGameplayAbility* InstancedAbility = nullptr;
+	Spec->InputPressed = true;
 
-		if (This->InternalTryActivateAbility(Handle, PredictionKey, &InstancedAbility, nullptr, TriggerEventData))
-		{
-			
+	if (This->InternalTryActivateAbility(Handle, PredictionKey, &InstancedAbility, nullptr, TriggerEventData))
+	{
+
+	}
+	else
+	{
+		Log("InternalServerTryActiveAbility. Rejecting ClientActivation of " + Spec->Ability->GetName().ToString() + ". InternalTryActivateAbility failed.");
+		This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
+		Spec->InputPressed = false;
+
+		if (Version::Engine_Version >= 4.22) {
+			This->ActivatableAbilities.MarkItemDirty(*Spec);
 		}
-		else
-		{
-			Log("InternalServerTryActiveAbility. Rejecting ClientActivation of " + Spec->Ability->GetName().ToString() + ". InternalTryActivateAbility failed.");
-			This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
-			Spec->InputPressed = false;
-		}
+	}
+	if (Version::Engine_Version <= 4.21) {
 		This->ActivatableAbilities.MarkItemDirty(*Spec);
 	}
 }
