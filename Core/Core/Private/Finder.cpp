@@ -250,52 +250,17 @@ uintptr_t Finder::FindStaticFindObject() {
 	if (ServerOffsets::StaticFindObject)
 		return ServerOffsets::StaticFindObject;
 
-	if (Version::Engine_Version == 5.00)
-	{
-
-		Addr = Memcury::Scanner::FindPattern("40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85 ? ? ? ? 45 33 F6 4C 8B E1 45 0F B6 E9 49 8B F8 41 8B C6").Get();
-
-		if (!Addr)
-		{
-			Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 4C 89 64 24 ? 55 41 55 41 57 48 8B EC 48 83 EC 50 4C 8B E9").Get(); // 19.40
-		}
-
-	}
-	else if (Version::Engine_Version >= 4.27)
-	{
-		if (Version::Fortnite_Version < 18.00)
-		{
-			if (Version::Fortnite_Version == 16.50)
-			{
-				Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC 60 45 33 ED 45 8A F9 44 38 2D ? ? ? ? 49 8B F8 48 8B F2 4C 8B E1").Get();
-			}
-
-			else
-			{
-				Addr = Memcury::Scanner::FindPattern("40 55 53 57 41 54 41 55 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 85").Get();
-			}
-		}
-		else
-		{
-			Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8B EC 48 83 EC 60 45 33 ED 45 8A F9 44 38 2D ? ? ? ? 49 8B F8 48 8B").Get();
-		}
-	}
-	else if (!Addr)
-	{
-		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ?? 48 89 74 24 ?? 55 57 41 54 41 56 41 57 48 8B EC 48 83 EC ?? 80 3D ?? ?? ?? ?? ?? 45 0F B6 F1").Get();
-	}
-
-	else if (!Addr)
+	if (!Addr)
 	{
 		auto String = Memcury::Scanner::FindStringRef(L"Illegal call to StaticFindObject() while serializing object data!", true, 1, Version::Engine_Version >= 4.27);
 		auto addr = Memcury::Scanner::FindBytes(String, { 0x48, 0x89, 0x5C }, 1024, 0, true, 0, false);
 	}
 
 	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("4C 8B DC 49 89 5B ? 49 89 6B ? 49 89 73 ? 57 41 56 41 57 48 83 EC ? 80 3D ? ? ? ? 00").Get();
+		Addr = Memcury::Scanner::FindPattern("4C 8B DC 57 48 81 EC ? ? ? ? 80 3D ? ? ? ? 00").Get();
 	}
 	if (!Addr) {
-		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 55 41 54 41 55 41 56 41 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? 45 33 ED 4D 8B F9").Get();
+		Addr = Memcury::Scanner::FindPattern("4C 8B DC 49 89 5B ? 49 89 6B ? 49 89 73 ? 57 41 56 41 57 48 83 EC ? 80 3D ? ? ? ? 00").Get();
 	}
 
 	if (Addr)

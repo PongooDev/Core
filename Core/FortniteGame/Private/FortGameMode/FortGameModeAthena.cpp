@@ -44,20 +44,14 @@ void AFortGameModeAthena::FinishWorldInitialization(AFortGameModeAthena* This, A
 		Log("FinishWorldInitialization: GameState is null or not AFortGameStateAthena");
 		return FinishWorldInitializationOG(This, WorldManager);
 	}
-	
-	GameState->SetCurrentPlaylistId(This->CurrentPlaylistId);
-}
 
-void AFortGameModeAthena::BeginPlay(AFortGameModeAthena* This) {
-	BeginPlayOG(This);
-
-	if (Version::Fortnite_Version <= 1.72) {
-		This->DefaultPawnClass = (UClass*)StaticLoadObject("/Game/Athena/PlayerPawn_Athena.PlayerPawn_Athena_C");
-		This->PlayerControllerClass = (UClass*)StaticLoadObject("/Game/Athena/Athena_PlayerController.Athena_PlayerController_C");
-		This->PlayerStateClass = AFortPlayerStateAthena::StaticClass();
-	}
+	This->DefaultPawnClass = (UClass*)StaticLoadObject("/Game/Athena/PlayerPawn_Athena.PlayerPawn_Athena_C");
+	This->PlayerControllerClass = (UClass*)StaticLoadObject("/Game/Athena/Athena_PlayerController.Athena_PlayerController_C");
+	This->PlayerStateClass = AFortPlayerStateAthena::StaticClass();
 
 	This->bDisableGCOnServerDuringMatch = true;
+	
+	GameState->SetCurrentPlaylistId(This->CurrentPlaylistId);
 }
 
 void AFortGameModeAthena::AddToAlivePlayers(AFortPlayerControllerAthena* PC) {

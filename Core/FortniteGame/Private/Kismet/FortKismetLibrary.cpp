@@ -403,11 +403,11 @@ bool UFortKismetLibrary::PickLootDrops(
 	TArray<UDataTable*> LootPackagesDataTables;
 	if (LootTierDataTables.Num() == 0 || LootPackagesDataTables.Num() == 0) {
 		if (FortGameModeAthena && FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist) {
-			UDataTable* MainLTD = StaticLoadObject<UDataTable>(
+			UDataTable* MainLTD = (UDataTable*)StaticLoadObject(
 				FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist->LootTierData.ObjectID.AssetPathName.ToString().ToString()
 			);
 
-			UDataTable* MainLP = StaticLoadObject<UDataTable>(
+			UDataTable* MainLP = (UDataTable*)StaticLoadObject(
 				FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist->LootPackages.ObjectID.AssetPathName.ToString().ToString()
 			);
 
@@ -428,7 +428,7 @@ bool UFortKismetLibrary::PickLootDrops(
 		if (LootTierDataTables.Num() == 0) {
 			UDataTable* DefaultLTD = nullptr;
 			if (FortGameModeAthena) {
-				DefaultLTD = StaticLoadObject<UDataTable>(
+				DefaultLTD = (UDataTable*)StaticLoadObject(
 					"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client"
 				);
 			}
@@ -447,7 +447,7 @@ bool UFortKismetLibrary::PickLootDrops(
 		if (LootPackagesDataTables.Num() == 0) {
 			UDataTable* DefaultLP = nullptr;
 			if (FortGameModeAthena) {
-				DefaultLP = StaticLoadObject<UDataTable>(
+				DefaultLP = (UDataTable*)StaticLoadObject(
 					"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client"
 				);
 			}

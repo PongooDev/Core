@@ -32,9 +32,6 @@ public:
 	static inline void (*FinishWorldInitializationOG)(AFortGameModeAthena* This, AFortWorldManager* WorldManager);
 	static void FinishWorldInitialization(AFortGameModeAthena* This, AFortWorldManager* WorldManager);
 
-	static inline void (*BeginPlayOG)(AFortGameModeAthena* This);
-	static void BeginPlay(AFortGameModeAthena* This);
-
 	void AddToAlivePlayers(AFortPlayerControllerAthena* PC);
 
 	static inline int32 (*StartAircraftPhaseOG)(AFortGameModeAthena* This, bool bGoStraightToSafeZone);
@@ -66,13 +63,6 @@ public:
 			Finder::FindAFortGameMode_FinishWorldInitializationVFT(),
 			FinishWorldInitialization,
 			(LPVOID*)&FinishWorldInitializationOG
-		);
-
-		HookVTableIdx(
-			AFortGameModeAthena::GetDefaultObj(),
-			Finder::FindAActor_BeginPlayVFT(),
-			BeginPlay,
-			(LPVOID*)&BeginPlayOG
 		);
 
 		if (Finder::FindAFortGameModeAthena_StartAircraftPhase()) {

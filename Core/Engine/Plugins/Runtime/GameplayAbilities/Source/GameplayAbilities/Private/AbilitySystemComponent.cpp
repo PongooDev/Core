@@ -55,7 +55,29 @@ void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemCom
 
 void UAbilitySystemComponent::ConsumeAllReplicatedData(FGameplayAbilitySpecHandle AbilityHandle, FPredictionKey AbilityOriginalPredictionKey)
 {
-	// This is not stripped so i can find the offset at some point
+	// its not stripped but its super hard to find, if anyone wants to find it be my guest!!
+
+	uintptr_t ActivatableAbilitiesOffset = StaticClass()->GetPropertyOffset("ActivatableAbilities");
+	uintptr_t AbilityTargetDataMapOffset = __int64(this) + ActivatableAbilitiesOffset + FGameplayAbilitySpecContainer::GetSize();
+
+	if (Version::Engine_Version >= 4.22) {
+		FGameplayAbilityReplicatedDataContainer& AbilityTargetDataMap = *(FGameplayAbilityReplicatedDataContainer*)(AbilityTargetDataMapOffset);
+
+		TSharedPtr<FAbilityReplicatedDataCache> CachedData = AbilityTargetDataMap.Find(FGameplayAbilitySpecHandleAndPredictionKey(AbilityHandle, AbilityOriginalPredictionKey));
+		if (CachedData.IsValid())
+		{
+			CachedData->Reset();
+		}
+	}
+	else {
+		TMap<FGameplayAbilitySpecHandleAndPredictionKey, FAbilityReplicatedDataCache>& AbilityTargetDataMap = *(TMap<FGameplayAbilitySpecHandleAndPredictionKey, FAbilityReplicatedDataCache>*)(AbilityTargetDataMapOffset);
+
+		FAbilityReplicatedDataCache* CachedData = AbilityTargetDataMap.Find(FGameplayAbilitySpecHandleAndPredictionKey(AbilityHandle, AbilityOriginalPredictionKey));
+		if (CachedData)
+		{
+			CachedData->Reset();
+		}
+	}
 }
 
 bool UAbilitySystemComponent::InternalTryActivateAbility(FGameplayAbilitySpecHandle AbilityToActivate, FPredictionKey InPredictionKey, UGameplayAbility** OutInstancedAbility, void* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)

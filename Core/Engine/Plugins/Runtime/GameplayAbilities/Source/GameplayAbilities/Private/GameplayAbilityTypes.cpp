@@ -32,3 +32,16 @@ FGameplayAbilitySpec::FGameplayAbilitySpec(UGameplayAbility* InAbility, int32 In
 		Handle.GenerateNewHandle();
 	}
 }
+
+TSharedPtr<FAbilityReplicatedDataCache> FGameplayAbilityReplicatedDataContainer::Find(const FGameplayAbilitySpecHandleAndPredictionKey& Key) const
+{
+	for (const FKeyDataPair& Pair : InUseData)
+	{
+		if (Pair.Key() == Key)
+		{
+			return Pair.Value();
+		}
+	}
+
+	return TSharedPtr<FAbilityReplicatedDataCache>();
+}

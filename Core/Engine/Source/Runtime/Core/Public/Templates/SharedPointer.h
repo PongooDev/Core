@@ -1,6 +1,22 @@
 #pragma once
 #include "pch.h"
 
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+
+struct FNullTag {};
+
+struct TReferenceControllerBase {
+	int32 SharedReferenceCount{ 1 };
+	int32 WeakReferenceCount{ 1 };
+};
+
+template <class ObjectType>
+struct TSharedRef {
+	ObjectType* Object;
+
+	TReferenceControllerBase* SharedReferenceCount;
+};
+
 template<class ObjectType>
 class TSharedPtr {
 public:
@@ -19,11 +35,18 @@ public:
 		return Object;
 	}
 
-	FORCEINLINE void Reset()
+	FORCEINLINE TSharedPtr(FNullTag* = nullptr)
+		: Object(nullptr)
+		, SharedReferenceCount()
 	{
-		*this = TSharedPtr<ObjectType>();
+	}
+
+	TSharedPtr(const TSharedRef<ObjectType>& Ref)
+	{
+		Object = Ref.Object;
 	}
 public:
 	ObjectType* Object;
-	void* ReferenceController;
+	int32 SharedReferenceCount;
+	int32 WeakReferenceCount;
 };
