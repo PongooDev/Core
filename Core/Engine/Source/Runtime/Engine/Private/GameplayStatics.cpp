@@ -6,6 +6,16 @@
 
 AActor* UGameplayStatics::BeginDeferredActorSpawnFromClass(const UObject* WorldContextObject, TSubclassOf<AActor> ActorClass, const FTransform& SpawnTransform, ESpawnActorCollisionHandlingMethod CollisionHandlingOverride, AActor* Owner)
 {
+	if (!WorldContextObject) {
+		Log("UGameplayStatics::BeginDeferredActorSpawnFromClass: WorldContextObject is null!");
+		return nullptr;
+	}
+
+	if (!ActorClass) {
+		Log("UGameplayStatics::BeginDeferredActorSpawnFromClass: ActorClass is null!");
+		return nullptr;
+	}
+
 	if (Finder::FindUGameplayStatics_BeginDeferredActorSpawnFromClass()) {
 		AActor* (*BeginDeferredActorSpawnFromClassInternal)(const UObject*, TSubclassOf<AActor>, const FTransform&, ESpawnActorCollisionHandlingMethod, AActor*) = decltype(BeginDeferredActorSpawnFromClassInternal)(ImageBase + Finder::FindUGameplayStatics_BeginDeferredActorSpawnFromClass());
 		return BeginDeferredActorSpawnFromClassInternal(WorldContextObject, ActorClass, SpawnTransform, CollisionHandlingOverride, Owner);

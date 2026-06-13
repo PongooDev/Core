@@ -15,10 +15,18 @@
 
 void AFortInventory::HandleInventoryLocalUpdate()
 {
+	if (!this)
+		return;
+
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("HandleInventoryLocalUpdate");
+
+	if (!Func) {
+		Log("AFortInventory::HandleInventoryLocalUpdate: Function not found!");
+		return;
+	}
 
 	ProcessEvent(Func, nullptr);
 }

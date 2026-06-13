@@ -67,7 +67,9 @@ void UFortQuestManager::SendCustomStatEvent(UFortQuestManager* This, FDataTableR
 		}
 	}
 
-	return SendCustomStatEventOG(This, ObjectiveStat, Count, bForceFlush);
+	if (SendStatEventOG) {
+		return SendCustomStatEventOG(This, ObjectiveStat, Count, bForceFlush);
+	}
 }
 
 void UFortQuestManager::SendStatEvent(
