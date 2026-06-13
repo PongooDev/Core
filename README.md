@@ -1,5 +1,6 @@
 # Core
 A Universal Gameserver For Fortnite that aims for accuracy over version support!
+### -> [Discord Server](https://discord.gg/FXA9ySgtuW)
 
 ## Version Support
 | Version | Status |
