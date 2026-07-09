@@ -3,6 +3,7 @@
 
 #include "Configuration.h"
 
+#include "FortniteGame/Public/FortPawn/FortPlayerPawnAthena.h"
 #include "Engine/Source/Runtime/Core/Public/Containers/UnrealString.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectMacros.h"
 
@@ -18,6 +19,8 @@ public:
 	static void DumpClassProperties(const char* ClassName);
 	static void DumpEnumProperties(const char* EnumName);
 	static uint8 GetEnumValueFromName(const char* EnumName, const char* EnumMemberName);
+
+    static void SetClientObservedStat(AFortPlayerPawn* Pawn, FName StatName, int32 StatValue);
 
 	static void Hook();
 

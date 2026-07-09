@@ -710,6 +710,12 @@ void AFortPlayerController::ServerClientPawnLoaded(AFortPlayerController* This, 
 
 	if (bIsPawnLoaded) {
 		FortPlayerState->ApplyCharacterCustomization(MyFortPawn);
+
+		if (auto KillScore = ((AFortPlayerStateAthena*)FortPCAthena->PlayerState)->KillScore)
+		{
+			static auto AthenaKills = UKismetStringLibrary::Conv_StringToName(L"AthenaKills");
+			Utils::SetClientObservedStat((AFortPlayerPawn*)MyFortPawn, AthenaKills, KillScore);
+		}
 	}
 }
 

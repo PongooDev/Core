@@ -71,3 +71,20 @@ public:
 		}
 	}
 };
+
+struct FFortClientObservedStat : public FFastArraySerializerItem
+{
+public:
+	DefineUnrealStruct(FFortClientObservedStat);
+public:
+	FName StatName;
+	int32 StatValue;
+};
+
+struct FFortClientObservedStatArray : public FFastArraySerializer
+{
+public:
+    DefineUnrealStruct(FFortClientObservedStatArray);
+public:
+	TArray<struct FFortClientObservedStat> ObservedStats;
+};

@@ -186,6 +186,35 @@ uint8 Utils::GetEnumValueFromName(const char* EnumName, const char* EnumMemberNa
 	return Enum->GetValue(EnumMemberName);
 }
 
+void Utils::SetClientObservedStat(AFortPlayerPawn* Pawn, FName StatName, int32 StatValue) {
+	if (!Pawn) {
+		Log("Pawn is nullptr!");
+		return;
+	}
+
+	auto& ObservedStats = Pawn->ClientObservedStats.ObservedStats;
+
+	for (int i = 0; i < ObservedStats.Num(); i++)
+	{
+		if (ObservedStats[i].StatName == StatName)
+		{
+			ObservedStats[i].StatValue = StatValue;
+			Pawn->ClientObservedStats.MarkItemDirty(ObservedStats[i]);
+			return;
+		}
+	}
+
+	FFortClientObservedStat NewStat{};
+	NewStat.MostRecentArrayReplicationKey = -1;
+	NewStat.ReplicationID = -1;
+	NewStat.ReplicationKey = -1;
+	NewStat.StatName = StatName;
+	NewStat.StatValue = StatValue;
+
+	ObservedStats.Add(NewStat);
+	Pawn->ClientObservedStats.MarkItemDirty(ObservedStats[ObservedStats.Num() - 1]);
+}
+
 void Utils::Hook() {
 	MH_STATUS status = MH_Initialize();
 	if (status != MH_OK) {

@@ -121,6 +121,9 @@ void AFortPlayerControllerAthena::ClientOnPawnDied_Implementation(FFortPlayerDea
 					}
 				}
 			}
+
+			static auto AthenaKills = UKismetStringLibrary::Conv_StringToName(L"AthenaKills");
+			Utils::SetClientObservedStat((AFortPlayerPawn*)MyFortPawn, AthenaKills, KillerPlayerStateAthena->KillScore);
 		}
 	}
 

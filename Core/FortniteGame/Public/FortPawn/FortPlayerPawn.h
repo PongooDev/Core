@@ -29,6 +29,8 @@ public:
 	DefineUProperty(float, PickupSpeedMultiplier);
 
 	DefineUProperty(TWeakObjectPtr<UFortHero>, Hero);
+
+	DefineUProperty(FFortClientObservedStatArray, ClientObservedStats);
 public:
 	void BeginSkydiving(bool bFromBus);
 
