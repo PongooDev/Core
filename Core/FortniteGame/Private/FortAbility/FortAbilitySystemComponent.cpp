@@ -57,7 +57,7 @@ void UFortAbilitySystemComponent::EndAllAbilities() {
 	}
 }
 
-void UFortAbilitySystemComponentAthena::EndDBNOAbilities() {
+void UFortAbilitySystemComponent::EndDBNOAbilities() {
 	for (int32 i = 0; i < ActivatableAbilities.Items.Num(); i++) {
 		FGameplayAbilitySpec& AbilitySpec = ActivatableAbilities.Items.GetWithSize(i, FGameplayAbilitySpec::GetSize());
 		if (AbilitySpec.Ability) {
@@ -67,6 +67,16 @@ void UFortAbilitySystemComponentAthena::EndDBNOAbilities() {
 				ClientEndAbility(AbilitySpec.Handle, AbilitySpec.ActivationInfo);
 				ServerEndAbility(AbilitySpec.Handle, AbilitySpec.ActivationInfo, FPredictionKey());
 			}
+		}
+	}
+}
+
+void UFortAbilitySystemComponent::PrintAllAbilities() {
+	Log("UFortAbilitySystemComponent::PrintAllAbilities: Printing all abilities for " + GetOwner()->GetName().ToString());
+	for (int32 i = 0; i < ActivatableAbilities.Items.Num(); i++) {
+		FGameplayAbilitySpec& AbilitySpec = ActivatableAbilities.Items.GetWithSize(i, FGameplayAbilitySpec::GetSize());
+		if (AbilitySpec.Ability) {
+			Log(std::format("Ability {}: Name={}, Level={}, InputID={}, ActiveCount={}", i, AbilitySpec.Ability->GetName().ToString(), AbilitySpec.Level, AbilitySpec.InputID, AbilitySpec.ActiveCount));
 		}
 	}
 }

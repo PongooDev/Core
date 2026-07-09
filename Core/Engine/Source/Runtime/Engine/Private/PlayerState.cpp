@@ -12,15 +12,5 @@ FString APlayerState::GetPlayerName() const
 		return PlayerName;
 	}
 
-	struct PlayerState_GetPlayerName
-	{
-	public:
-		FString ReturnValue;
-	};
-
-	PlayerState_GetPlayerName Parms{};
-
-	const_cast<APlayerState*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<APlayerState*>(this)->Call<FString>(Func);
 }

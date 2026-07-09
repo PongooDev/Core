@@ -8,41 +8,25 @@ void UFortItem::SetOwningControllerForTemporaryItem(AFortPlayerController* InCon
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"SetOwningControllerForTemporaryItem"));
 
-	struct FortItem_SetOwningControllerForTemporaryItem final
-	{
-	public:
-		AFortPlayerController* InController;
-	};
-
-	FortItem_SetOwningControllerForTemporaryItem Parms{};
-
-	Parms.InController = InController;
-
-	ProcessEvent(Func, &Parms);
+	return const_cast<UFortItem*>(this)->Call<void>(Func, InController);
 }
 
 FGuid UFortItem::GetItemGuid() const
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetItemGuid"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		FGuid& (*&GetItemGuidInternal)(const UFortItem*) = decltype(GetItemGuidInternal)(VTable[VTableIdx]);
-		return GetItemGuidInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("GetItemGuid");
 
-	return FGuid();
+	return const_cast<UFortItem*>(this)->Call<FGuid>(Func);
 }
 
 AFortPlayerController* UFortItem::GetOwningController() const
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetOwningController"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		AFortPlayerController* (*&GetOwningControllerInternal)(const UFortItem*) = decltype(GetOwningControllerInternal)(VTable[VTableIdx]);
-		return GetOwningControllerInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("GetOwningController");
 
-	return nullptr;
+	return const_cast<UFortItem*>(this)->Call<AFortPlayerController*>(Func);
 }

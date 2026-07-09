@@ -17,7 +17,7 @@ public:
 	DefineStructProperty(UDataTable*, Durability);
 	DefineStructProperty(FName, DurabilityRowName);
 public:
-	uint8 Padding[0x118];
+	uint8 Padding[0x130];
 public:
 	int32 GetClipSize(int32 WeaponLevel);
 

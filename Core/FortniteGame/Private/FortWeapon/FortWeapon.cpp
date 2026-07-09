@@ -10,17 +10,7 @@ void AFortWeap_BuildingTool::OnRep_DefaultMetadata(UBuildingEditModeMetadata* Ol
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_DefaultMetadata");
 
-	struct FortWeap_BuildingTool_OnRep_DefaultMetadata final
-	{
-	public:
-		UBuildingEditModeMetadata* OldMetadata;
-	};
-
-	FortWeap_BuildingTool_OnRep_DefaultMetadata Parms{};
-
-	Parms.OldMetadata = OldMetadata;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, OldMetadata);
 }
 
 void AFortWeap_EditingTool::OnRep_EditActor()
@@ -30,5 +20,5 @@ void AFortWeap_EditingTool::OnRep_EditActor()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_EditActor");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }

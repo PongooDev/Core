@@ -26,5 +26,7 @@ public:
 	static inline void (*ClientOnPawnDiedOG)(AFortPlayerControllerZone* This, FFortPlayerDeathReport& DeathReport);
 	static void ClientOnPawnDied(AFortPlayerControllerZone* This, FFortPlayerDeathReport& DeathReport);
 
+	void ClientOnPawnRevived(AController* EventInstigator);
+
 	static void Hook();
 };

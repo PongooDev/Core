@@ -9,6 +9,8 @@
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
+#include "FortniteGame/Public/FortPlayerState/FortPlayerStateAthena.h"
+#include "FortniteGame/Public/FortAbility/FortAbilitySystemComponent.h"
 
 void AFortPlayerPawn::BeginSkydiving(bool bFromBus)
 {
@@ -17,17 +19,7 @@ void AFortPlayerPawn::BeginSkydiving(bool bFromBus)
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"BeginSkydiving"));
 
-	struct FortPlayerPawn_BeginSkydiving final
-	{
-	public:
-		bool bFromBus;
-	};
-
-	FortPlayerPawn_BeginSkydiving Parms{};
-
-	Parms.bFromBus = bFromBus;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, bFromBus);
 }
 
 void AFortPlayerPawn::ForceFinishIncomingPickups()
@@ -38,13 +30,12 @@ void AFortPlayerPawn::ForceFinishIncomingPickups()
 
 void AFortPlayerPawn::ServerChoosePart(UCustomCharacterPart* ChosenCharacterPart, uint8 Part)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"ServerChoosePart"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static class UFunction* Func = nullptr;
 
-		void (*&ServerChoosePartInternal)(AFortPlayerPawn*, uint8, UCustomCharacterPart*) = decltype(ServerChoosePartInternal)(VTable[VTableIdx]);
-		return ServerChoosePartInternal(this, Part, ChosenCharacterPart);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("ServerChoosePart");
+
+	return Call(Func, Part, ChosenCharacterPart);
 }
 
 void AFortPlayerPawn::RandomizeCharacter(const FString& GenderString)
@@ -54,24 +45,45 @@ void AFortPlayerPawn::RandomizeCharacter(const FString& GenderString)
 	if (Func == nullptr)
 		Func = FindFunction("RandomizeCharacter");
 
-	struct FortPlayerPawn_RandomizeCharacter
-	{
-	public:
-		FString GenderString;
-	};
-
-	FortPlayerPawn_RandomizeCharacter Parms{};
-
-	Parms.GenderString = std::move(GenderString);
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, GenderString);
 }
 
 void AFortPlayerPawn::ServerReviveFromDBNO(AFortPlayerPawn* This, AController* EventInstigator)
 {
 	ServerReviveFromDBNOOG(This, EventInstigator);
+	if (!This->IsDBNO()) {
+		return; // ServerReviveFromDBNO was probably not stripped in this version
+	}
 
-	Log("ServerReviveFromDBNO Called!");
+	AFortPlayerController* FortPlayerController = This->Controller->Cast<AFortPlayerController>();
+	if (!FortPlayerController) {
+		Log("ServerReviveFromDBNO: FortPlayerController is null!");
+		return;
+	}
+
+	AFortPlayerControllerZone* FortPlayerControllerZone = FortPlayerController->Cast<AFortPlayerControllerZone>();
+
+	AFortPlayerState* FortPlayerState = FortPlayerController->PlayerState->Cast<AFortPlayerState>();
+	if (!FortPlayerState) {
+		Log("ServerReviveFromDBNO: FortPlayerState is null!");
+		return;
+	}
+
+	FortPlayerState->AbilitySystemComponent->EndDBNOAbilities();
+
+	This->bIsDBNO = false;
+	This->bPlayedDying = false;
+
+	int32 ReviveHealth = 30;
+	// change revive health variable to more proper value (datatables?)
+
+	This->SetHealth(ReviveHealth);
+
+	This->OnRep_IsDBNO();
+
+	if (FortPlayerControllerZone) {
+		FortPlayerControllerZone->ClientOnPawnRevived(EventInstigator);
+	}
 }
 
 void AFortPlayerPawn::ServerHandlePickup(AFortPlayerPawn* This, AFortPickup* Pickup, float InFlyTime, FVector& InStartDirection, bool bPlayPickupSound) {
@@ -150,19 +162,30 @@ void AFortPlayerPawn::OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp,
 	if (OtherActor && OtherActor->Cast<AFortPickup>()) {
 		TryToAutoPickup(OtherActor);
 	}
+
+	/*if (OtherActor) {
+		Log("OnCapsuleBeginOverlap: Overlapped with: " + OtherActor->GetName().ToString());
+	}
+	else {
+		Log("OnCapsuleBeginOverlap: Overlapped with null actor!");
+	}*/
 }
 
 void AFortPlayerPawn::TryToAutoPickup(AFortPickup* Pickup) {
 	if (!Pickup) {
+		Log("TryToAutoPickup: Pickup is null!");
 		return;
 	}
 
 	if (Pickup->IsPendingKillPending()) {
+		//Log("TryToAutoPickup: Pickup is pending kill!");
 		return;
 	}
 
-	if (!Pickup->CheckForRePickup(this))
+	if (!Pickup->CheckForRePickup(this)) {
+		//Log("TryToAutoPickup: CheckForRePickup failed!");
 		return;
+	}
 
 	TryToAutoPickupWeapon(Pickup);
 }
@@ -182,8 +205,10 @@ void AFortPlayerPawn::TryToAutoPickupWeapon(AFortPickup* Pickup) {
 	uint8 ItemType = ItemDefinition->ItemType;
 	bool isAutoPickupType = ItemType >= EFortItemType::GetWorldResource() || ItemType <= EFortItemType::GetTrap()
 		|| ItemType == EFortItemType::GetConsumable();
-	if (!isAutoPickupType)
+	if (!isAutoPickupType) {
+		//Log("TryToAutoPickupWeapon: ItemType is not auto pickup type!");
 		return;
+	}
 
 	AFortPlayerController* FortPlayerController = Controller->Cast<AFortPlayerController>();
 	if (!FortPlayerController)
@@ -196,14 +221,17 @@ void AFortPlayerPawn::TryToAutoPickupWeapon(AFortPickup* Pickup) {
 	if (ItemDefinition->GetQuickBarForItem() == EFortQuickBars::GetPrimary()) {
 		FFortItemEntry* ItemEntry = Inventory->FindItemEntry(ItemDefinition);
 		if (!ItemEntry) {
+			//Log("TryToAutoPickupWeapon: No ItemEntry for Primary QuickBars");
 			return;
 		}
 	}
 
 	if (!Inventory->CanAddItemWithStacking(ItemDefinition)) {
+		//Log("TryToAutoPickupWeapon: Cannot add item with stacking");
 		return;
 	}
 
+	//Log("TryToAutoPickupWeapon: Auto-picking up item: " + ItemDefinition->GetName().ToString());
 	FVector ZeroVector(0, 0, 0);
 	ServerHandlePickup(this, Pickup, 1.0f, ZeroVector, true);
 }
@@ -219,5 +247,5 @@ void AFortPlayerPawn::OnRep_IsDBNO()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	return const_cast<AFortPlayerPawn*>(this)->Call<void>(Func);
 }

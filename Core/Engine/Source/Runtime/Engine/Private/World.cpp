@@ -141,7 +141,6 @@ bool UWorld::Listen(FURL& InURL)
 		if (NetDriver == NULL)
 		{
 			Engine->BroadcastNetworkFailure(this, NULL, ENetworkFailure::NetDriverCreateFailure);
-			Log("Fucked up creating net driver");
 			return false;
 		}
 
@@ -186,7 +185,11 @@ bool UWorld::Listen(FURL& InURL)
 
 		if (!NavigationSystem)
 		{
-			SetNavigationSystem(UNavigationSystem::CreateNavigationSystem(this));
+			UNavigationSystem* NavSys = UNavigationSystem::CreateNavigationSystem(this);
+			if (NavSys)
+			{
+				SetNavigationSystem(NavSys);
+			}
 		}
 
 		NextSwitchCountdown = NetDriver->ServerTravelPause;
@@ -246,8 +249,10 @@ bool UWorld::IsInSeamlessTravel()
 
 void UWorld::SetNavigationSystem(UNavigationSystem* InNavigationSystem)
 {
-	void (*SetNavigationSystemInternal)(UWorld*, UNavigationSystem*) = decltype(SetNavigationSystemInternal)(ImageBase + Finder::FindUWorld_SetNavigationSystem());
-	SetNavigationSystemInternal(this, InNavigationSystem);
+	if (Finder::FindUWorld_SetNavigationSystem()) {
+		void (*SetNavigationSystemInternal)(UWorld*, UNavigationSystem*) = decltype(SetNavigationSystemInternal)(ImageBase + Finder::FindUWorld_SetNavigationSystem());
+		SetNavigationSystemInternal(this, InNavigationSystem);
+	}
 }
 
 FString UWorld::RemovePIEPrefix(const FString& Source) {

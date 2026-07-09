@@ -12,6 +12,7 @@ class UFortPlaylistAthena;
 class AFortWorldManager;
 class UFortWeaponItemDefinition;
 class AFortAthenaPlaylistBase;
+class UAthenaBattleBusItemDefinition;
 
 class AFortGameModeAthena : public AFortGamePvPBase {
 public:
@@ -25,6 +26,7 @@ public:
 	DefineUProperty(bool, bPlaylistHotfixChangedGCDisabling);
 
 	DefineUProperty(TArray<AFortPlayerControllerAthena*>, AlivePlayers);
+	DefineUProperty(int32, TeamAlivePlayers);
 	DefineUProperty(bool, bAllowSpectateAfterDeath);
 	DefineUProperty(bool, bAlwaysDBNO);
 	DefineUProperty(AFortAthenaPlaylistBase*, FortAthenaPlaylist);
@@ -47,6 +49,16 @@ public:
 
 	static inline uint8 (*PickTeamOG)(AFortGameModeAthena* This, uint8 PreferredTeam, AFortPlayerController* ControllerToPickFor);
 	static uint8 PickTeam(AFortGameModeAthena* This, uint8 PreferredTeam, AFortPlayerController* ControllerToPickFor);
+
+	static inline void (*InitGameStateOG)(AFortGameModeAthena* This);
+	static void InitGameState(AFortGameModeAthena* This);
+
+	static UAthenaBattleBusItemDefinition* GetBattleBusItemDefinition();
+
+	static UClass* GetSupplyDropClass();
+
+	static inline void (*PlacePlayerOnTeamOG)(AFortGameModeAthena* This, AFortPlayerController* FortPC);
+	static void PlacePlayerOnTeam(AFortGameModeAthena* This, AFortPlayerController* FortPC);
 
 	static void Hook() {
 		//MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortGameModeAthena_ReadyToStartMatch()), ReadyToStartMatch, (LPVOID*)&ReadyToStartMatchOG);
@@ -86,6 +98,20 @@ public:
 			Finder::FindAFortGameMode_PickTeamVFT(),
 			PickTeam,
 			(LPVOID*)&PickTeamOG
+		);
+
+		HookEveryVTableIdx(
+			AFortGameModeAthena::StaticClass(),
+			Finder::FindAGameModeBase_InitGameStateVFT(),
+			InitGameState,
+			(LPVOID*)&InitGameStateOG
+		);
+
+		HookEveryVTableIdx(
+			AFortGameModeAthena::StaticClass(),
+			Finder::FindAFortGameMode_PlacePlayerOnTeamVFT(),
+			PlacePlayerOnTeam,
+			(LPVOID*)&PlacePlayerOnTeamOG
 		);
 
 		Log("Hooked AFortGameModeAthena");

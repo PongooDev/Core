@@ -25,6 +25,11 @@
 #include <winternl.h>
 #include <cstdlib>
 #include <cmath>
+#include <intrin.h>
+#include <windows.h>
+#include <psapi.h>
+#include <unordered_map>
+#include <numeric>
 
 #include "../includes/memcury.h"
 #include "../includes/MinHook/MinHook.h"
@@ -130,8 +135,8 @@ inline UObject* StaticLoadObject(const std::string& Name, const UClass* InClass 
 uintptr_t GetVTableIndex(class UFunction* Func);
 void HookVTable(class UObject* Object, class UFunction* Func, void* Detour, void** Original = nullptr);
 void HookVTableIdx(void* Base, int Idx, void* Detour, void** OG = nullptr);
-void HookEveryVTableIdx(UClass* Base, int Idx, void* Detour, void** OG = nullptr, bool bSilent = false);
-void HookEveryVTable(UClass* Base, class UFunction* Func, void* Detour, void** OG = nullptr);
+void HookEveryVTableIdx(UClass* Base, int Idx, void* Detour, void** OG = nullptr, bool bSilent = true);
+void HookEveryVTable(UClass* Base, class UFunction* Func, void* Detour, void** OG = nullptr, bool bSilent = true);
 void CreateVTableOriginal(void* Base, int Idx, void** Original);
 void CreateVTableOriginal(void* Base, class UFunction* Func, void** Original);
 uintptr_t GetOffsetFromVTable(class UObject* Object, class UFunction* Func);
@@ -234,5 +239,16 @@ struct _Pad_0x18
 {
     uint8_t Padding[0x18];
 };
+
+static bool IsAddressInModule(uintptr_t addr, HMODULE module)
+{
+    MODULEINFO mi{};
+    if (!GetModuleInformation(GetCurrentProcess(), module, &mi, sizeof(mi)))
+        return false;
+
+    const uintptr_t base = reinterpret_cast<uintptr_t>(mi.lpBaseOfDll);
+    const uintptr_t end = base + mi.SizeOfImage;
+    return addr >= base && addr < end;
+}
 
 #endif //PCH_H

@@ -34,6 +34,9 @@ public:
 
 	static bool CanCreateInCurrentContext(UObject* Template);
 
+	template <typename Ret = void, typename... Args>
+	Ret Call(UFunction* Function, Args&&... args);
+
 	static void Hook();
 
 	static UClass* StaticClass() {

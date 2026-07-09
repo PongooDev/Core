@@ -31,6 +31,10 @@ public:
 	DefineUProperty(int32, Place);
 	DefineUProperty(AFortTeamInfo*, PlayerTeam);
 	DefineUProperty(bool, bHasWonAGame);
+	DefineUProperty(uint8, ReplicatedTeamMemberState);
+	DefineUProperty(uint8, TeamMemberState);
+	DefineUProperty(float, TeamMemberStateRepTime);
+	DefineUProperty(uint8, SquadId);
 public:
 	void OnRep_TeamKillScore();
 
@@ -55,6 +59,10 @@ public:
 	void OnRep_TeamIndex();
 
 	static uint8 ToDeathCause(const FGameplayTagContainer& InTags, bool bWasDBNO);
+
+	void OnRep_ReplicatedTeamMemberState();
+
+	void OnRep_SquadId();
 
 	static void Hook() {
 		Log("AFortPlayerStateAthena Hooked!");

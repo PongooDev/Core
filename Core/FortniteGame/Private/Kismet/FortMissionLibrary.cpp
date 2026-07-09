@@ -14,17 +14,5 @@ void UFortMissionLibrary::LoadMission(UObject* WorldContextObject, UFortMissionI
 		return;
 	}
 
-	struct FortMissionLibrary_LoadMission
-	{
-	public:
-		UObject* WorldContextObject;
-		UFortMissionInfo* MissionInfo;
-	};
-
-	FortMissionLibrary_LoadMission Parms{};
-
-	Parms.WorldContextObject = WorldContextObject;
-	Parms.MissionInfo = MissionInfo;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
+	return GetDefaultObj()->Call<void>(Func, WorldContextObject, MissionInfo);
 }

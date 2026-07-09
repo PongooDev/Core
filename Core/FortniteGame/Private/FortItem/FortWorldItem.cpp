@@ -51,8 +51,8 @@ bool UFortWorldItem::SetPhantomReserveAmmo(UFortWorldItem* This, int32 InCount) 
 }
 
 bool UFortWorldItem::SetInInventoryOverflow(UFortWorldItem* This, bool bInInventoryOverflow) {
-	Log("UFortWorldItem::SetInInventoryOverflow called!");
-	Log("bInInventoryOverflow: " + std::to_string(bInInventoryOverflow));
+	//Log("UFortWorldItem::SetInInventoryOverflow called!");
+	//Log("bInInventoryOverflow: " + std::to_string(bInInventoryOverflow));
 	return false;
 }
 

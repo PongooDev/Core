@@ -17,6 +17,10 @@ public:
 
 	FORCEINLINE FString GetName() const
 	{
+		if (!this) {
+			return "None";
+		}
+
 		if (!IsValidLowLevelFast()) {
 			return "None";
 		}

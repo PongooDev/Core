@@ -189,6 +189,9 @@ UClass** AFortGameMode::GetGameSessionClass(AFortGameMode* This, UClass** result
 
 void AFortGameMode::RestartPlayerHK(AFortGameMode* This, AController* NewPlayer) {
 	RestartPlayerOG(This, NewPlayer);
+	if (Version::Fortnite_Version > 2.5) {
+		return;
+	}
 
 	AFortPlayerController* FortPC = NewPlayer->Cast<AFortPlayerController>();
 	if (FortPC) {
@@ -240,4 +243,13 @@ void AFortGameMode::AddInactivePlayerHK(AFortGameMode* This, APlayerState* Playe
 
 bool AFortGameMode::ReadyToStartMatch(AFortGameMode* This) {
 	return ReadyToStartMatchOG(This);
+}
+
+void AFortGameMode::PreInitializeComponents(AFortGameMode* This) {
+	PreInitializeComponentsOG(This);
+}
+
+void AFortGameMode::InitializeTeams() {
+	void (*&InitializeTeamsInternal)(AFortGameMode* This) = decltype(InitializeTeamsInternal)(VTable[Finder::FindAFortGameMode_InitializeTeamsVFT()]);
+	InitializeTeamsInternal(this);
 }

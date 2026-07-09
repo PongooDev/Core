@@ -18,13 +18,24 @@ struct FPropertyTag;
 #define DefineCustomProperty(PropertyType, PropertyName, Offset) \
 public: \
     FORCEINLINE PropertyType& _Get##PropertyName() { \
-        return *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset); \
+        if (!(this) || (uintptr_t)(Offset) <= 0) { \
+            static PropertyType dummy{}; \
+            return dummy; \
+        } \
+        return *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)); \
     } \
     FORCEINLINE PropertyType _Get##PropertyName() const { \
-        return *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset); \
+        if (!(this) || (uintptr_t)(Offset) <= 0) { \
+            static PropertyType dummy{}; \
+            return dummy; \
+        } \
+        return *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)); \
     } \
     FORCEINLINE void _Set##PropertyName(PropertyType Value) { \
-        *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset) = Value; \
+        if (!(this) || (uintptr_t)(Offset) <= 0) { \
+            return; \
+        } \
+        *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)) = Value; \
     } \
 public: \
     __declspec(property(get = _Get##PropertyName, put = _Set##PropertyName)) PropertyType PropertyName;
@@ -267,6 +278,103 @@ public:
 
 };
 
+template <typename Ret, typename... Args>
+Ret UObject::Call(UFunction* Function, Args&&... args)
+{
+
+    if (!Function)
+        return Ret();
+
+    // fast paths
+    if constexpr (sizeof...(args) == 0 && std::is_void_v<Ret>)
+        return ProcessEvent(Function, nullptr);
+
+    if constexpr (sizeof...(args) == 1 && std::is_void_v<Ret>)
+        return ProcessEvent(Function, (void*)&args...);
+
+    if constexpr (sizeof...(args) == 0 && !std::is_void_v<Ret>)
+    {
+        Ret ret{};
+
+        ProcessEvent(Function, &ret);
+
+        return ret;
+    }
+
+    auto Params = Function->GetParams();
+    auto Mem = FMemory::Malloc(Params.Size);
+    memset((PBYTE)Mem, 0, Params.Size);
+
+    size_t i = 0;
+    ([&]
+        {
+            if (i >= Params.NameOffsetMap.size())
+                return;
+
+            auto& Param = Params.NameOffsetMap[i];
+
+            if (((Param.PropertyFlags & 0x100) != 0 && (Param.PropertyFlags & 0x8000000) == 0) || (Param.PropertyFlags & 0x400) != 0)
+            {
+                i++;
+                return;
+            }
+
+            const auto& Arg = args;
+
+            memcpy(PBYTE(__int64(Mem) + Param.Offset), (const PBYTE)&Arg, Param.ElementSize);
+            i++;
+        }(), ...);
+
+    ProcessEvent(Function, Mem);
+
+    i = 0;
+    ([&]
+        {
+            if (i >= Params.NameOffsetMap.size())
+                return;
+
+            auto& Param = Params.NameOffsetMap[i];
+
+            if (((Param.PropertyFlags & 0x100) == 0 && (Param.PropertyFlags & 0x8000000) == 0) || (Param.PropertyFlags & 0x400) != 0)
+            {
+                i++;
+                return;
+            }
+
+            const auto& Arg = args;
+
+            if constexpr (std::is_pointer_v<std::remove_reference_t<decltype(args)>>)
+            {
+                if (Arg != nullptr)
+                    memcpy((PBYTE)Arg, (const PBYTE)(__int64(Mem) + Param.Offset), Param.ElementSize);
+            }
+            else if constexpr (std::is_reference_v<decltype(args)>)
+            {
+                // if ((Param.PropertyFlags & 0x2) != 0)
+                //	memcpy((PBYTE)&Arg, (const PBYTE)(__int64(Mem) + Param.Offset), Param.ElementSize);
+            }
+            i++;
+        }(), ...);
+
+    if constexpr (!std::is_void_v<Ret>)
+    {
+        Ret ret{};
+        for (auto& Param : Params.NameOffsetMap)
+        {
+            if ((Param.PropertyFlags & 0x400) == 0)
+                continue;
+
+            memcpy((PBYTE)&ret, (const PBYTE)(__int64(Mem) + Param.Offset), Param.ElementSize);
+            break;
+        }
+
+        FMemory::Free(Mem);
+        return ret;
+    }
+
+    FMemory::Free(Mem);
+}
+
 #define DefineUnrealClass(__Class) \
     static UClass* StaticClass() \
     { \
@@ -342,6 +450,10 @@ public:
         void* Mem = FMemory::Malloc(GetSize()); \
         if (Mem) memset(Mem, 0, GetSize()); \
         return (__Class*)Mem; \
+    } \
+    static void Copy(__Class* Dest, const __Class* Src) \
+    { \
+        memcpy(Dest, Src, GetSize()); \
     } \
 
 #define DefineUnrealStructPath(FullName) \

@@ -8,5 +8,5 @@ void APawn::OnRep_PlayerState()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_PlayerState");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }

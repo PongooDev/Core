@@ -7,6 +7,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Engine.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DemoNetDriver.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/GameInstance.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
@@ -24,6 +25,7 @@
 #include "FortniteGame/Public/BuildingActor/BuildingTrap.h"
 #include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
 #include "FortniteGame/Public/BuildingActor/BuildingGameplayActor.h"
+#include "FortniteGame/Public/BuildingActor/BuildingItemCollectorActor.h"
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
 #include "FortniteGame/Public/FortPickup/FortPickup.h"
 #include "FortniteGame/Public/FortPlayerState/FortPlayerStateAthena.h"
@@ -34,6 +36,8 @@
 #include "FortniteGame/Public/FortGameSession/FortGameSessionDedicated.h"
 #include "FortniteGame/Public/FortWeapon/FortDecoTool.h"
 #include "FortniteGame/Public/FortQuest/FortQuestManager.h"
+#include "FortniteGame/Public/Athena/FortAthenaMapInfo.h"
+#include "FortniteGame/Public/FortInventory/FortQuickBarsAthena.h"
 
 void Utils::InitConsole(FCoreConfig& Config)
 {
@@ -231,6 +235,7 @@ void Utils::Hook() {
 	UWorld::Hook();
 	AActor::Hook();
 	UNetDriver::Hook();
+	UDemoNetDriver::Hook();
 	AGameSession::Hook();
 	UAbilitySystemComponent::Hook();
 	APlayerController::Hook();
@@ -266,6 +271,10 @@ void Utils::Hook() {
 	AFortGameModeOutpost::Hook();
 	AB_SupplyDropPlacement_C::Hook();
 	UFortQuestManager::Hook();
+	ABuildingItemCollectorActor::Hook();
+	AFortAthenaMapInfo::Hook();
+	AFortAthenaSupplyDrop::Hook();
+	AFortQuickBars::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {
@@ -325,9 +334,9 @@ void Utils::SetLogVerbosity() {
 		return;
 	}
 
-    UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogGarbage VeryVerbose", nullptr);
-    UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogAbilitySystem VeryVerbose", nullptr);
-    UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogAbilitySystemPrediction VeryVerbose", nullptr);
+    //UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogGarbage VeryVerbose", nullptr);
+    //UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogAbilitySystem VeryVerbose", nullptr);
+    //UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogAbilitySystemPrediction VeryVerbose", nullptr);
 
     UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogFortAIDebug VeryVerbose", nullptr);
     UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), L"log LogFortBotMission VeryVerbose", nullptr);
@@ -406,9 +415,6 @@ void Utils::RemoveLocalPlayer() {
 	if (World->OwningGameInstance && World->OwningGameInstance->LocalPlayers.Num() > 0) {
 		World->OwningGameInstance->LocalPlayers.RemoveAt(0);
 		Log("Utils::RemoveLocalPlayer: Local Player Removed!");
-	}
-	else {
-		Log("Utils::RemoveLocalPlayer: No Local Players Found!");
 	}
 }
 

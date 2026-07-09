@@ -3,6 +3,9 @@
 
 #include "BlueprintFunctionLibrary.h"
 
+#include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+
 class UKismetMathLibrary : public UBlueprintFunctionLibrary {
 public:
 	DefineUnrealClass(UKismetMathLibrary);
@@ -26,4 +29,10 @@ public:
 	static int32 Round(float A);
 
 	static float RandomFloat();
+
+	static FVector GetForwardVector(const FRotator& InRot);
+
+	static FVector GetRightVector(const FRotator& InRot);
+
+	static FVector GetUpVector(const FRotator& InRot);
 };

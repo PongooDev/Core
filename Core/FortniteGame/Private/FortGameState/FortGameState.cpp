@@ -11,7 +11,7 @@ void AFortGameState::OnRep_AdditionalPlaylistLevelsStreamed()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_AdditionalPlaylistLevelsStreamed"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortGameState::OnFinishedStreamingAdditionalPlaylistLevel()
@@ -21,7 +21,7 @@ void AFortGameState::OnFinishedStreamingAdditionalPlaylistLevel()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnFinishedStreamingAdditionalPlaylistLevel"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortGameState::OnRep_MissionManager()
@@ -31,7 +31,7 @@ void AFortGameState::OnRep_MissionManager()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_MissionManager");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortGameState::Hook()

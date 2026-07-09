@@ -11,29 +11,5 @@ void UDataTableFunctionLibrary::EvaluateCurveTableRow(UCurveTable* CurveTable, F
 	if (Func == nullptr)
 		Func = StaticClass()->GetFunction("Function /Script/Engine.DataTableFunctionLibrary.EvaluateCurveTableRow");
 
-	struct DataTableFunctionLibrary_EvaluateCurveTableRow final
-	{
-	public:
-		UCurveTable* CurveTable;
-		FName RowName;
-		float InXY;
-		EEvaluateCurveTableResult::Type OutResult;
-		float OutXY;
-		FString ContextString;
-	};
-
-	DataTableFunctionLibrary_EvaluateCurveTableRow Parms{};
-
-	Parms.CurveTable = CurveTable;
-	Parms.RowName = RowName;
-	Parms.InXY = InXY;
-	Parms.ContextString = std::move(ContextString);
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	if (OutResult != nullptr)
-		*OutResult = Parms.OutResult;
-
-	if (OutXY != nullptr)
-		*OutXY = Parms.OutXY;
+	GetDefaultObj()->Call(Func, CurveTable, RowName, InXY, OutResult, OutXY, ContextString);
 }

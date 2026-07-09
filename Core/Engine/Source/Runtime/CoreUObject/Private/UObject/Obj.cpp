@@ -7,6 +7,11 @@
 
 UFunction* UObject::FindFunction(FName InName) const
 {
+	if (!this)
+		return nullptr;
+	if (InName.IsNone())
+		return nullptr;
+
 	return GetClass()->FindFunctionByName(InName, EIncludeSuperFlag::IncludeSuper);
 }
 
@@ -18,6 +23,14 @@ UObject* UObject::GetArchetypeFromRequiredInfo(UClass* Class, UObject* Outer, FN
 
 void UObject::ProcessEvent(UFunction* Function, void* Parms)
 {
+	if (!this)
+		return;
+	if (!Function)
+		return;
+
+	if (!IsValidLowLevelFast())
+		return;
+
 	void (*&ProcessEventInternal)(UObject*, UFunction*, void*) = decltype(ProcessEventInternal)(VTable[Finder::FindProcessEventVFT()]);
 	ProcessEventInternal(this, Function, Parms);
 }

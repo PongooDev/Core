@@ -83,11 +83,11 @@ public:
 		return *(TSharedPtr<FGameplayAbilityActorInfo>*)(__int64(this) + AvatarActorOffset + 8);
 	}
 
-	void ClientCancelAbility(const FGameplayAbilitySpecHandle& AbilityToCancel, const FGameplayAbilityActivationInfo& ActivationInfo);
+	void ClientCancelAbility(FGameplayAbilitySpecHandle& AbilityToCancel, FGameplayAbilityActivationInfo& ActivationInfo);
 
-	void ClientEndAbility(const FGameplayAbilitySpecHandle& AbilityToEnd, const FGameplayAbilityActivationInfo& ActivationInfo);
+	void ClientEndAbility(FGameplayAbilitySpecHandle& AbilityToEnd, FGameplayAbilityActivationInfo& ActivationInfo);
 
-	void ServerEndAbility(const FGameplayAbilitySpecHandle& AbilityToEnd, const FGameplayAbilityActivationInfo& ActivationInfo, const FPredictionKey& PredictionKey);
+	void ServerEndAbility(FGameplayAbilitySpecHandle& AbilityToEnd, FGameplayAbilityActivationInfo& ActivationInfo, const FPredictionKey& PredictionKey);
 public:
 	static void Hook() {
 		HookEveryVTableIdx(UAbilitySystemComponent::StaticClass(), Finder::FindInternalServerTryActivateAbilityVFT(), InternalServerTryActivateAbility);

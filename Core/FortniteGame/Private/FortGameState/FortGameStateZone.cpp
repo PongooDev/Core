@@ -11,7 +11,7 @@ void AFortGameStateZone::OnRep_GameDifficulty()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_GameDifficulty");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortGameStateZone::Hook() {

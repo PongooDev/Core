@@ -18,20 +18,7 @@ FName UKismetStringLibrary::Conv_StringToName(const FString& InString)
 			return FName();
 		}
 
-		struct KismetStringLibrary_Conv_StringToName final
-		{
-		public:
-			FString InString;
-			FName ReturnValue;
-		};
-
-		KismetStringLibrary_Conv_StringToName Parms{};
-
-		Parms.InString = std::move(InString);
-
-		GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-		return Parms.ReturnValue;
+		return GetDefaultObj()->Call<FName>(Func, InString);
 	}
 }
 
@@ -42,20 +29,7 @@ FString UKismetStringLibrary::ToUpper(const FString& SourceString)
 	if (Func == nullptr)
 		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetStringLibrary.ToUpper");
 
-	struct KismetStringLibrary_ToUpper
-	{
-	public:
-		FString SourceString;
-		FString ReturnValue;
-	};
-
-	KismetStringLibrary_ToUpper Parms{};
-
-	Parms.SourceString = std::move(SourceString);
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<FString>(Func, SourceString);
 }
 
 bool UKismetStringLibrary::Contains(const class FString& SearchIn, const class FString& Substring, bool bUseCase, bool bSearchFromEnd)
@@ -65,26 +39,7 @@ bool UKismetStringLibrary::Contains(const class FString& SearchIn, const class F
 	if (Func == nullptr)
 		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetStringLibrary.Contains");
 
-	struct KismetStringLibrary_Contains
-	{
-	public:
-		FString SearchIn;
-		FString Substring;
-		bool bUseCase;
-		bool bSearchFromEnd;
-		bool ReturnValue;
-	};
-
-	KismetStringLibrary_Contains Parms{};
-
-	Parms.SearchIn = std::move(SearchIn);
-	Parms.Substring = std::move(Substring);
-	Parms.bUseCase = bUseCase;
-	Parms.bSearchFromEnd = bSearchFromEnd;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<bool>(Func, SearchIn, Substring, bUseCase, bSearchFromEnd);
 }
 
 int32 UKismetStringLibrary::FindSubstring(const class FString& SearchIn, const class FString& Substring, bool bUseCase, bool bSearchFromEnd, int32 StartPosition)
@@ -94,30 +49,7 @@ int32 UKismetStringLibrary::FindSubstring(const class FString& SearchIn, const c
 	if (Func == nullptr)
 		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetStringLibrary.FindSubstring");
 
-	struct KismetStringLibrary_FindSubstring
-	{
-	public:
-		FString SearchIn;
-		FString Substring;
-		bool bUseCase;
-		bool bSearchFromEnd;
-		uint8 Pad_22[0x2];
-		int32 StartPosition;
-		int32 ReturnValue;
-		uint8 Pad_2C[0x4];
-	};
-
-	KismetStringLibrary_FindSubstring Parms{};
-
-	Parms.SearchIn = std::move(SearchIn);
-	Parms.Substring = std::move(Substring);
-	Parms.bUseCase = bUseCase;
-	Parms.bSearchFromEnd = bSearchFromEnd;
-	Parms.StartPosition = StartPosition;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, SearchIn, Substring, bUseCase, bSearchFromEnd, StartPosition);
 }
 
 FString UKismetStringLibrary::Left(const class FString& SourceString, int32 Count)
@@ -127,21 +59,5 @@ FString UKismetStringLibrary::Left(const class FString& SourceString, int32 Coun
 	if (Func == nullptr)
 		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetStringLibrary.Left");
 
-	struct KismetStringLibrary_Left
-	{
-	public:
-		FString SourceString;
-		int32 Count;
-		uint8 Pad_14[0x4];
-		FString ReturnValue;
-	};
-
-	KismetStringLibrary_Left Parms{};
-
-	Parms.SourceString = std::move(SourceString);
-	Parms.Count = Count;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<FString>(Func, SourceString, Count);
 }

@@ -3,13 +3,12 @@
 
 void AController::Possess(APawn* InPawn)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"Possess"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&PossessInternal)(AController*, APawn*) = decltype(PossessInternal)(VTable[VTableIdx]);
-		PossessInternal(this, InPawn);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("Possess");
+
+	return Call(Func, InPawn);
 }
 
 APawn* AController::K2_GetPawn() const
@@ -19,28 +18,17 @@ APawn* AController::K2_GetPawn() const
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"K2_GetPawn"));
 
-	struct Controller_K2_GetPawn
-	{
-	public:
-		APawn* ReturnValue;
-	};
-
-	Controller_K2_GetPawn Parms{};
-
-	const_cast<AController*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AController*>(this)->Call<APawn*>(Func);
 }
 
 AActor* AController::GetViewTarget() const
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetViewTarget"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		AActor* (*&GetViewTargetInternal)(const AController*) = decltype(GetViewTargetInternal)(VTable[VTableIdx]);
-		return GetViewTargetInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("GetViewTarget");
+
+	return const_cast<AController*>(this)->Call<AActor*>(Func);
 }
 
 void AController::InitPlayerState()
@@ -56,7 +44,7 @@ void AController::OnRep_Pawn()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_Pawn");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AController::OnRep_PlayerState()
@@ -66,7 +54,7 @@ void AController::OnRep_PlayerState()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_PlayerState");
 	
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 FRotator AController::GetControlRotation() const
@@ -76,15 +64,5 @@ FRotator AController::GetControlRotation() const
 	if (Func == nullptr)
 		Func = FindFunction("GetControlRotation");
 
-	struct Controller_GetControlRotation
-	{
-	public:
-		FRotator ReturnValue;
-	};
-
-	Controller_GetControlRotation Parms{};
-
-	const_cast<AController*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AController*>(this)->Call<FRotator>(Func);
 }

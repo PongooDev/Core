@@ -26,6 +26,7 @@ struct FNetworkObjectInfo;
 struct FComponentInstanceDataCache;
 class ULevel;
 class AOnlineBeaconClient;
+struct FHitResult;
 
 class AActor : public UObject {
 public:
@@ -73,8 +74,12 @@ public:
 	bool IsNetStartupActor() const;
 
 	float GetNetPriority(const FVector& ViewPos, const FVector& ViewDir, class AActor* Viewer, AActor* ViewTarget, UActorChannel* InChannel, float Time, bool bLowBandwidth) {
-		float (*&GetNetPriorityInternal)(AActor*, const FVector&, const FVector&, AActor*, AActor*, UActorChannel*, float, bool) = decltype(GetNetPriorityInternal)(VTable[Finder::FindAActor_GetNetPriorityVFT()]);
-		return GetNetPriorityInternal(this, ViewPos, ViewDir, Viewer, ViewTarget, InChannel, Time, bLowBandwidth);
+		if (Finder::FindAActor_GetNetPriorityVFT()) {
+			float (*&GetNetPriorityInternal)(AActor*, const FVector&, const FVector&, AActor*, AActor*, UActorChannel*, float, bool) = decltype(GetNetPriorityInternal)(VTable[Finder::FindAActor_GetNetPriorityVFT()]);
+			return GetNetPriorityInternal(this, ViewPos, ViewDir, Viewer, ViewTarget, InChannel, Time, bLowBandwidth);
+		}
+
+		return 0.f;
 	}
 
 	bool IsRelevancyOwnerFor(const AActor* ReplicatedActor, const AActor* ActorOwner, const AActor* ConnectionActor) const;
@@ -143,6 +148,14 @@ public:
 	void Reset();
 
 	float GetDistanceTo(const AActor* OtherActor) const;
+
+	bool K2_SetActorLocation(FVector& NewLocation, bool bSweep, FHitResult* SweepHitResult, bool bTeleport);
+
+	void FlushNetDormancy();
+
+	void SetOwner(AActor* NewOwner);
+
+	void SetReplicateMovement(bool bInReplicateMovement);
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAActor_InternalGetNetMode()), InternalGetNetMode, (LPVOID*)&InternalGetNetModeOG);

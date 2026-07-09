@@ -14,19 +14,7 @@ void UAbilitySystemComponent::ClientActivateAbilityFailed(FGameplayAbilitySpecHa
 		return;
 	}
 
-	struct AbilitySystemComponent_ClientActivateAbilityFailed
-	{
-	public:
-		FGameplayAbilitySpecHandle AbilityToActivate;
-		int16 PredictionKey;
-	};
-
-	AbilitySystemComponent_ClientActivateAbilityFailed Parms{};
-
-	Parms.AbilityToActivate = std::move(AbilityToActivate);
-	Parms.PredictionKey = PredictionKey;
-
-	ProcessEvent(Func, &Parms);
+	Call(Func, AbilityToActivate, PredictionKey);
 }
 
 FGameplayAbilitySpec* UAbilitySystemComponent::FindAbilitySpecFromHandle(FGameplayAbilitySpecHandle Handle)
@@ -36,6 +24,7 @@ FGameplayAbilitySpec* UAbilitySystemComponent::FindAbilitySpecFromHandle(FGamepl
 }
 
 void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemComponent* This, FGameplayAbilitySpecHandle Handle, bool InputPressed, const FPredictionKey& PredictionKey, FGameplayEventData* TriggerEventData) {
+	//Log("UAbilitySystemComponent::InternalServerTryActivateAbility");
 	FGameplayAbilitySpec* Spec = This->FindAbilitySpecFromHandle(Handle);
 	if (!Spec)
 	{
@@ -154,25 +143,7 @@ FActiveGameplayEffectHandle UAbilitySystemComponent::BP_ApplyGameplayEffectToSel
 		return FActiveGameplayEffectHandle();
 	}
 
-	struct AbilitySystemComponent_BP_ApplyGameplayEffectToSelf
-	{
-	public:
-		TSubclassOf<UGameplayEffect> GameplayEffectClass;
-		float Level;
-		uint8 Pad_C[0x4];
-		FGameplayEffectContextHandle EffectContext;
-		FActiveGameplayEffectHandle ReturnValue;
-	};
-
-	AbilitySystemComponent_BP_ApplyGameplayEffectToSelf Parms{};
-
-	Parms.GameplayEffectClass = GameplayEffectClass;
-	Parms.Level = Level;
-	Parms.EffectContext = std::move(EffectContext);
-
-	ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return Call<FActiveGameplayEffectHandle>(Func, GameplayEffectClass, Level, EffectContext);
 }
 
 FGameplayEffectContextHandle UAbilitySystemComponent::MakeEffectContext() const
@@ -186,20 +157,10 @@ FGameplayEffectContextHandle UAbilitySystemComponent::MakeEffectContext() const
 		return FGameplayEffectContextHandle();
 	}
 
-	struct AbilitySystemComponent_MakeEffectContext
-	{
-	public:
-		FGameplayEffectContextHandle ReturnValue;
-	};
-
-	AbilitySystemComponent_MakeEffectContext Parms{};
-
-	const_cast<UAbilitySystemComponent*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UAbilitySystemComponent*>(this)->Call<FGameplayEffectContextHandle>(Func);
 }
 
-void UAbilitySystemComponent::ClientCancelAbility(const FGameplayAbilitySpecHandle& AbilityToCancel, const FGameplayAbilityActivationInfo& ActivationInfo)
+void UAbilitySystemComponent::ClientCancelAbility(FGameplayAbilitySpecHandle& AbilityToCancel, FGameplayAbilityActivationInfo& ActivationInfo)
 {
 	static UFunction* Func = nullptr;
 
@@ -210,23 +171,10 @@ void UAbilitySystemComponent::ClientCancelAbility(const FGameplayAbilitySpecHand
 		return;
 	}
 
-	struct AbilitySystemComponent_ClientCancelAbility
-	{
-	public:
-		FGameplayAbilitySpecHandle AbilityToCancel;
-		uint8 Pad_4[0x4];
-		FGameplayAbilityActivationInfo ActivationInfo;
-	};
-
-	AbilitySystemComponent_ClientCancelAbility Parms{};
-
-	Parms.AbilityToCancel = std::move(AbilityToCancel);
-	Parms.ActivationInfo = std::move(ActivationInfo);
-
-	ProcessEvent(Func, &Parms);
+	Call(Func, AbilityToCancel, ActivationInfo);
 }
 
-void UAbilitySystemComponent::ClientEndAbility(const struct FGameplayAbilitySpecHandle& AbilityToEnd, const struct FGameplayAbilityActivationInfo& ActivationInfo)
+void UAbilitySystemComponent::ClientEndAbility(FGameplayAbilitySpecHandle& AbilityToEnd, FGameplayAbilityActivationInfo& ActivationInfo)
 {
 	static UFunction* Func = nullptr;
 
@@ -237,23 +185,10 @@ void UAbilitySystemComponent::ClientEndAbility(const struct FGameplayAbilitySpec
 		return;
 	}
 
-	struct AbilitySystemComponent_ClientEndAbility
-	{
-	public:
-		FGameplayAbilitySpecHandle AbilityToEnd;
-		uint8 Pad_4[0x4];
-		FGameplayAbilityActivationInfo ActivationInfo;
-	};
-
-	AbilitySystemComponent_ClientEndAbility Parms{};
-
-	Parms.AbilityToEnd = std::move(AbilityToEnd);
-	Parms.ActivationInfo = std::move(ActivationInfo);
-
-	ProcessEvent(Func, &Parms);
+	Call(Func, AbilityToEnd, ActivationInfo);
 }
 
-void UAbilitySystemComponent::ServerEndAbility(const FGameplayAbilitySpecHandle& AbilityToEnd, const FGameplayAbilityActivationInfo& ActivationInfo, const FPredictionKey& PredictionKey)
+void UAbilitySystemComponent::ServerEndAbility(FGameplayAbilitySpecHandle& AbilityToEnd, FGameplayAbilityActivationInfo& ActivationInfo, const FPredictionKey& PredictionKey)
 {
 	static UFunction* Func = nullptr;
 
@@ -264,20 +199,5 @@ void UAbilitySystemComponent::ServerEndAbility(const FGameplayAbilitySpecHandle&
 		return;
 	}
 
-	struct AbilitySystemComponent_ServerEndAbility
-	{
-	public:
-		FGameplayAbilitySpecHandle AbilityToEnd;
-		uint8 Pad_4[0x4];
-		FGameplayAbilityActivationInfo ActivationInfo;
-		FPredictionKey PredictionKey;
-	};
-
-	AbilitySystemComponent_ServerEndAbility Parms{};
-
-	Parms.AbilityToEnd = std::move(AbilityToEnd);
-	Parms.ActivationInfo = std::move(ActivationInfo);
-	Parms.PredictionKey = std::move(PredictionKey);
-
-	ProcessEvent(Func, &Parms);
+	Call(Func, AbilityToEnd, ActivationInfo, PredictionKey);
 }

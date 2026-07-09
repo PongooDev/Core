@@ -3,6 +3,10 @@
 
 UNavigationSystem* UNavigationSystem::CreateNavigationSystem(UWorld* WorldOwner)
 {
-	UNavigationSystem* (*CreateNavigationSystemInternal)(UWorld*) = decltype(CreateNavigationSystemInternal)(ImageBase + Finder::FindUNavigationSystem_CreateNavigationSystem());
-	return CreateNavigationSystemInternal(WorldOwner);
+	if (Finder::FindUNavigationSystem_CreateNavigationSystem()) {
+		UNavigationSystem* (*CreateNavigationSystemInternal)(UWorld*) = decltype(CreateNavigationSystemInternal)(ImageBase + Finder::FindUNavigationSystem_CreateNavigationSystem());
+		return CreateNavigationSystemInternal(WorldOwner);
+	}
+	
+	return nullptr;
 }

@@ -3,6 +3,7 @@
 
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
+#include "Engine/Source/Runtime/Engine/Classes/Camera/PlayerCameraManager.h"
 
 #include "FortPlayerControllerZone.h"
 #include "FortniteGame/Public/FortLoadout/FortAthenaLoadout.h"
@@ -10,6 +11,7 @@
 #include "FortniteGame/Public/Athena/AthenaMatchStats.h"
 #include "FortniteGame/Public/Athena/AthenaMatchTeamStats.h"
 #include "FortniteGame/Public/Athena/AthenaPlayerMatchReport.h"
+#include "FortniteGame/Public/QuickChat/AthenaQuickChatActiveEntry.h"
 
 class AFortPlayerPawnAthena;
 class AFortBroadcastRemoteClientInfo;
@@ -64,6 +66,9 @@ public:
 
 	FAthenaMatchTeamStats& ConstructAthenaMatchTeamStats();
 
+	static inline void (*ServerPlaySquadQuickChatMessageOG)(AFortPlayerControllerAthena* This, FAthenaQuickChatActiveEntry& ChatEntry, FUniqueNetIdRepl& SenderID);
+	static void ServerPlaySquadQuickChatMessage(AFortPlayerControllerAthena* This, FAthenaQuickChatActiveEntry& ChatEntry, FUniqueNetIdRepl& SenderID);
+
 	static void Hook() {
 		UObject* AircraftComp = FUObjectArray::FindObject("Class FortniteGame.FortControllerComponent_Aircraft");
 		if (!AircraftComp) {
@@ -95,6 +100,13 @@ public:
 			AFortPlayerControllerAthena::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerReturnToMainMenu"),
 			ServerReturnToMainMenu,
 			(LPVOID*)&ServerReturnToMainMenuOG
+		);
+
+		HookEveryVTable(
+			AFortPlayerControllerAthena::StaticClass(),
+			AFortPlayerControllerAthena::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerControllerAthena.ServerPlaySquadQuickChatMessage"),
+			ServerPlaySquadQuickChatMessage,
+			(LPVOID*)&ServerPlaySquadQuickChatMessageOG
 		);
 
 		Log("Hooked AFortPlayerControllerAthena");

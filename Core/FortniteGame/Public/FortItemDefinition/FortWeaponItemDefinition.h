@@ -46,6 +46,8 @@ public:
 class UFortDecoItemDefinition : public UFortWeaponItemDefinition {
 public:
 	DefineUnrealClass(UFortDecoItemDefinition);
+
+	DefineUProperty(TSoftClassPtr<UClass>, BlueprintClass);
 };
 
 class UFortTrapItemDefinition : public UFortDecoItemDefinition {

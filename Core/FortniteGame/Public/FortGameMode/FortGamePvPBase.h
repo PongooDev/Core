@@ -6,4 +6,6 @@
 class AFortGamePvPBase : public AFortGameModeZone {
 public:
 	DefineUnrealClass(AFortGamePvPBase);
+
+	DefineUProperty(uint8, NumTeams);
 };

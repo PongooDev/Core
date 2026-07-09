@@ -17,28 +17,15 @@
 #include "FortniteGame/Public/AI/FortAIGoalManager.h"
 #include "FortniteGame/Public/FortWeapon/FortWeaponStats.h"
 
-class UFortResourceItemDefinition* UFortKismetLibrary::K2_GetResourceItemDefinition(const uint8 ResourceType)
+UFortResourceItemDefinition* UFortKismetLibrary::K2_GetResourceItemDefinition(const uint8 ResourceType)
 {
-	if (Version::Fortnite_Version > 3.0) {
+	if (Version::Fortnite_Version > 3.4) {
 		static UFunction* Func = nullptr;
 
 		if (Func == nullptr)
 			Func = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.K2_GetResourceItemDefinition");
 
-		struct FortKismetLibrary_K2_GetResourceItemDefinition final
-		{
-		public:
-			uint8 ResourceType;
-			UFortResourceItemDefinition* ReturnValue;
-		};
-
-		FortKismetLibrary_K2_GetResourceItemDefinition Parms{};
-
-		Parms.ResourceType = ResourceType;
-
-		GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-		return Parms.ReturnValue;
+		return GetDefaultObj()->Call<UFortResourceItemDefinition*>(Func, ResourceType);
 	}
 	else {
 		UObject* ItemDefinition = nullptr;
@@ -107,24 +94,7 @@ FFortAbilitySetHandle UFortKismetLibrary::EquipFortAbilitySet(TScriptInterface<I
 		return FFortAbilitySetHandle();
 	}
 
-	struct FortKismetLibrary_EquipFortAbilitySet
-	{
-	public:
-		TScriptInterface<IAbilitySystemInterface> AbilitySystemInterfaceActor;
-		UFortAbilitySet* AbilitySet;
-		UObject* OverrideSourceObject;
-		FFortAbilitySetHandle ReturnValue;
-	};
-
-	FortKismetLibrary_EquipFortAbilitySet Parms{};
-
-	Parms.AbilitySystemInterfaceActor = AbilitySystemInterfaceActor;
-	Parms.AbilitySet = AbilitySet;
-	Parms.OverrideSourceObject = OverrideSourceObject;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<FFortAbilitySetHandle>(Func, AbilitySystemInterfaceActor, AbilitySet, OverrideSourceObject);
 }
 
 AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
@@ -184,8 +154,12 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 		Pickup->PawnWhoDroppedPickup = ItemOwner;
 	}
 
+	FVector FinalLocation = Position;
+	if (Direction.X || Direction.Y || Direction.Z)
+		FinalLocation = Direction;
+
 	Pickup->TossPickup(
-		Position,
+		FinalLocation,
 		OptionalOwnerPC ? OptionalOwnerPC->Pawn->Cast<AFortPawn>() : nullptr,
 		OverrideMaxStackCount,
 		bToss,
@@ -204,7 +178,7 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 		Pickup->bOnlyRelevantToOwner = true;
 	}
 
-	//Pickup->ForceNetUpdate();
+	Pickup->ForceNetUpdate();
 
 	//Log("UFortKismetLibrary::K2_SpawnPickupInWorld: Spawned Pickup: " + Pickup->GetName().ToString());
 	return Pickup;
@@ -402,42 +376,55 @@ bool UFortKismetLibrary::PickLootDrops(
 	TArray<UDataTable*> LootTierDataTables;
 	TArray<UDataTable*> LootPackagesDataTables;
 	if (LootTierDataTables.Num() == 0 || LootPackagesDataTables.Num() == 0) {
-		if (FortGameModeAthena && FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist) {
-			UDataTable* MainLTD = (UDataTable*)StaticLoadObject(
-				FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist->LootTierData.ObjectID.AssetPathName.ToString().ToString()
-			);
-
-			UDataTable* MainLP = (UDataTable*)StaticLoadObject(
-				FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist->LootPackages.ObjectID.AssetPathName.ToString().ToString()
-			);
-
-			if (MainLTD) {
-				LootTierDataTables.Add(MainLTD);
+		if (FortGameModeAthena) {
+			UFortPlaylistAthena* CurrentPlaylist = FortGameStateAthena->CurrentPlaylistData;
+			if (!CurrentPlaylist) {
+				CurrentPlaylist = FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist;
 			}
-			else {
-				Log("UFortKismetLibrary::PickLootDrops: Failed to load main loot tier data table from playlist!");
-			}
+			if (CurrentPlaylist && CurrentPlaylist->LootTierData && CurrentPlaylist->LootPackages) {
+				UDataTable* MainLTD = nullptr;
+				UDataTable* MainLP = nullptr;
 
-			if (MainLP) {
-				LootPackagesDataTables.Add(MainLP);
-			}
-			else {
-				Log("UFortKismetLibrary::PickLootDrops: Failed to load main loot packages data table from playlist!");
+				if (CurrentPlaylist->LootTierData) {
+					MainLTD = (UDataTable*)StaticLoadObject(
+						CurrentPlaylist->LootTierData.ObjectID.AssetPathName.ToString().ToString()
+					);
+				}
+
+				if (CurrentPlaylist->LootPackages) {
+					MainLP = (UDataTable*)StaticLoadObject(
+						CurrentPlaylist->LootPackages.ObjectID.AssetPathName.ToString().ToString()
+					);
+				}
+
+				if (MainLTD) {
+					//Log("UFortKismetLibrary::PickLootDrops: Added to LootTierDataTables: " + MainLTD->GetName().ToString());
+					LootTierDataTables.Add(MainLTD);
+				}
+				else {
+					Log("UFortKismetLibrary::PickLootDrops: Failed to load main loot tier data table from playlist!");
+				}
+
+				if (MainLP) {
+					//Log("UFortKismetLibrary::PickLootDrops: Added to LootPackagesDataTables: " + MainLP->GetName().ToString());
+					LootPackagesDataTables.Add(MainLP);
+				}
+				else {
+					Log("UFortKismetLibrary::PickLootDrops: Failed to load main loot packages data table from playlist!");
+				}
 			}
 		}
 		if (LootTierDataTables.Num() == 0) {
 			UDataTable* DefaultLTD = nullptr;
 			if (FortGameModeAthena) {
-				DefaultLTD = (UDataTable*)StaticLoadObject(
-					"/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client"
-				);
+				DefaultLTD = (UDataTable*)StaticLoadObject("/Game/Items/Datatables/AthenaLootTierData_Client.AthenaLootTierData_Client");
 			}
 			else {
-				DefaultLTD = (UDataTable*)StaticLoadObject(
-					"/Game/Items/Datatables/LootTierData_Client.LootTierData_Client"
-				);
+				DefaultLTD = (UDataTable*)StaticLoadObject("/Game/Items/Datatables/LootTierData_Client.LootTierData_Client");
 			}
+
 			if (DefaultLTD) {
+				//Log("UFortKismetLibrary::PickLootDrops: Added to LootTierDataTables: " + DefaultLTD->GetName().ToString());
 				LootTierDataTables.Add(DefaultLTD);
 			}
 			else {
@@ -447,17 +434,14 @@ bool UFortKismetLibrary::PickLootDrops(
 		if (LootPackagesDataTables.Num() == 0) {
 			UDataTable* DefaultLP = nullptr;
 			if (FortGameModeAthena) {
-				DefaultLP = (UDataTable*)StaticLoadObject(
-					"/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client"
-				);
+				DefaultLP = (UDataTable*)StaticLoadObject("/Game/Items/Datatables/AthenaLootPackages_Client.AthenaLootPackages_Client");
 			}
 			else {
-				DefaultLP = (UDataTable*)StaticLoadObject(
-					"/Game/Items/Datatables/LootPackages_Client.LootPackages_Client"
-				);
+				DefaultLP = (UDataTable*)StaticLoadObject("/Game/Items/Datatables/LootPackages_Client.LootPackages_Client");
 			}
 
 			if (DefaultLP) {
+				//Log("UFortKismetLibrary::PickLootDrops: Added to LootPackagesDataTables: " + DefaultLP->GetName().ToString());
 				LootPackagesDataTables.Add(DefaultLP);
 			}
 			else {
@@ -485,7 +469,7 @@ bool UFortKismetLibrary::PickLootDrops(
 	}
 
 	if (OutLootToDrop->Num() > 0) {
-		//Log("UFortKismetLibrary::PickLootDrops: Successfully picked " + std::to_string(OutLootToDrop.Num()) + " loot items to drop!");
+		//Log("UFortKismetLibrary::PickLootDrops: Successfully picked " + std::to_string(OutLootToDrop->Num()) + " loot items to drop!");
 		return true;
 	}
 

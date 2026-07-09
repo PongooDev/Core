@@ -36,15 +36,6 @@ public:
 	static inline void (*PostUpdateOG)(ABuildingContainer* This, uint8 PersistantState, void* ReservedRandomValues);
 	static void PostUpdate(ABuildingContainer* This, uint8 PersistantState, void* ReservedRandomValues);
 
-	static inline void (*PostLoadOG)(ABuildingContainer* This);
-	static void PostLoad(ABuildingContainer* This);
-
-	static inline bool (*ServerOnAttemptInteractOG)(ABuildingContainer* This, FInteractionType& InteractType);
-	static bool ServerOnAttemptInteract(ABuildingContainer* This, FInteractionType& InteractType);
-
-	static inline void (*BeginPlayOG)(ABuildingContainer* This);
-	static void BeginPlay(ABuildingContainer* This);
-
 	void OnSetSearched();
 
 	static void Hook() {

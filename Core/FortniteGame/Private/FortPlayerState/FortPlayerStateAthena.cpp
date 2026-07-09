@@ -12,7 +12,7 @@ void AFortPlayerStateAthena::OnRep_TeamKillScore()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerStateAthena::OnRep_TeamScore()
@@ -26,7 +26,7 @@ void AFortPlayerStateAthena::OnRep_TeamScore()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerStateAthena::ClientReportDBNO(const AFortPlayerStateAthena* Player)
@@ -44,17 +44,7 @@ void AFortPlayerStateAthena::ClientReportDBNO(const AFortPlayerStateAthena* Play
 			return;
 		}
 
-		struct FortPlayerStateAthena_ClientReportDBNO
-		{
-		public:
-			const AFortPlayerStateAthena* Player;
-		};
-
-		FortPlayerStateAthena_ClientReportDBNO Parms{};
-
-		Parms.Player = Player;
-
-		ProcessEvent(Func, &Parms);
+		return Call(Func, Player);
 	}
 }
 
@@ -69,17 +59,7 @@ void AFortPlayerStateAthena::ClientReportDBNO(const FString& DBNOPlayersName)
 		return;
 	}
 
-	struct FortPlayerStateAthena_ClientReportDBNO
-	{
-	public:
-		FString DBNOPlayersName;
-	};
-
-	FortPlayerStateAthena_ClientReportDBNO Parms{};
-
-	Parms.DBNOPlayersName = std::move(DBNOPlayersName);
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, DBNOPlayersName);
 }
 
 void AFortPlayerStateAthena::ClientReportKill(const AFortPlayerStateAthena* Player)
@@ -97,17 +77,7 @@ void AFortPlayerStateAthena::ClientReportKill(const AFortPlayerStateAthena* Play
 			return;
 		}
 
-		struct FortPlayerStateAthena_ClientReportKill
-		{
-		public:
-			const AFortPlayerStateAthena* Player;
-		};
-
-		FortPlayerStateAthena_ClientReportKill Parms{};
-
-		Parms.Player = Player;
-
-		ProcessEvent(Func, &Parms);
+		return Call(Func, Player);
 	}
 }
 
@@ -122,17 +92,7 @@ void AFortPlayerStateAthena::ClientReportKill(const FString& KilledPlayersName)
 		return;
 	}
 
-	struct FortPlayerStateAthena_ClientReportKill
-	{
-	public:
-		FString KilledPlayersName;
-	};
-
-	FortPlayerStateAthena_ClientReportKill Parms{};
-
-	Parms.KilledPlayersName = std::move(KilledPlayersName);
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, KilledPlayersName);
 }
 
 void AFortPlayerStateAthena::ClientReportTeamKill(int32 TeamKills)
@@ -146,17 +106,7 @@ void AFortPlayerStateAthena::ClientReportTeamKill(int32 TeamKills)
 		return;
 	}
 
-	struct FortPlayerStateAthena_ClientReportTeamKill
-	{
-	public:
-		int32 TeamKills;
-	};
-
-	FortPlayerStateAthena_ClientReportTeamKill Parms{};
-
-	Parms.TeamKills = TeamKills;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, TeamKills);
 }
 
 void AFortPlayerStateAthena::OnRep_Kills()
@@ -170,7 +120,7 @@ void AFortPlayerStateAthena::OnRep_Kills()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerStateAthena::OnRep_DeathInfo()
@@ -184,7 +134,7 @@ void AFortPlayerStateAthena::OnRep_DeathInfo()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerStateAthena::OnRep_Downs()
@@ -198,7 +148,7 @@ void AFortPlayerStateAthena::OnRep_Downs()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerStateAthena::OnRep_Place()
@@ -212,7 +162,7 @@ void AFortPlayerStateAthena::OnRep_Place()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerStateAthena::OnRep_TeamIndex()
@@ -226,12 +176,12 @@ void AFortPlayerStateAthena::OnRep_TeamIndex()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 uint8 AFortPlayerStateAthena::ToDeathCause(const FGameplayTagContainer& InTags, bool bWasDBNO)
 {
-	if (Version::Fortnite_Version <= 3.0 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
+	if (Version::Fortnite_Version <= 3.6 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
 		// need to reimplement this for older versions, but for now just return unspecified
 		return EDeathCause::GetUnspecified();
 	}
@@ -241,21 +191,34 @@ uint8 AFortPlayerStateAthena::ToDeathCause(const FGameplayTagContainer& InTags, 
 		if (Func == nullptr)
 			Func = StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerStateAthena:ToDeathCause");
 
-		struct FortPlayerStateAthena_ToDeathCause
-		{
-		public:
-			FGameplayTagContainer InTags;
-			bool bWasDBNO;
-			uint8 ReturnValue;
-		};
-
-		FortPlayerStateAthena_ToDeathCause Parms{};
-
-		Parms.InTags = std::move(InTags);
-		Parms.bWasDBNO = bWasDBNO;
-
-		GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-		return Parms.ReturnValue;
+		return GetDefaultObj()->Call<uint8>(Func, InTags, bWasDBNO);
 	}
+}
+
+void AFortPlayerStateAthena::OnRep_ReplicatedTeamMemberState()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("OnRep_ReplicatedTeamMemberState");
+
+	if (!Func) {
+		return;
+	}
+
+	Call(Func);
+}
+
+void AFortPlayerStateAthena::OnRep_SquadId()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("OnRep_SquadId");
+
+	if (!Func) {
+		return;
+	}
+
+	Call(Func);
 }

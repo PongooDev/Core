@@ -28,7 +28,7 @@ void AFortInventory::HandleInventoryLocalUpdate()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 bool AFortInventory::Update(FFortItemEntry* ItemEntry)
@@ -57,8 +57,14 @@ bool AFortInventory::Update(FFortItemEntry* ItemEntry)
 }
 
 void AFortInventory::InitializeExistingItem(UFortWorldItem* ExistingItem) {
-	void (*InitializeExistingItemInternal)(AFortInventory * This, UFortWorldItem * ExistingItem) = decltype(InitializeExistingItemInternal)(ImageBase + Finder::FindAFortInventory_InitializeExistingItem());
-	return InitializeExistingItemInternal(this, ExistingItem);
+	if (Finder::FindAFortInventory_InitializeExistingItem()) {
+		void (*InitializeExistingItemInternal)(AFortInventory * This, UFortWorldItem * ExistingItem) = decltype(InitializeExistingItemInternal)(ImageBase + Finder::FindAFortInventory_InitializeExistingItem());
+		return InitializeExistingItemInternal(this, ExistingItem);
+	}
+	else {
+		Inventory.ReplicatedEntries.Add(ExistingItem->ItemEntry);
+		Inventory.ItemInstances.Add(ExistingItem);
+	}
 }
 
 FFortItemEntry* AFortInventory::FindItemEntry(FGuid Guid)
@@ -265,7 +271,7 @@ AFortPlayerController* AFortInventory::GetOwnerPlayerController() const
 	return Owner ? Owner->Cast<AFortPlayerController>() : nullptr;
 }
 
-FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item)
+FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 {
 	if (!Item)
 		return nullptr;
@@ -293,7 +299,7 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item)
 	}
 
 	SetStateValues(RepEntry);
-	if (Update(RepEntry))
+	if (bDeferUpdate ? true : Update(RepEntry))
 	{
 		return RepEntry;
 	}
@@ -301,7 +307,7 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item)
 	return nullptr;
 }
 
-FFortItemEntry* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count, int32 Level)
+FFortItemEntry* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count, int32 Level, bool bDeferUpdate)
 {
 	if (!CanAddItem(Def, Count))
 		return nullptr;
@@ -316,7 +322,7 @@ FFortItemEntry* AFortInventory::AddItem(UFortItemDefinition* Def, int32 Count, i
 	return AddItem(Item);
 }
 
-FFortItemEntry* AFortInventory::AddItem(const FFortItemEntry& ItemEntry)
+FFortItemEntry* AFortInventory::AddItem(const FFortItemEntry& ItemEntry, bool bDeferUpdate)
 {
 	AFortPlayerController* PC = GetOwnerPlayerController();
 	if (!PC)
@@ -333,9 +339,56 @@ FFortItemEntry* AFortInventory::AddItem(const FFortItemEntry& ItemEntry)
 	if (!RepEntry)
 		return nullptr;
 
-	RepEntry->CopyGenericValuesFrom(&ItemEntry);
+	RepEntry->LoadedAmmo = ItemEntry.LoadedAmmo;
+	RepEntry->Durability = ItemEntry.Durability;
+	RepEntry->bIsDirty = true;
 
-	return RepEntry;
+	if (bDeferUpdate ? true : Update(RepEntry))
+	{
+		return RepEntry;
+	}
+
+	return nullptr;
+}
+
+FFortItemEntry* AFortInventory::AddItemPreserveGuid(const FFortItemEntry& ItemEntry)
+{
+	AFortPlayerController* PC = GetOwnerPlayerController();
+	if (!PC)
+		return nullptr;
+
+	UFortItemDefinition* Def = ItemEntry.ItemDefinition;
+	if (!Def)
+		return nullptr;
+
+	if (FindItemEntry(ItemEntry.ItemGuid))
+	{
+		Log("AddItemPreserveGuid: guid already exists in inventory!");
+		return nullptr;
+	}
+
+	UFortWorldItem* Item = (UFortWorldItem*)Def->CreateTemporaryItemInstanceBP(ItemEntry.Count, ItemEntry.Level);
+	if (!Item)
+		return nullptr;
+
+	FFortItemEntry::Copy(&Item->ItemEntry, &ItemEntry);
+
+	Item->SetOwningControllerForTemporaryItem(PC);
+	SetStateValues(&Item->ItemEntry);
+
+	InitializeExistingItem(Item);
+
+	if (PC->IsUsingOldQuickBars())
+		PC->QuickBars->AddItemToQuickBar(ItemEntry.ItemGuid, Def->GetQuickBarForItem());
+
+	FFortItemEntry* RepEntry = FindItemEntry(ItemEntry.ItemGuid);
+	if (!RepEntry)
+		return nullptr;
+
+	if (Update(RepEntry))
+		return RepEntry;
+
+	return nullptr;
 }
 
 int32 AFortInventory::GetOverflowFromAddingItem(const FFortItemEntry& ItemEntry)
@@ -463,7 +516,7 @@ int32 AFortInventory::GetOverflowFromAddingItem(const FFortItemEntry& ItemEntry)
 	return Remaining;
 }
 
-bool AFortInventory::RemoveItem(FGuid Guid, int32 Count)
+bool AFortInventory::RemoveItem(FGuid Guid, int32 Count, bool bDeferUpdate)
 {
 	if (!CanRemoveItem(Guid, Count))
 		return false;
@@ -479,19 +532,20 @@ bool AFortInventory::RemoveItem(FGuid Guid, int32 Count)
 	if (Entry->Count > Count)
 	{
 		Entry->Count -= Count;
-		return Update(Entry);
+		return bDeferUpdate ? true : Update(Entry);
 	}
 
-	if (PC->IsUsingOldQuickBars())
+	if (PC->IsUsingOldQuickBars() && floor(Version::Fortnite_Version) < 3)
 	{
 		PC->QuickBars->EmptyQuickbarSlot(Guid);
 	}
 
 	RemoveEntryAndInstance(Guid);
-	return Update();
+
+	return bDeferUpdate ? true : Update();
 }
 
-bool AFortInventory::RemoveItem(UFortItemDefinition* Def, int32 Count)
+bool AFortInventory::RemoveItem(UFortItemDefinition* Def, int32 Count, bool bDeferUpdate)
 {
 	if (!Def)
 	{
@@ -512,7 +566,7 @@ bool AFortInventory::RemoveItem(UFortItemDefinition* Def, int32 Count)
 		return false;
 	}
 
-	return RemoveItem(ItemEntry->ItemGuid, Count);
+	return RemoveItem(ItemEntry->ItemGuid, Count, bDeferUpdate);
 }
 
 void AFortInventory::RemoveEntryAndInstance(FGuid Guid)
@@ -577,20 +631,43 @@ int32 AFortInventory::GetInventoryUsed()
 		return 0;
 	}
 
+	AFortPlayerController* PC = GetOwnerPlayerController();
+	if (!PC) {
+		return 0;
+	}
+
+	int32 InventoryUsed = 0;
+
 	if (Version::Fortnite_Version >= 1.9 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11)
 	{
 		IFortInventoryOwnerInterface* InventoryOwner = (IFortInventoryOwnerInterface*)Owner->GetInterfaceAddress(IFortInventoryOwnerInterface::StaticClass());
 		if (!InventoryOwner)
 		{
+			Log("AFortInventory::GetInventoryUsed: Owner does not implement IFortInventoryOwnerInterface!");
 			return 0;
 		}
 
 		int32(*GetInventoryUsedInternal)(IFortInventoryOwnerInterface*, uint8) = decltype(GetInventoryUsedInternal)(ImageBase + Finder::FindAFortInventory_GetInventoryUsed());
-		return GetInventoryUsedInternal(InventoryOwner, InventoryType);
+		InventoryUsed = GetInventoryUsedInternal(InventoryOwner, InventoryType);
+	}
+	else {
+		int32(*GetInventoryUsedInternal)(AActor*, uint8) = decltype(GetInventoryUsedInternal)(ImageBase + Finder::FindAFortInventory_GetInventoryUsed());
+		InventoryUsed = GetInventoryUsedInternal(Owner, InventoryType);
 	}
 
-	int32(*GetInventoryUsedInternal)(AActor*, uint8) = decltype(GetInventoryUsedInternal)(ImageBase + Finder::FindAFortInventory_GetInventoryUsed());
-	return GetInventoryUsedInternal(Owner, InventoryType);
+	// semi fallback just incase the above fails
+	if (InventoryUsed <= 0) {
+		InventoryUsed = 0;
+
+		for (int32 i = 0; i < Inventory.ReplicatedEntries.Num(); i++) {
+			FFortItemEntry& ItemEntry = Inventory.ReplicatedEntries.GetWithSize(i, FFortItemEntry::GetSize());
+			if (ItemEntry.ItemDefinition && ItemEntry.ItemDefinition->GetQuickBarForItem() == EFortQuickBars::GetPrimary()) {
+				InventoryUsed += 1;
+			}
+		}
+	}
+
+	return InventoryUsed;
 }
 
 bool AFortInventory::IsInventoryFull()
@@ -631,13 +708,16 @@ bool AFortInventory::CanSwapForItem(UFortItemDefinition* Def)
 	return true;
 }
 
-FFortItemEntry* AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEntry, bool bSpawnPickup)
+FFortItemEntry* AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEntry, bool bSpawnPickup, bool bExecuteItem)
 {
-	if (!CanAddItem(NewItemEntry))
+	UWorld* World = UWorld::GetWorld();
+	if (!World)
 		return nullptr;
 
-	if (!CanSwapForItem(NewItemEntry.ItemDefinition))
+	AFortPlayerController* PC = GetOwnerPlayerController();
+	if (!PC) {
 		return nullptr;
+	}
 
 	FFortItemEntry* CurrentItemEntry = GetCurrentItemEntry();
 	if (!CurrentItemEntry)
@@ -646,9 +726,35 @@ FFortItemEntry* AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEnt
 	const FFortItemEntry OldItemEntry = *CurrentItemEntry;
 	const FGuid CurrentGuid = CurrentItemEntry->ItemGuid;
 	const int32 CurrentCount = CurrentItemEntry->Count;
+	const uint8 CurrentQuickBar = CurrentItemEntry->ItemDefinition->GetQuickBarForItem();
+	const int32 CurrentSlot = PC->IsUsingOldQuickBars()
+		? PC->QuickBars->FindQuickBarSlotForItem(CurrentQuickBar, CurrentGuid)
+		: PC->ClientQuickBars->FindQuickBarSlotForItem(CurrentQuickBar, CurrentGuid);
 
-	if (!RemoveItem(CurrentGuid, CurrentCount))
-		return nullptr;
+	if (PC->IsUsingOldQuickBars())
+	{
+		PC->QuickBars->EmptyQuickbarSlot(CurrentGuid);
+	}
+
+	for (int32 i = 0; i < Inventory.ReplicatedEntries.Num(); i++)
+	{
+		auto& Entry = Inventory.ReplicatedEntries.GetWithSize(i, FFortItemEntry::GetSize());
+		if (Entry.ItemGuid == CurrentGuid)
+		{
+			Inventory.ReplicatedEntries.RemoveAt(i, FFortItemEntry::GetSize());
+			break;
+		}
+	}
+
+	for (int32 i = 0; i < Inventory.ItemInstances.Num(); i++)
+	{
+		UFortWorldItem* Item = Inventory.ItemInstances[i];
+		if (Item && Item->ItemEntry.ItemGuid == CurrentGuid)
+		{
+			Inventory.ItemInstances.RemoveAt(i);
+			break;
+		}
+	}
 
 	FFortItemEntry* AddedEntry = AddItem(NewItemEntry);
 	if (!AddedEntry)
@@ -657,12 +763,44 @@ FFortItemEntry* AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEnt
 		return nullptr;
 	}
 
-	if (bSpawnPickup)
-	{
-		SpawnPickupFromEntry(OldItemEntry);
+	if (bExecuteItem) {
+		PC->ServerExecuteInventoryItem(PC, AddedEntry->ItemGuid);
+		if (PC->IsUsingOldQuickBars())
+		{
+			PC->QuickBars->EquipItem(AddedEntry->ItemGuid);
+		}
+
+		PC->ClientExecuteInventoryItem(AddedEntry->ItemGuid, 0.f, true, true);
 	}
 
-	return AddedEntry;
+	if (bSpawnPickup)
+	{
+		AFortPickup* Pickup = UFortKismetLibrary::K2_SpawnPickupInWorld(
+			World,
+			OldItemEntry.ItemDefinition,
+			OldItemEntry.Count,
+			PC->Pawn->K2_GetActorLocation(),
+			PC->GetDropFinalLocation(),
+			-1,
+			true,
+			true,
+			true,
+			-1,
+			EFortPickupSourceTypeFlag::GetPlayer(),
+			EFortPickupSpawnSource::GetTossedByPlayer(),
+			PC,
+			false
+		);
+
+		Pickup->PrimaryPickupItemEntry.LoadedAmmo = OldItemEntry.LoadedAmmo;
+		Pickup->PrimaryPickupItemEntry.Durability = OldItemEntry.Durability;
+		Pickup->PrimaryPickupItemEntry.bIsDirty = true;
+
+		Pickup->PrimaryPickupItemEntry.ReplicationKey++;
+		Pickup->OnRep_PrimaryPickupItemEntry();
+	}
+
+	return Update(AddedEntry) ? AddedEntry : nullptr;
 }
 
 bool AFortInventory::AddItemAndHandleOverflow(const FFortItemEntry& ItemEntry, bool bAllowSwap, bool bSpawnOverflowPickup)
@@ -689,11 +827,8 @@ bool AFortInventory::AddItemAndHandleOverflow(const FFortItemEntry& ItemEntry, b
 			FFortItemEntry* AddedEntry = SwapCurrentItem(OverflowEntry, bSpawnOverflowPickup);
 			if (AddedEntry)
 			{
-				PC->ServerExecuteInventoryItem(PC, AddedEntry->ItemGuid);
-				if (PC->IsUsingOldQuickBars())
-				{
-					PC->QuickBars->EquipItem(AddedEntry->ItemGuid);
-				}
+				//Log("AFortInventory::AddItemAndHandleOverflow: Swapped current item for new item: " + AddedEntry->ItemDefinition->GetName().ToString());
+				
 				return true;
 			}
 		}
@@ -706,7 +841,7 @@ bool AFortInventory::AddItemAndHandleOverflow(const FFortItemEntry& ItemEntry, b
 			OverflowEntry.ItemDefinition,
 			OverflowEntry.Count,
 			PC->Pawn->K2_GetActorLocation(),
-			*FVector::Allocate(),
+			PC->GetDropFinalLocation(),
 			-1,
 			true,
 			true,
@@ -717,7 +852,14 @@ bool AFortInventory::AddItemAndHandleOverflow(const FFortItemEntry& ItemEntry, b
 			PC,
 			false
 		);
+
 		Pickup->PrimaryPickupItemEntry.LoadedAmmo = OverflowEntry.LoadedAmmo;
+		Pickup->PrimaryPickupItemEntry.Durability = OverflowEntry.Durability;
+		Pickup->PrimaryPickupItemEntry.bIsDirty = true;
+
+		Pickup->PrimaryPickupItemEntry.ReplicationKey++;
+		Pickup->OnRep_PrimaryPickupItemEntry();
+
 		return true;
 	}
 
@@ -766,8 +908,12 @@ void AFortInventory::EquipHarvestingTool()
 	}
 }
 
-bool AFortInventory::DropAllItems(bool bSpawnPickups)
+bool AFortInventory::DropAllItems(bool bSpawnPickups, bool bUseTossDirection)
 {
+	UWorld* World = UWorld::GetWorld();
+	if (!World)
+		return false;
+
 	AFortPlayerController* PC = GetOwnerPlayerController();
 	if (!PC)
 		return false;
@@ -798,7 +944,29 @@ bool AFortInventory::DropAllItems(bool bSpawnPickups)
 		auto& Entry = EntriesToRemove.GetWithSize(i, FFortItemEntry::GetSize());
 		if (bSpawnPickups)
 		{
-			SpawnPickupFromEntry(Entry);
+			AFortPickup* Pickup = UFortKismetLibrary::K2_SpawnPickupInWorld(
+				World,
+				Entry.ItemDefinition,
+				Entry.Count,
+				PC->Pawn->K2_GetActorLocation(),
+				bUseTossDirection ? PC->GetDropFinalLocation() : *FVector::Allocate(),
+				-1,
+				true,
+				true,
+				true,
+				-1,
+				EFortPickupSourceTypeFlag::GetPlayer(),
+				EFortPickupSpawnSource::GetUnset(),
+				PC,
+				false
+			);
+
+			Pickup->PrimaryPickupItemEntry.LoadedAmmo = Entry.LoadedAmmo;
+			Pickup->PrimaryPickupItemEntry.Durability = Entry.Durability;
+			Pickup->PrimaryPickupItemEntry.bIsDirty = true;
+
+			Pickup->PrimaryPickupItemEntry.ReplicationKey++;
+			Pickup->OnRep_PrimaryPickupItemEntry();
 		}
 		RemoveItem(Entry.ItemGuid, Entry.Count);
 	}
@@ -818,6 +986,9 @@ bool AFortInventory::CanAddItemWithStacking(UFortItemDefinition* Def, int32 Coun
 	}
 
 	TArray<FFortItemEntry*> ExistingEntries = FindItemEntries(Def);
+	if (ExistingEntries.Num() == 0)
+		return true;
+
 	for (FFortItemEntry* Entry : ExistingEntries)
 	{
 		if (!Entry)
@@ -905,7 +1076,7 @@ AFortPickup* AFortInventory::SpawnPickupFromDefinition(UFortItemDefinition* Def,
 		Def,
 		Count,
 		PC->Pawn->K2_GetActorLocation(),
-		FVector(),
+		PC->GetDropFinalLocation(),
 		-1,
 		true,
 		true,
@@ -951,16 +1122,6 @@ bool AFortInventory::SetNewItemCountStateValue(FFortItemEntry* ItemEntry, int32 
 	FGuid ItemGuid = ItemEntry->ItemGuid;
 
 	ItemEntry->SetStateValue(EFortItemEntryState::GetNewItemCount(), Count);
-
-	/*std::thread([this, ItemGuid]()
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		FFortItemEntry* Entry = FindItemEntry(ItemGuid);
-		if (Entry)
-		{
-			Entry->SetStateValue(EFortItemEntryState::GetNewItemCount(), 0);
-		}
-	}).detach();*/
 
 	return true;
 }

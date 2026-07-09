@@ -162,7 +162,7 @@ FScriptContainerElement* UFortQuestManager::ProcessPendingStatEvents() {
 }
 
 AFortPlayerController* UFortQuestManager::GetPlayerControllerBP() {
-	if (Version::Fortnite_Version <= 3.0 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
+	if (Version::Fortnite_Version <= 3.6 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
 		UWorld* World = UWorld::GetWorld();
 		if (!World) {
 			Log("UFortQuestManager::GetPlayerControllerBP: World is null!");
@@ -281,7 +281,7 @@ void UFortQuestManager::ForceTriggerQuestsUpdated()
 		return;
 	}
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void UFortQuestManager::GetSourceAndContextTags(FGameplayTagContainer* OutSourceTags, FGameplayTagContainer* OutContextTags) const
@@ -291,20 +291,5 @@ void UFortQuestManager::GetSourceAndContextTags(FGameplayTagContainer* OutSource
 	if (Func == nullptr)
 		Func = FindFunction("GetSourceAndContextTags");
 
-	struct FortQuestManager_GetSourceAndContextTags
-	{
-	public:
-		FGameplayTagContainer OutSourceTags;
-		FGameplayTagContainer OutContextTags;
-	};
-
-	FortQuestManager_GetSourceAndContextTags Parms{};
-
-	const_cast<UFortQuestManager*>(this)->ProcessEvent(Func, &Parms);
-
-	if (OutSourceTags != nullptr)
-		*OutSourceTags = std::move(Parms.OutSourceTags);
-
-	if (OutContextTags != nullptr)
-		*OutContextTags = std::move(Parms.OutContextTags);
+	return const_cast<UFortQuestManager*>(this)->Call<void>(Func, OutSourceTags, OutContextTags);
 }

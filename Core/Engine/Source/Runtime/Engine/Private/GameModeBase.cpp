@@ -10,15 +10,12 @@
 
 APawn* AGameModeBase::SpawnDefaultPawnFor(AController* NewPlayer, AActor* StartSpot)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"SpawnDefaultPawnFor"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		APawn* (*&SpawnDefaultPawnForInternal)(AGameModeBase*, AController*, AActor*) = decltype(SpawnDefaultPawnForInternal)(VTable[VTableIdx]);
-		return SpawnDefaultPawnForInternal(this, NewPlayer, StartSpot);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("SpawnDefaultPawnFor");
 
-	return nullptr;
+	return const_cast<AGameModeBase*>(this)->Call<APawn*>(Func, NewPlayer, StartSpot);
 }
 
 APawn* AGameModeBase::SpawnDefaultPawnAtTransform(AController* NewPlayer, const FTransform& SpawnTransform)
@@ -28,34 +25,17 @@ APawn* AGameModeBase::SpawnDefaultPawnAtTransform(AController* NewPlayer, const 
 	if (Func == nullptr)
 		Func = FindFunction("SpawnDefaultPawnAtTransform");
 
-	struct GameModeBase_SpawnDefaultPawnAtTransform
-	{
-	public:
-		AController* NewPlayer;
-		uint8 Pad_8[0x8];
-		FTransform SpawnTransform;
-		APawn* ReturnValue;
-	};
-
-	GameModeBase_SpawnDefaultPawnAtTransform Parms{};
-
-	Parms.NewPlayer = NewPlayer;
-	Parms.SpawnTransform = std::move(SpawnTransform);
-
-	ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AGameModeBase*>(this)->Call<APawn*>(Func, NewPlayer, SpawnTransform);
 }
 
 void AGameModeBase::RestartPlayer(AController* NewPlayer)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"RestartPlayer"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&RestartPlayerInternal)(AGameModeBase*, AController*) = decltype(RestartPlayerInternal)(VTable[VTableIdx]);
-		RestartPlayerInternal(this, NewPlayer);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("RestartPlayer");
+
+	return const_cast<AGameModeBase*>(this)->Call<void>(Func, NewPlayer);
 }
 
 void AGameModeBase::FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation)
@@ -66,45 +46,41 @@ void AGameModeBase::FinishRestartPlayer(AController* NewPlayer, const FRotator& 
 
 void AGameModeBase::HandleStartingNewPlayer(APlayerController* NewPlayer)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"HandleStartingNewPlayer"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&HandleStartingNewPlayerInternal)(AGameModeBase*, APlayerController*) = decltype(HandleStartingNewPlayerInternal)(VTable[VTableIdx]);
-		HandleStartingNewPlayerInternal(this, NewPlayer);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("HandleStartingNewPlayer");
+
+	return const_cast<AGameModeBase*>(this)->Call<void>(Func, NewPlayer);
 }
 
 AActor* AGameModeBase::ChoosePlayerStart(AController* Player)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"ChoosePlayerStart"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
-		AActor* (*&ChoosePlayerStartInternal)(AGameModeBase*, AController*) = decltype(ChoosePlayerStartInternal)(VTable[VTableIdx]);
-		return ChoosePlayerStartInternal(this, Player);
-	}
+	static UFunction* Func = nullptr;
 
-	return nullptr;
+	if (Func == nullptr)
+		Func = FindFunction("ChoosePlayerStart");
+
+	return const_cast<AGameModeBase*>(this)->Call<AActor*>(Func, Player);
 }
 
 void AGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"RestartPlayerAtPlayerStart"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
-		void (*&RestartPlayerAtPlayerStartInternal)(AGameModeBase*, AController*, AActor*) = decltype(RestartPlayerAtPlayerStartInternal)(VTable[VTableIdx]);
-		RestartPlayerAtPlayerStartInternal(this, NewPlayer, StartSpot);
-	}
+	static UFunction* Func = nullptr;
+	if (Func == nullptr)
+		Func = FindFunction("RestartPlayerAtPlayerStart");
+	
+	return const_cast<AGameModeBase*>(this)->Call<void>(Func, NewPlayer, StartSpot);
 }
 
 void AGameModeBase::RestartPlayerAtTransform(AController* NewPlayer, const FTransform& SpawnTransform)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"RestartPlayerAtTransform"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
-		void (*&RestartPlayerAtTransformInternal)(AGameModeBase*, AController*, const FTransform&) = decltype(RestartPlayerAtTransformInternal)(VTable[VTableIdx]);
-		RestartPlayerAtTransformInternal(this, NewPlayer, SpawnTransform);
-	}
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("RestartPlayerAtTransform");
+
+	return const_cast<AGameModeBase*>(this)->Call<void>(Func, NewPlayer, SpawnTransform);
 }
 
 APlayerController* AGameModeBase::SpawnPlayerController(ENetRole InRemoteRole, FVector const& SpawnLocation, FRotator const& SpawnRotation)

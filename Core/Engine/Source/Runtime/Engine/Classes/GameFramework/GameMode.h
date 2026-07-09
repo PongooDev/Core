@@ -48,17 +48,7 @@ public:
 		if (Func == nullptr)
 			Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetMatchState"));
 
-		struct GameMode_GetMatchState
-		{
-		public:
-			FName ReturnValue;
-		};
-
-		GameMode_GetMatchState Parms{};
-
-		const_cast<AGameMode*>(this)->ProcessEvent(Func, &Parms);
-
-		return Parms.ReturnValue;
+		return const_cast<AGameMode*>(this)->Call<FName>(Func);
 	}
 
 	bool IsMatchInProgress() const;

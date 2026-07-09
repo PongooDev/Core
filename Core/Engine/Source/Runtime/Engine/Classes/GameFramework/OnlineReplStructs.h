@@ -8,5 +8,5 @@ struct FUniqueNetIdRepl : public FUniqueNetIdWrapper {
 public:
 	DefineUnrealStruct(FUniqueNetIdRepl);
 public:
-	uint8 Padding[0x17];
+	uint8 Padding[0x27];
 };

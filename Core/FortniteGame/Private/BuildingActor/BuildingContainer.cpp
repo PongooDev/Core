@@ -27,9 +27,10 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 	FVector LootSpawnLocation = This->LootSpawnLocation;
 	FVector FinalSpawnLocation = ContainerLocation + (This->GetActorForwardVector() * LootSpawnLocation.X) +
 		(This->GetActorRightVector() * LootSpawnLocation.Y) + (This->GetActorUpVector() * LootSpawnLocation.Z);
+	FVector LootFinalLocation = ContainerLocation + (This->GetActorForwardVector() * This->LootFinalLocation.X) + (This->GetActorRightVector() * This->LootFinalLocation.Y) +
+		(This->GetActorUpVector() * This->LootFinalLocation.Z);
 
 	TArray<FFortItemEntry> LootDrops;
-
 	bool bSuccess = UFortKismetLibrary::PickLootDrops(This, &LootDrops, This->SearchLootTierGroup, 0, This->ReplicatedLootTier);
 
 	for (int i = 0; i < LootDrops.Num(); i++) {
@@ -44,7 +45,7 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 			ItemEntry.ItemDefinition,
 			ItemEntry.Count,
 			FinalSpawnLocation,
-			FVector(),
+			*FVector::Allocate(),
 			-1,
 			true,
 			true,
@@ -61,6 +62,7 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 				int32 Level = Pickup->PrimaryPickupItemEntry.Level;
 				Pickup->PrimaryPickupItemEntry.LoadedAmmo = WeaponDef->GetClipSize(Level);
 				Pickup->PrimaryPickupItemEntry.Durability = WeaponDef->GetDurability(Level);
+				Pickup->PrimaryPickupItemEntry.bIsDirty = true;
 				Pickup->PrimaryPickupItemEntry.ReplicationKey++;
 				Pickup->OnRep_PrimaryPickupItemEntry();
 			}
@@ -88,7 +90,7 @@ void ABuildingContainer::OnRep_bAlreadySearched()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_bAlreadySearched"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void ABuildingContainer::BounceContainer()
@@ -98,7 +100,7 @@ void ABuildingContainer::BounceContainer()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"BounceContainer"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void ABuildingContainer::PostUpdate(ABuildingContainer* This, uint8 PersistantState, void* ReservedRandomValues)
@@ -197,5 +199,5 @@ void ABuildingContainer::OnSetSearched()
 	if (Func == nullptr)
 		Func = FindFunction("OnSetSearched");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }

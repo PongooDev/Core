@@ -23,6 +23,7 @@ class UPlayer;
 class UPrimitiveComponent;
 struct FActiveHapticFeedbackEffect;
 struct FCollisionQueryParams;
+class APlayerCameraManager;
 
 class APlayerController : public AController {
 public:
@@ -32,6 +33,7 @@ public:
 	DefineUProperty(TSubclassOf<UCheatManager>, CheatClass);
 	DefineUProperty(FVector, LastSpectatorSyncLocation);
 	DefineUProperty(FRotator, LastSpectatorSyncRotation);
+	DefineUProperty(APlayerCameraManager*, PlayerCameraManager);
 public:
 	static inline void (*ServerAcknowledgePossessionOG)(APlayerController* This, APawn* P);
 	void ServerAcknowledgePossession(APawn* P);

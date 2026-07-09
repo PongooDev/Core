@@ -8,6 +8,21 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/GameInstance.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/OnlineReplStructs.h"
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
+#include "Engine/Source/Runtime/Core/Public/Misc/OutputDevice.h"
+#include "Engine/Source/Runtime/Core/Public/Templates/TypeCompatibleBytes.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptInterface.h"
+#include "Engine/Source/Runtime/Net/Core/Classes/Net/Serialization/FastArraySerializer.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DataAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DataTable.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/CurveTable.h"
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
 
 class AFortPlayerPawn;
 class ABuildingSMActor;
@@ -51,8 +66,8 @@ public:
 
 	void SetupQuickBars();
 
-	static inline void (*ServerCheatOG)(AFortPlayerController* This, FString* Msg);
-	static void ServerCheat(AFortPlayerController* This, FString* Msg);
+	static inline void (*ServerCheatOG)(AFortPlayerController* This, FString& Msg);
+	static void ServerCheat(AFortPlayerController* This, FString& Msg);
 
 	static inline void (*ServerExecuteInventoryItemOG)(AFortPlayerController* This, FGuid& ItemGuid);
 	static void ServerExecuteInventoryItem(AFortPlayerController* This, FGuid& ItemGuid);
@@ -95,9 +110,6 @@ public:
 	static inline void (*ServerEndEditingBuildingActorOG)(AFortPlayerController* This, ABuildingSMActor* BuildingActorToStopEditing);
 	static void ServerEndEditingBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToStopEditing);
 
-	static inline void (*ServerAttemptInteractOG)(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType);
-	static void ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType);
-
 	static void ServerRemoveInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, uint8 StateValueType);
 
 	static void ServerSetInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, FFortItemEntryStateValue& StateValue);
@@ -106,18 +118,27 @@ public:
 
 	UFortQuestManager* GetQuestManager(uint8 SubGame) const;
 
-	static inline void (*ServerRepairBuildingActorOG)(AFortPlayerController* This, ABuildingSMActor* BuildingActorToRepair);
-	static void ServerRepairBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToRepair);
+	void ServerRepairBuildingActor(ABuildingSMActor* BuildingActorToRepair);
+	static inline void (*execServerRepairBuildingActorOG)(AFortPlayerController* Context, FFrame& Stack);
+	static void execServerRepairBuildingActor(AFortPlayerController* Context, FFrame& Stack);
 
 	int32 PayBuildingRepairCost(ABuildingSMActor* BuildingToRepair);
 
 	static inline void (*ServerPlayEmoteItemOG)(AFortPlayerController* This, UFortMontageItemDefinitionBase* EmoteAsset);
-	static void ServerPlayEmoteItem(AFortPlayerController* This, UFortMontageItemDefinitionBase* EmoteAsset);
+	static void ServerPlayEmoteItem(AFortPlayerController* This, UFortMontageItemDefinitionBase* EmoteAsset, float EmoteRandomNumber);
 
 	static inline void (*GetPlayerViewPointOG)(AFortPlayerController* This, FVector& out_Location, FRotator& out_Rotation);
 	static void GetPlayerViewPoint(AFortPlayerController* This, FVector& out_Location, FRotator& out_Rotation);
 
 	FUniqueNetIdRepl GetGameAccountId() const;
+
+	static void ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType, UObject* OptionalObjectData);
+	static inline void (*execServerAttemptInteractOG)(AFortPlayerController* Context, FFrame& Stack);
+	static void execServerAttemptInteract(AFortPlayerController* Context, FFrame& Stack);
+
+	FVector GetDropFinalLocation();
+
+	void ClientExecuteInventoryItem(FGuid& ItemGuid, float Delay, bool bForceExecute, bool bActivateSlotAfterSettingFocused);
 
 	static void Hook() {
 		/*HookVTableIdx(
@@ -151,17 +172,17 @@ public:
 
 		UFunction* ServerAttemptInventoryDropFunc = AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInventoryDrop");
 		if (ServerAttemptInventoryDropFunc) {
-			HookEveryVTable(
+			HookEveryVTableIdx(
 				AFortPlayerController::StaticClass(),
-				ServerAttemptInventoryDropFunc,
+				ServerAttemptInventoryDropFunc->GetVTableIndex(),
 				ServerAttemptInventoryDrop,
 				nullptr
 			);
 		}
 		else {
-			HookEveryVTable(
+			HookEveryVTableIdx(
 				AFortPlayerController::StaticClass(),
-				AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerSpawnInventoryDrop"),
+				AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerSpawnInventoryDrop")->GetVTableIndex(),
 				ServerAttemptInventoryDrop,
 				nullptr
 			);
@@ -182,7 +203,7 @@ public:
 		);*/
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_RemoveInventoryItem()), RemoveInventoryItem, (LPVOID*)&RemoveInventoryItemOG);
 
-		if (Version::Fortnite_Version <= 2.42 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
+		if (Version::Fortnite_Version <= 3.6 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
 			HookEveryVTable(
 				AFortPlayerController::StaticClass(),
 				AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerCreateBuildingActor"),
@@ -214,13 +235,6 @@ public:
 
 		HookEveryVTable(
 			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInteract"),
-			ServerAttemptInteract,
-			(LPVOID*)&ServerAttemptInteractOG
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
 			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRemoveInventoryStateValue"),
 			ServerRemoveInventoryStateValue
 		);
@@ -231,12 +245,13 @@ public:
 			ServerSetInventoryStateValue
 		);
 
-		HookEveryVTableIdx(
+		/*HookEveryVTableIdx(
 			AFortPlayerController::StaticClass(),
 			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRepairBuildingActor")->GetVTableIndex(),
 			ServerRepairBuildingActor,
 			(LPVOID*)&ServerRepairBuildingActorOG
-		);
+		);*/
+		ExecHook(AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRepairBuildingActor"), execServerRepairBuildingActor, execServerRepairBuildingActorOG);
 
 		HookEveryVTable(
 			AFortPlayerController::StaticClass(),
@@ -246,6 +261,17 @@ public:
 		);
 
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_GetPlayerViewPoint()), GetPlayerViewPoint, (LPVOID*)&GetPlayerViewPointOG);
+
+		UFunction* ServerAttemptInteractFunc = AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInteract");
+		if (ServerAttemptInteractFunc) {
+			/*HookEveryVTable(
+				AFortPlayerController::StaticClass(),
+				ServerAttemptInteractFunc,
+				ServerAttemptInteract,
+				(LPVOID*)&ServerAttemptInteractOG
+			);*/
+			ExecHook(ServerAttemptInteractFunc, execServerAttemptInteract, execServerAttemptInteractOG);
+		}
 
 		Log("Hooked AFortPlayerController");
 	}

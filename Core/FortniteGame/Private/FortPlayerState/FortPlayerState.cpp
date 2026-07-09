@@ -14,7 +14,7 @@ void AFortPlayerState::OnRep_bHasStartedPlaying()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_bHasStartedPlaying"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerState::OnRep_CharacterParts()
@@ -24,18 +24,17 @@ void AFortPlayerState::OnRep_CharacterParts()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_CharacterParts"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void AFortPlayerState::OnRep_HeroType()
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_HeroType"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&OnRep_HeroTypeInternal)(AFortPlayerState*) = decltype(OnRep_HeroTypeInternal)(VTable[VTableIdx]);
-		return OnRep_HeroTypeInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("OnRep_HeroType");
+
+	Call(Func);
 }
 
 void AFortPlayerState::InitializeHero() {

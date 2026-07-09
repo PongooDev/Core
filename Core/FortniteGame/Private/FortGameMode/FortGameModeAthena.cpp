@@ -25,6 +25,10 @@
 #include "FortniteGame/Public/FortQuest/FortQuestObjectiveCompletion.h"
 #include "FortniteGame/Public/FortPlayer/FortPlayerDeathReport.h"
 #include "FortniteGame/Public/Info/FortTeamInfo.h"
+#include "FortniteGame/Public/FortPlaylist/FortPlaylistAthena.h"
+#include "FortniteGame/Public/FortPlaylist/FortPlaylistManager.h"
+#include "FortniteGame/Public/Athena/FortAthenaMapInfo.h"
+#include "FortniteGame/Public/FortSupplyDrop/FortSupplyDropInfo.h"
 
 bool AFortGameModeAthena::ReadyToStartMatch(AFortGameModeAthena* This) {
 	if (This->bWorldIsReady
@@ -53,25 +57,46 @@ APawn* AFortGameModeAthena::SpawnDefaultPawnFor(AFortGameModeAthena* This, ACont
 }
 
 void AFortGameModeAthena::FinishWorldInitialization(AFortGameModeAthena* This, AFortWorldManager* WorldManager) {
-	AFortGameModeZone::FinishWorldInitialization(This, WorldManager);
-	FinishWorldInitializationOG(This, WorldManager);
-	
-	AFortGameStateAthena* GameState = This->GameState ? This->GameState->Cast<AFortGameStateAthena>() : nullptr;
+	AFortGameStateAthena* GameState = This->GameState->Cast<AFortGameStateAthena>();
 	if (!GameState) {
-		Log("FinishWorldInitialization: GameState is null or not AFortGameStateAthena");
+		Log("AFortGameModeAthena::FinishWorldInitialization: GameState is null or not AFortGameStateAthena");
 		return FinishWorldInitializationOG(This, WorldManager);
 	}
+	
+	GameState->OnRep_CurrentPlaylistData();
+	GameState->OnRep_CurrentPlaylistInfo();
+	
+	FinishWorldInitializationOG(This, WorldManager);
+	AFortGameModeZone::FinishWorldInitialization(This, WorldManager);
 
 	This->DefaultPawnClass = (UClass*)StaticLoadObject("/Game/Athena/PlayerPawn_Athena.PlayerPawn_Athena_C");
 	//This->PlayerControllerClass = (UClass*)StaticLoadObject("/Game/Athena/Athena_PlayerController.Athena_PlayerController_C");
 
 	This->bDisableGCOnServerDuringMatch = true;
-	
-	GameState->SetCurrentPlaylistId(This->CurrentPlaylistId);
 
-	This->GameSession->MaxPlayers = 100;
+	if (GameState->MapInfo) {
+		GameState->MapInfo->SpawnLlamas();
+	}
+	else {
+		Log("AFortGameModeAthena::FinishWorldInitialization: MapInfo is null");
+	}
 
-	This->MaxPlayerCount = 100;
+	if (UAthenaBattleBusItemDefinition* BBID = GetBattleBusItemDefinition()) {
+		GameState->DefaultBattleBus = BBID;
+		Log("Set Custom Battle Bus: " + BBID->GetName().ToString());
+	}
+	if (UClass* SupplyDropClass = GetSupplyDropClass()) {
+		GameState->MapInfo->SupplyDropClass = SupplyDropClass;
+
+		for (UFortSupplyDropInfo* SupplyDropInfo : GameState->MapInfo->SupplyDropInfoList) {
+			SupplyDropInfo->SupplyDropClass = SupplyDropClass;
+		}
+
+		Log("Set Custom Supply Drop Class: " + SupplyDropClass->GetName().ToString());
+	}
+
+	GameState->OnRep_CurrentPlaylistData();
+	GameState->OnRep_CurrentPlaylistInfo();
 }
 
 void AFortGameModeAthena::AddToAlivePlayers(AFortPlayerControllerAthena* PC) {
@@ -104,7 +129,7 @@ int32 AFortGameModeAthena::StartAircraftPhase(AFortGameModeAthena* This, bool bG
 uint8 AFortGameModeAthena::PickTeam(AFortGameModeAthena* This, uint8 PreferredTeam, AFortPlayerController* ControllerToPickFor) {
 	FCoreConfig& Config = ConfigurationManager::GetConfig();
 	if (Config.bDevSameTeam) {
-		return 0;
+		return 2;
 	}
 	if (Config.bUseGameSessions) {
 		return PickTeamOG(This, PreferredTeam, ControllerToPickFor);
@@ -129,4 +154,134 @@ uint8 AFortGameModeAthena::PickTeam(AFortGameModeAthena* This, uint8 PreferredTe
 	}
 
 	return PickTeamOG(This, PreferredTeam, ControllerToPickFor);
+}
+
+void AFortGameModeAthena::InitGameState(AFortGameModeAthena* This) {
+	InitGameStateOG(This);
+	
+	FCoreConfig& Config = ConfigurationManager::GetConfig();
+
+	AFortGameStateAthena* GameState = This->GameState->Cast<AFortGameStateAthena>();
+	if (!GameState) {
+		Log("AFortGameModeAthena::InitGameState: GameState is null or not AFortGameStateAthena");
+		return;
+	}
+
+	if (UFortPlaylistManager::StaticClass()) {
+		UFortPlaylistManager* PlaylistManager = UFortPlaylistManager::Get();
+		UFortPlaylistAthena* Playlist = nullptr;
+		if (PlaylistManager) {
+			// We need to check if Config.Playlist is a number or a string and thats how we will find the playlist
+			if (Config.Playlist.find_first_not_of("0123456789") == std::string::npos) {
+				int32 PlaylistId = std::stoi(Config.Playlist);
+				Playlist = PlaylistManager->GetPlaylist(PlaylistId);
+			}
+			else {
+				FName PlaylistName = UKismetStringLibrary::Conv_StringToName(Config.Playlist);
+				Playlist = PlaylistManager->GetPlaylist(PlaylistName);
+			}
+		}
+		else {
+			Log("AFortGameModeAthena::InitGameState: Failed to get PlaylistManager");
+		}
+
+		if (Playlist) {
+			if (GameState->_HasCurrentPlaylistData()) {
+				GameState->CurrentPlaylistData = Playlist;
+			}
+			if (GameState->_HasCurrentPlaylistInfo()) {
+				GameState->CurrentPlaylistInfo.BasePlaylist = Playlist;
+				GameState->CurrentPlaylistInfo.OverridePlaylist = Playlist;
+				GameState->CurrentPlaylistInfo.PlaylistReplicationKey++;
+				GameState->CurrentPlaylistInfo.MarkArrayDirty();
+			}
+
+			This->CurrentPlaylistName = Playlist->GetPlaylistName();
+			This->CurrentPlaylistId = Playlist->GetPlaylistId();
+			GameState->SetCurrentPlaylistId(This->CurrentPlaylistId);
+
+			GameState->TeamCount = Playlist->MaxTeamCount;
+			GameState->TeamSize = Playlist->MaxTeamSize;
+			GameState->bIsLargeTeamGame = Playlist->bIsLargeTeamGame;
+
+			This->GameSession->MaxPlayers = Playlist->MaxPlayers;
+			This->GameSession->MaxPartySize = Playlist->MaxTeamSize;
+
+			This->MaxPlayerCount = Playlist->MaxPlayers;
+
+			GameState->CachedSafeZoneStartUp = Playlist->SafeZoneStartUp;
+
+			Log("AFortGameModeAthena::InitGameState: Applied playlist " + Playlist->GetFName().ToString().ToString());
+
+			// Start Playlist Dump
+			Log("====== Playlist Dump ======");
+			Log("Playlist: " + Playlist->GetFName().ToString().ToString());
+			Log("PlaylistName: " + Playlist->GetPlaylistName().ToString().ToString());
+			Log("PlaylistId: " + std::to_string(Playlist->GetPlaylistId()));
+			Log("MaxTeamCount: " + std::to_string(Playlist->MaxTeamCount));
+			Log("MaxTeamSize: " + std::to_string(Playlist->MaxTeamSize));
+			Log("MaxSquadSize: " + std::to_string(Playlist->MaxSquadSize));
+			Log("MaxPlayers: " + std::to_string(Playlist->MaxPlayers));
+			Log("SafeZoneStartUp: " + std::to_string(Playlist->SafeZoneStartUp));
+			Log("bIsLargeTeamGame: " + std::string(Playlist->bIsLargeTeamGame ? "true" : "false"));
+			Log("====== End Playlist Dump ======");
+		}
+		else {
+			Log("AFortGameModeAthena::InitGameState: Failed to get Playlist");
+		}
+	}
+	else {
+		GameState->SetCurrentPlaylistId(This->CurrentPlaylistId);
+
+		This->GameSession->MaxPlayers = 100;
+		This->GameSession->MaxPartySize = GameState->TeamSize;
+
+		This->MaxPlayerCount = 100;
+	}
+}
+
+UAthenaBattleBusItemDefinition* AFortGameModeAthena::GetBattleBusItemDefinition() {
+	UAthenaBattleBusItemDefinition* BBID = nullptr;
+	if (Version::Fortnite_Version == 1.11
+		|| (Version::Fortnite_Version >= 2.1 && Version::Fortnite_Version <= 2.42)) {
+		BBID = (UAthenaBattleBusItemDefinition*)StaticLoadObject("/Game/Athena/Items/Cosmetics/BattleBuses/BBID_WinterBus.BBID_WinterBus");
+	}
+
+	return BBID;
+}
+
+UClass* AFortGameModeAthena::GetSupplyDropClass() {
+	UClass* SupplyDropClass = nullptr;
+	if (Version::Fortnite_Version == 1.11
+		|| (Version::Fortnite_Version >= 2.1 && Version::Fortnite_Version <= 2.42)) {
+		SupplyDropClass = (UClass*)StaticLoadObject("/Game/Athena/SupplyDrops/B_AthenaSupplyDrop_Gift.B_AthenaSupplyDrop_Gift_C");
+	}
+
+	return SupplyDropClass;
+}
+
+void AFortGameModeAthena::PlacePlayerOnTeam(AFortGameModeAthena* This, AFortPlayerController* FortPC) {
+	PlacePlayerOnTeamOG(This, FortPC);
+	if (!FortPC) {
+		return;
+	}
+
+	AFortGameStateAthena* GameState = This->GameState->Cast<AFortGameStateAthena>();
+	if (!GameState) {
+		Log("AFortGameModeAthena::PlacePlayerOnTeam: GameState is null or not AFortGameStateAthena");
+		return;
+	}
+
+	AFortPlayerStateAthena* FortPS = FortPC->PlayerState->Cast<AFortPlayerStateAthena>();
+	if (!FortPS) {
+		return;
+	}
+
+	FCoreConfig& Config = ConfigurationManager::GetConfig();
+	if (GameState->TeamSize > 1 && !Config.bUseGameSessions) {
+		FortPS->SquadId = FortPS->TeamIndex - 3;
+		FortPS->OnRep_SquadId();
+
+		Log("AFortGameModeAthena::PlacePlayerOnTeam: Set SquadId for PlayerState: " + FortPS->GetName().ToString() + " to " + std::to_string(FortPS->SquadId));
+	}
 }

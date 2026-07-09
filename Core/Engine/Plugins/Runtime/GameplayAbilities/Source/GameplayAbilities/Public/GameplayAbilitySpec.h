@@ -38,7 +38,7 @@ public:
 
 	DefineStructProperty(FGameplayAbilityActivationInfo, ActivationInfo)
 public:
-	uint8 Padding[0x6C];
+	uint8 Padding[0xBC];
 public:
 	FGameplayAbilitySpec()
 	{

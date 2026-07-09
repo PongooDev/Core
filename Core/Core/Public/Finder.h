@@ -317,6 +317,8 @@ public:
 
 	static uintptr_t FindAGameModeBase_InitGameState();
 
+	static uintptr_t FindAGameModeBase_InitGameStateVFT();
+
 	static uintptr_t FindAGameModeBase_CanServerTravel();
 
 	static uintptr_t FindUKismetStringLibrary_Conv_StringToName();
@@ -1080,6 +1082,26 @@ public:
 	static uintptr_t FindUNetConnection_FindActorChannelRef();
 
 	static uintptr_t FindUFortAssetManager_Get();
+
+	static uintptr_t FindUDemoNetDriver_TickFlushInternal();
+
+	static uintptr_t FindAFortAthenaMapInfo_PickSupplyDropLocation();
+
+	static uintptr_t FindAFortDecoTool_ShouldAllowServerSpawnDecoVFT();
+
+	static uintptr_t FindAFortDecoTool_SpawnDecoVFT();
+
+	static uintptr_t FindAFortGameMode_InitializeTeams();
+
+	static uintptr_t FindAFortGameMode_InitializeTeamsVFT();
+
+	static uintptr_t FindAActor_PreInitializeComponents();
+
+	static uintptr_t FindAActor_PreInitializeComponentsVFT();
+
+	static uintptr_t FindAFortGameModeAthena_PlacePlayerOnTeam();
+
+	static uintptr_t FindAFortGameMode_PlacePlayerOnTeamVFT();
 public:
 	static void SetupCoreOffsets();
 

@@ -10,6 +10,7 @@ class AFortPlayerController;
 class AFortWorldManager;
 class AFortMissionManager;
 class AFortGameSession;
+class UFortPlaylistManager;
 
 class AFortGameMode : public AGameMode {
 public:
@@ -23,6 +24,7 @@ public:
 	DefineBitfieldUProperty(bTeamGame);
 	DefineUProperty(bool, bDBNOEnabled);
 	DefineUProperty(AFortGameSession*, FortGameSession);
+	DefineUProperty(UFortPlaylistManager*, PlaylistManager);
 public:
 	static inline APawn* (*SpawnDefaultPawnForOG)(AFortGameMode* This, AController* NewPlayer, AActor* StartSpot);
 	static APawn* SpawnDefaultPawnFor(AFortGameMode* This, AController* NewPlayer, AActor* StartSpot);
@@ -44,6 +46,11 @@ public:
 
 	static inline bool (*ReadyToStartMatchOG)(AFortGameMode* This);
 	static bool ReadyToStartMatch(AFortGameMode* This);
+
+	static inline void (*PreInitializeComponentsOG)(AFortGameMode* This);
+	static void PreInitializeComponents(AFortGameMode* This);
+
+	void InitializeTeams();
 
 	static void Hook() {
 		//CreateVTableOriginal(AFortGameMode::GetDefaultObj(), AFortGameMode::StaticClass()->GetFunction("Function /Script/Engine.GameModeBase.SpawnDefaultPawnFor"), (LPVOID*)&SpawnDefaultPawnForOG);
@@ -85,6 +92,12 @@ public:
 			AFortGameMode::StaticClass()->GetFunction("Function /Script/Engine.GameMode.ReadyToStartMatch"),
 			ReadyToStartMatch,
 			(LPVOID*)&ReadyToStartMatchOG
+		);
+
+		MH_CreateHook(
+			(LPVOID)(GetOffsetFromVTable(AFortGameMode::GetDefaultObj(), Finder::FindAActor_PreInitializeComponentsVFT())),
+			PreInitializeComponents,
+			(LPVOID*)&PreInitializeComponentsOG
 		);
 
 		Log("AFortGameMode Hooked!");

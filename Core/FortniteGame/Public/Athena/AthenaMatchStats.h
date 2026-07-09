@@ -26,5 +26,5 @@ public:
 	DefineStructProperty(int32, MaterialsUsed);
 	DefineStructProperty(int32, CriticalShots);
 public:
-	uint8 Padding[0x50];
+	uint8 Padding[0x74];
 };

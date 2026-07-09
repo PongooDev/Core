@@ -37,9 +37,7 @@ void UActorChannel::SetChannelActorForDestroy(FActorDestructionInfo* DestructInf
 	}
 	else {
 		if (Version::Engine_Version >= 4.0 && Version::Engine_Version <= 4.19) {
-			UActorChannelUE416* ActorChannel = (UActorChannelUE416*)this;
-
-			if (ActorChannel->Closing && (Connection->State == USOCK_Open || Connection->State == USOCK_Pending))
+			if (/*Closing && */(Connection->State == USOCK_Open || Connection->State == USOCK_Pending))
 			{
 				// Send a close notify, and wait for ack.
 				FOutBunch CloseBunch(this, 1);

@@ -11,7 +11,11 @@ const FNameEntry* FName::GetComparisonNameEntry() const
 
 FString FName::ToString() const
 {
-	FString Out = FString();
+	if (IsNone()) {
+		return L"None";
+	}
+
+	FString Out = L"";
 
 	if (Finder::FindFName_ToStringOut() != 0)
 	{
@@ -25,14 +29,15 @@ FString FName::ToString() const
 }
 
 void FName::ToString(FString& Out) const
-{
+{			
 	static void (*ToStringInternal)(const FName*, FString&) = nullptr;
 	if (!ToStringInternal)
 	{
-		uintptr_t addr = ImageBase + Finder::FindFName_ToStringOut();
+		const uintptr_t addr = ImageBase + Finder::FindFName_ToStringOut();
+		if (!addr)
+			return;
 		ToStringInternal = reinterpret_cast<void(*)(const FName*, FString&)>(addr);
 	}
-
 	ToStringInternal(this, Out);
 }
 

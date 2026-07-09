@@ -45,7 +45,7 @@ public:
 
 	static TArray<FFortLootPackageData*> GetCandidateLootPackages(
 		TArray<UDataTable*>& LootPackageDataTables,
-		TArray<FFortLootPackageData*> LootPackages,
+		const TArray<FFortLootPackageData*>& LootPackages,
 		FString LootPackageID,
 		FFortLootTierData* LootTierData,
 		int32 WorldLevel = -1

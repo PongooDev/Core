@@ -15,22 +15,7 @@ int32 UKismetMathLibrary::RandomIntegerInRange(int32 Min, int32 Max)
 		return 0;
 	}
 
-	struct KismetMathLibrary_RandomIntegerInRange final
-	{
-	public:
-		int32 Min;
-		int32 Max;
-		int32 ReturnValue;
-	};
-
-	KismetMathLibrary_RandomIntegerInRange Parms{};
-
-	Parms.Min = Min;
-	Parms.Max = Max;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, Min, Max);
 }
 
 float UKismetMathLibrary::RandomFloatInRange(float Min, float Max)
@@ -45,22 +30,7 @@ float UKismetMathLibrary::RandomFloatInRange(float Min, float Max)
 		return 0.0f;
 	}
 
-	struct KismetMathLibrary_RandomFloatInRange final
-	{
-	public:
-		float Min;
-		float Max;
-		float ReturnValue;
-	};
-
-	KismetMathLibrary_RandomFloatInRange Parms{};
-
-	Parms.Min = Min;
-	Parms.Max = Max;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<float>(Func, Min, Max);
 }
 
 int32 UKismetMathLibrary::Min(int32 A, int32 B)
@@ -75,22 +45,7 @@ int32 UKismetMathLibrary::Min(int32 A, int32 B)
 		return 0;
 	}
 
-	struct KismetMathLibrary_Min final
-	{
-	public:
-		int32 A;
-		int32 B;
-		int32 ReturnValue;
-	};
-
-	KismetMathLibrary_Min Parms{};
-
-	Parms.A = A;
-	Parms.B = B;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, A, B);
 }
 
 int32 UKismetMathLibrary::FTrunc(float A)
@@ -105,20 +60,7 @@ int32 UKismetMathLibrary::FTrunc(float A)
 		return 0;
 	}
 
-	struct KismetMathLibrary_FTrunc final
-	{
-	public:
-		float A;
-		int32 ReturnValue;
-	};
-
-	KismetMathLibrary_FTrunc Parms{};
-
-	Parms.A = A;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, A);
 }
 
 int32 UKismetMathLibrary::Max(int32 A, int32 B)
@@ -133,22 +75,7 @@ int32 UKismetMathLibrary::Max(int32 A, int32 B)
 		return 0;
 	}
 
-	struct KismetMathLibrary_Max final
-	{
-	public:
-		int32 A;
-		int32 B;
-		int32 ReturnValue;
-	};
-
-	KismetMathLibrary_Max Parms{};
-
-	Parms.A = A;
-	Parms.B = B;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, A, B);
 }
 
 int32 UKismetMathLibrary::Clamp(int32 Value, int32 Min, int32 Max)
@@ -163,24 +90,7 @@ int32 UKismetMathLibrary::Clamp(int32 Value, int32 Min, int32 Max)
 		return 0;
 	}
 
-	struct KismetMathLibrary_Clamp final
-	{
-	public:
-		int32 Value;
-		int32 Min;
-		int32 Max;
-		int32 ReturnValue;
-	};
-
-	KismetMathLibrary_Clamp Parms{};
-
-	Parms.Value = Value;
-	Parms.Min = Min;
-	Parms.Max = Max;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, Value, Min, Max);
 }
 
 float UKismetMathLibrary::Lerp(float A, float B, float Alpha)
@@ -195,24 +105,7 @@ float UKismetMathLibrary::Lerp(float A, float B, float Alpha)
 		return 0.0f;
 	}
 
-	struct KismetMathLibrary_Lerp final
-	{
-	public:
-		float A;
-		float B;
-		float Alpha;
-		float ReturnValue;
-	};
-
-	KismetMathLibrary_Lerp Parms{};
-
-	Parms.A = A;
-	Parms.B = B;
-	Parms.Alpha = Alpha;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<float>(Func, A, B, Alpha);
 }
 
 int32 UKismetMathLibrary::Round(float A)
@@ -227,20 +120,7 @@ int32 UKismetMathLibrary::Round(float A)
 		return 0;
 	}
 
-	struct KismetMathLibrary_Round final
-	{
-	public:
-		float A;
-		int32 ReturnValue;
-	};
-
-	KismetMathLibrary_Round Parms{};
-
-	Parms.A = A;
-
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return GetDefaultObj()->Call<int32>(Func, A);
 }
 
 float UKismetMathLibrary::RandomFloat()
@@ -255,15 +135,47 @@ float UKismetMathLibrary::RandomFloat()
 		return 0.0f;
 	}
 
-	struct KismetMathLibrary_RandomFloat final
-	{
-	public:
-		float ReturnValue;
-	};
+	return GetDefaultObj()->Call<float>(Func);
+}
 
-	KismetMathLibrary_RandomFloat Parms{};
+FVector UKismetMathLibrary::GetForwardVector(const FRotator& InRot)
+{
+	static UFunction* Func = nullptr;
 
-	GetDefaultObj()->ProcessEvent(Func, &Parms);
+	if (Func == nullptr)
+		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetMathLibrary.GetForwardVector");
 
-	return Parms.ReturnValue;
+	if (!Func) {
+		return FVector(0, 0, 0);
+	}
+
+	return GetDefaultObj()->Call<FVector>(Func, InRot);
+}
+
+FVector UKismetMathLibrary::GetRightVector(const FRotator& InRot)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetMathLibrary.GetRightVector");
+
+	if (!Func) {
+		return FVector(0, 0, 0);
+	}
+
+	return GetDefaultObj()->Call<FVector>(Func, InRot);
+}
+
+FVector UKismetMathLibrary::GetUpVector(const FRotator& InRot)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetMathLibrary.GetUpVector");
+
+	if (!Func) {
+		return FVector(0, 0, 0);
+	}
+
+	return GetDefaultObj()->Call<FVector>(Func, InRot);
 }

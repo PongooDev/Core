@@ -1010,7 +1010,7 @@ namespace Memcury
             {
                 if (bWarnIfNotFound)
                 {
-                    
+
                 }
                 return Scanner(add);
             }
@@ -1084,8 +1084,6 @@ namespace Memcury
 
                     if (currentOpcode == -1)
                         continue;
-
-                    // LOG_INFO(LogDev, "[{} 0x{:x}] 0x{:x}", i, __int64(&scanBytes[i]) - __int64(GetModuleHandleW(0)), currentOpcode);
 
                     found = currentOpcode == scanBytes[i + k];
                 }

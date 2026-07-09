@@ -8,5 +8,5 @@ void AFortAIDirector::Activate()
 	if (Func == nullptr)
 		Func = FindFunction("Activate");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }

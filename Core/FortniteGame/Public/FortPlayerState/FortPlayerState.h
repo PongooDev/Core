@@ -12,16 +12,12 @@ public:
 	DefineUnrealClass(AFortPlayerState);
 
 	DefineUProperty(UFortAbilitySystemComponent*, AbilitySystemComponent);
-
 	DefineBitfieldUProperty(bHasFinishedLoading);
-
 	DefineBitfieldUProperty(bHasStartedPlaying);
-
 	DefineUProperty(FString, HeroId);
-
 	DefineUProperty(UFortHeroType*, HeroType);
-
 	DefineUProperty(FName, HeroSquadId);
+	DefineUProperty(int32, WorldPlayerId);
 public:
 	void OnRep_bHasStartedPlaying();
 

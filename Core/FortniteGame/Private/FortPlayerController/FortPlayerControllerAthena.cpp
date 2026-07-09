@@ -27,6 +27,7 @@
 #include "FortniteGame/Public/Athena/AthenaMatchTeamStats.h"
 #include "FortniteGame/Public/Athena/AthenaPlayerMatchReport.h"
 #include "FortniteGame/Public/FortAbility/FortAbilitySystemComponent.h"
+#include "FortniteGame/Public/QuickChat/AthenaQuickChatBank.h"
 
 void AFortPlayerControllerAthena::EnterAircraft(AFortPlayerControllerAthena* This, AFortAircraft* InAircraft) {
 	EnterAircraftOG(This, InAircraft);
@@ -246,7 +247,7 @@ void AFortPlayerControllerAthena::ClientOnPawnDied_Implementation(FFortPlayerDea
 		}
 	}
 
-	if ((Version::Fortnite_Version < 3.0 && Version::Fortnite_Version >= 1.91) || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
+	if ((Version::Fortnite_Version <= 3.6 && Version::Fortnite_Version >= 1.91) || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
 		if (FortGameModeAthena->bAllowSpectateAfterDeath) {
 			APawn* PawnToSpectate = DeathReport.KillerPawn;
 			if (!PawnToSpectate && PlayerStateAthena->PlayerTeam) {
@@ -321,16 +322,6 @@ void AFortPlayerControllerAthena::ClientOnPawnDied_Implementation(FFortPlayerDea
 
 void AFortPlayerControllerAthena::OnReadyToStartMatch(AFortPlayerControllerAthena* This) {
 	OnReadyToStartMatchOG(This);
-
-	UWorld* World = UWorld::GetWorld();
-	if (!World) {
-		Log("AFortPlayerControllerAthena::OnReadyToStartMatch: World is null!");
-		return;
-	}
-
-	if (This->CustomizationLoadout.Pickaxe) {
-		This->WorldInventory->AddItem(This->CustomizationLoadout.Pickaxe->WeaponDefinition);
-	}
 }
 
 void AFortPlayerControllerAthena::ServerReturnToMainMenu(AFortPlayerControllerAthena* This) {
@@ -348,21 +339,7 @@ void AFortPlayerControllerAthena::ClientNotifyTeamWon(APawn* FinisherPawn, const
 	if (Func == nullptr)
 		Func = FindFunction("ClientNotifyTeamWon");
 
-	struct FortPlayerControllerAthena_ClientNotifyTeamWon
-	{
-	public:
-		APawn* FinisherPawn;
-		const UFortWeaponItemDefinition* FinishingWeapon;
-		uint8 DeathCause;
-	};
-
-	FortPlayerControllerAthena_ClientNotifyTeamWon Parms{};
-
-	Parms.FinisherPawn = FinisherPawn;
-	Parms.FinishingWeapon = FinishingWeapon;
-	Parms.DeathCause = DeathCause;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, FinisherPawn, FinishingWeapon, DeathCause);
 }
 
 void AFortPlayerControllerAthena::ClientNotifyWon(APawn* FinisherPawn, const UFortWeaponItemDefinition* FinishingWeapon, uint8 DeathCause)
@@ -372,21 +349,7 @@ void AFortPlayerControllerAthena::ClientNotifyWon(APawn* FinisherPawn, const UFo
 	if (Func == nullptr)
 		Func = FindFunction("ClientNotifyWon");
 
-	struct FortPlayerControllerAthena_ClientNotifyWon
-	{
-	public:
-		APawn* FinisherPawn;
-		const UFortWeaponItemDefinition* FinishingWeapon;
-		uint8 DeathCause;
-	};
-
-	FortPlayerControllerAthena_ClientNotifyWon Parms{};
-
-	Parms.FinisherPawn = FinisherPawn;
-	Parms.FinishingWeapon = FinishingWeapon;
-	Parms.DeathCause = DeathCause;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, FinisherPawn, FinishingWeapon, DeathCause);
 }
 
 void AFortPlayerControllerAthena::ClientSendEndBattleRoyaleMatchForPlayer(bool bSuccess, const FAthenaRewardResult& Result)
@@ -400,20 +363,7 @@ void AFortPlayerControllerAthena::ClientSendEndBattleRoyaleMatchForPlayer(bool b
 		return;
 	}
 
-	struct FortPlayerControllerAthena_ClientSendEndBattleRoyaleMatchForPlayer
-	{
-	public:
-		bool bSuccess;
-		uint8 Pad_1[0x7];
-		FAthenaRewardResult Result;
-	};
-
-	FortPlayerControllerAthena_ClientSendEndBattleRoyaleMatchForPlayer Parms{};
-
-	Parms.bSuccess = bSuccess;
-	Parms.Result = std::move(Result);
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, bSuccess, Result);
 }
 
 void AFortPlayerControllerAthena::ClientSendMatchStatsForPlayer(const FAthenaMatchStats& Stats)
@@ -427,17 +377,7 @@ void AFortPlayerControllerAthena::ClientSendMatchStatsForPlayer(const FAthenaMat
 		return;
 	}
 
-	struct FortPlayerControllerAthena_ClientSendMatchStatsForPlayer
-	{
-	public:
-		FAthenaMatchStats Stats;
-	};
-
-	FortPlayerControllerAthena_ClientSendMatchStatsForPlayer Parms{};
-
-	Parms.Stats = std::move(Stats);
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, Stats);
 }
 
 void AFortPlayerControllerAthena::ClientSendTeamStatsForPlayer(const FAthenaMatchTeamStats& TeamStats)
@@ -451,17 +391,7 @@ void AFortPlayerControllerAthena::ClientSendTeamStatsForPlayer(const FAthenaMatc
 		return;
 	}
 
-	struct FortPlayerControllerAthena_ClientSendTeamStatsForPlayer
-	{
-	public:
-		FAthenaMatchTeamStats TeamStats;
-	};
-
-	FortPlayerControllerAthena_ClientSendTeamStatsForPlayer Parms{};
-
-	Parms.TeamStats = std::move(TeamStats);
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, TeamStats);
 }
 
 FAthenaRewardResult& AFortPlayerControllerAthena::ConstructAthenaRewardResult() {
@@ -551,4 +481,33 @@ FAthenaMatchTeamStats& AFortPlayerControllerAthena::ConstructAthenaMatchTeamStat
 	AthenaMatchTeamStats->TotalPlayers = FortGameStateAthena->TotalPlayers;
 
 	return *AthenaMatchTeamStats;
+}
+
+void AFortPlayerControllerAthena::ServerPlaySquadQuickChatMessage(AFortPlayerControllerAthena* This, FAthenaQuickChatActiveEntry& ChatEntry, FUniqueNetIdRepl& SenderID) {
+	ServerPlaySquadQuickChatMessageOG(This, ChatEntry, SenderID);
+	
+	AFortPlayerStateAthena* PlayerStateAthena = This->PlayerState->Cast<AFortPlayerStateAthena>();
+	if (!PlayerStateAthena) {
+		Log("ServerPlaySquadQuickChatMessage: PlayerState is null or not a FortPlayerStateAthena!");
+		return;
+	}
+	
+	UAthenaQuickChatBank* QuickChatBank = ChatEntry.GetBank();
+	if (!QuickChatBank) {
+		Log("ServerPlaySquadQuickChatMessage: QuickChatBank is null!");
+		return;
+	}
+
+	if (!QuickChatBank->ChatOptions.IsValidIndex(ChatEntry.Index)) {
+		Log("ServerPlaySquadQuickChatMessage: ChatEntry index is out of bounds!");
+		return;
+	}
+
+	FAthenaQuickChatLeafEntry& LeafEntry = QuickChatBank->ChatOptions.GetWithSize(ChatEntry.Index, FAthenaQuickChatLeafEntry::GetSize());
+
+	ServerPlayEmoteItem(This, LeafEntry.EmojiItemDefinition, 0.f);
+
+	PlayerStateAthena->TeamMemberState = LeafEntry.TeamCommType;
+	PlayerStateAthena->ReplicatedTeamMemberState = LeafEntry.TeamCommType;
+	PlayerStateAthena->OnRep_ReplicatedTeamMemberState();
 }

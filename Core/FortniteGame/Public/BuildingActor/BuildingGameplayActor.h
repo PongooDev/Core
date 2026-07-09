@@ -18,6 +18,10 @@
 
 #include "BuildingActor.h"
 
+class AFortPickup;
+class UFortWorldItemDefinition;
+class AFortPawn;
+
 class ABuildingGameplayActor : public ABuildingActor {
 public:
 	DefineUnrealClass(ABuildingGameplayActor);
@@ -26,6 +30,17 @@ public:
 class AFortAthenaSupplyDrop : public ABuildingGameplayActor {
 public:
 	DefineUnrealClass(AFortAthenaSupplyDrop);
+public:
+	AFortPickup* SpawnPickup(UFortWorldItemDefinition* ItemDefinition, int32 NumberToSpawn, AFortPawn* TriggeringPawn, FVector& Position, FVector& Direction);
+	static void execSpawnPickup(AFortAthenaSupplyDrop* Context, FFrame& Stack, AFortPickup** Result);
+
+	FVector FindGroundLocationAt(const FVector& InLocation);
+
+	static void Hook() {
+		ExecHook("Function /Script/FortniteGame.FortAthenaSupplyDrop.SpawnPickup", execSpawnPickup);
+
+		Log("Hooked ABuildingGameplayActor");
+	}
 };
 
 class AB_SupplyDropPlacement_C : public ABuildingGameplayActor {

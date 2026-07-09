@@ -20,6 +20,7 @@
 #include "FortniteGame/Public/FortHero/FortHeroSpecialization.h"
 #include "FortniteGame/Public/BuildingActor/BuildingSMActor.h"
 #include "FortniteGame/Public/BuildingActor/BuildingContainer.h"
+#include "FortniteGame/Public/BuildingActor/BuildingItemCollectorActor.h"
 #include "FortniteGame/Public/Mcp/FortMcpProfileAccount.h"
 #include "FortniteGame/Public/FortAbility/FortGameplayAbility.h"
 #include "FortniteGame/Public/FortAbility/FortAbilitySystemComponent.h"
@@ -28,19 +29,24 @@
 
 void AFortPlayerController::ClientForceProfileQuery()
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName("ClientForceProfileQuery"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static class UFunction* Func = nullptr;
 
-		void (*&ClientForceProfileQueryInternal)(AFortPlayerController*) = decltype(ClientForceProfileQueryInternal)(VTable[VTableIdx]);
-		return ClientForceProfileQueryInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("ClientForceProfileQuery");
+
+	return Call(Func);
 }
 
 void AFortPlayerController::OnReadyToStartMatch(AFortPlayerController* This) {
 	OnReadyToStartMatchOG(This);
 
-	if ((!This->QuickBars || !This->ClientQuickBars))
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPlayerController::OnReadyToStartMatch: World is null!");
+		return;
+	}
+
+	if (This->_HasQuickBars() && !This->QuickBars)
 	{
 		This->SpawnQuickBars();
 		This->SetupQuickBars();
@@ -60,12 +66,16 @@ void AFortPlayerController::SpawnQuickBars()
 			return;
 		}
 
+		UClass* QuickBarsClass = AFortQuickBars::GetDefaultQuickBarsClass();
+
 		if (IsUsingOldQuickBars()) {
 			if (!QuickBars)
 			{
-				AActor* NewQuickBars = World->SpawnActor(AFortQuickBars::StaticClass(), FVector(), FRotator(), this);
+				AActor* NewQuickBars = World->SpawnActor(QuickBarsClass, FVector(-280, 400, 3000), FRotator(), this);
 				if (NewQuickBars && NewQuickBars->Cast<AFortQuickBars>()) {
 					QuickBars = NewQuickBars->Cast<AFortQuickBars>();
+					OnRep_QuickBar();
+
 					Log("Spawned QuickBars: " + QuickBars->GetName().ToString());
 				}
 			}
@@ -73,9 +83,10 @@ void AFortPlayerController::SpawnQuickBars()
 		else {
 			if (!ClientQuickBars)
 			{
-				AActor* NewQuickBars = World->SpawnActor(AFortQuickBars::StaticClass(), FVector(), FRotator(), this);
+				AActor* NewQuickBars = World->SpawnActor(QuickBarsClass, FVector(), FRotator(), this);
 				if (NewQuickBars && NewQuickBars->Cast<AFortQuickBars>()) {
 					ClientQuickBars = NewQuickBars->Cast<AFortQuickBars>();
+
 					Log("Spawned ClientQuickBars: " + ClientQuickBars->GetName().ToString());
 				}
 			}
@@ -91,8 +102,8 @@ void AFortPlayerController::SetupQuickBars()
 	}
 }
 
-void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Msg) {
-	std::string Command = Msg->ToString();
+void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString& Msg) {
+	std::string Command = Msg.ToString();
 	Log("ServerCheat (" + This->GetName().ToString() + "): [" + Command + "]");
 
 	FCoreConfig& Config = ConfigurationManager::GetConfig();
@@ -146,6 +157,15 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		This->ClientMessage("SetMaxShield <MaxShield> - Sets the player's max shield.");
 		This->ClientMessage("SpawnActor <ActorClassName> [bSetOwnerAsThis] - Spawns an actor");
 		This->ClientMessage("ClearEquippedItem - Clears the currently equipped item.");
+		This->ClientMessage("GetWeaponStats - Gets the stats of the currently equipped weapon.");
+		This->ClientMessage("DumpActorsWithClass <ClassName> - Dumps all actors of a specific class.");
+		This->ClientMessage("TeleportToLocation <X> <Y> <Z> - Teleports the player to a specific location.");
+		This->ClientMessage("DumpCurrentLocation - Dumps the player's current location.");
+		This->ClientMessage("SpawnQuickBars - Spawns the player's quickbars.");
+		This->ClientMessage("DestroyQuickBars - Destroys the player's quickbars.");
+		This->ClientMessage("DumpQuickBars - Dumps the player's quickbars.");
+		This->ClientMessage("ServerExecuteInventoryItem <ItemGuid> - Executes an inventory item by its GUID.");
+		return;
 	}
 	else if (Parser.IsCommand("GiveItem")) {
 		if (Parser.GetArgCount() < 1)
@@ -206,7 +226,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 			ItemDef,
 			Count,
 			FinalLoc,
-			FVector(),
+			This->GetDropFinalLocation(),
 			-1,
 			true,
 			true,
@@ -223,6 +243,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 			AFortPlayerPawn::ServerHandlePickup(Pawn, Pickup, Pickup->PickupLocationData.FlyTime, ZeroVector, true);
 			This->ClientMessage("Given Item: (Item=" + ItemDef->GetName().ToString() + " Count=" + std::to_string(Count) + ")");
 		}
+		return;
 	}
 	else if (Parser.IsCommand("ForceGiveItem")) {
 		if (Parser.GetArgCount() < 1)
@@ -252,6 +273,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		}
 
 		This->WorldInventory->AddItem(ItemDef, Count);
+		return;
 	}
 	else if (Parser.IsCommand("SpawnPickup")) {
 		if (Parser.GetArgCount() < 1)
@@ -285,17 +307,18 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 			ItemDef,
 			Count,
 			This->Pawn->K2_GetActorLocation(),
-			FVector(),
+			This->GetDropFinalLocation(),
 			-1,
 			true,
 			true,
-			false,
+			true,
 			-1,
 			EFortPickupSourceTypeFlag::GetPlayer(),
 			EFortPickupSpawnSource::GetUnset(),
-			nullptr,
+			This,
 			false
 		);
+		return;
 	}
 	else if (Parser.IsCommand("SetLoadedAmmo")) {
 		if (Parser.GetArgCount() < 1)
@@ -325,6 +348,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		WeaponEntry->LoadedAmmo = LoadedAmmo;
 		This->WorldInventory->Update(WeaponEntry);
 		This->ClientMessage("Set loaded ammo of current weapon to " + std::to_string(LoadedAmmo));
+		return;
 	}
 	else if (Parser.IsCommand("GiveAmmo")) {
 		int32 AmmoAmount = Parser.GetArgInt(0, 30);
@@ -372,6 +396,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 				This->ClientMessage("Failed to add ammo item: " + AmmoItemDef->GetName().ToString());
 			}
 		}
+		return;
 	} else if (Parser.IsCommand("DumpInventory")) {
 		if (!This->WorldInventory) {
 			This->ClientMessage("WorldInventory is null!");
@@ -393,6 +418,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		}
 
 		This->ClientMessage("=== End of Inventory Dump ===");
+		return;
 	}
 	else if (Parser.IsCommand("SpawnBot")) {
 		bool bSpawnAtPlayer = Parser.GetArgBool(0, false);
@@ -404,6 +430,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		else {
 			This->ClientMessage("Failed to spawn bot.");
 		}
+		return;
 	} else if (Parser.IsCommand("SetHealth")) {
 		if (Parser.GetArgCount() < 1)
 		{
@@ -421,6 +448,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		This->MyFortPawn->SetHealth(Health);
 
 		This->ClientMessage("Set health to " + std::to_string(Health));
+		return;
 	} else if (Parser.IsCommand("SetShield")) {
 		if (Parser.GetArgCount() < 1)
 		{
@@ -438,6 +466,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		This->MyFortPawn->SetShield(Shield);
 
 		This->ClientMessage("Set shield to " + std::to_string(Shield));
+		return;
 	} else if (Parser.IsCommand("SetMaxHealth")) {
 		if (Parser.GetArgCount() < 1)
 		{
@@ -455,6 +484,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		This->MyFortPawn->SetMaxHealth(MaxHealth);
 
 		This->ClientMessage("Set max health to " + std::to_string(MaxHealth));
+		return;
 	} else if (Parser.IsCommand("SetMaxShield")) {
 		if (Parser.GetArgCount() < 1)
 		{
@@ -472,6 +502,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		This->MyFortPawn->SetMaxShield(MaxShield);
 
 		This->ClientMessage("Set max shield to " + std::to_string(MaxShield));
+		return;
 	}
 	else if (Parser.IsCommand("SpawnActor")) {
 		if (Parser.GetArgCount() < 1)
@@ -504,6 +535,7 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 		else {
 			This->ClientMessage("Failed to spawn actor of class: " + ActorClass->GetName().ToString());
 		}
+		return;
 	}
 	else if (Parser.IsCommand("ClearEquippedItem")) {
 		if (!This->WorldInventory) {
@@ -523,6 +555,175 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString* Ms
 
 		This->WorldInventory->RemoveItem(This->MyFortPawn->CurrentWeapon->ItemEntryGuid);
 		This->ClientMessage("Cleared currently equipped item.");
+		return;
+	}
+	else if (Parser.IsCommand("GetWeaponStats")) {
+		if (!This->MyFortPawn) {
+			This->ClientMessage("MyFortPawn is null!");
+			return;
+		}
+		AFortWeapon* CurrentWeapon = This->MyFortPawn->CurrentWeapon;
+		if (!CurrentWeapon) {
+			This->ClientMessage("CurrentWeapon is null!");
+			return;
+		}
+		UFortWeaponItemDefinition* WeaponDef = CurrentWeapon->WeaponData;
+		if (!WeaponDef) {
+			This->ClientMessage("WeaponData is null!");
+			return;
+		}
+
+		This->ClientMessage("=== Weapon Stats ===");
+		This->ClientMessage("Weapon Name: " + WeaponDef->GetName().ToString());
+		This->ClientMessage("ClipSize: " + std::to_string(WeaponDef->GetClipSize()));
+		This->ClientMessage("Durability: " + std::to_string(WeaponDef->GetDurability()));
+		This->ClientMessage("=== End of Weapon Stats ===");
+		return;
+	}
+	else if (Parser.IsCommand("DestroyTarget"))
+	{
+		This->CheatManager->DestroyTarget();
+		return;
+	}
+	else if (Parser.IsCommand("DumpActorsWithClass")) {
+		if (Parser.GetArgCount() < 1)
+		{
+			This->ClientMessage("Usage: DumpActorsWithClass <ClassName>");
+			return;
+		}
+
+		std::string ActorClassName = Parser.GetArg(0);
+
+		UObject* ActorClassObj = Utils::GetObjectFromString(ActorClassName, EClassCastFlags::CASTCLASS_UClass);
+		if (!ActorClassObj) {
+			This->ClientMessage("Actor class not found: " + ActorClassName);
+			return;
+		}
+
+		UClass* ActorClass = ActorClassObj->Cast<UClass>();
+		if (!ActorClass) {
+			This->ClientMessage("Object is not a UClass: " + ActorClassObj->GetName().ToString());
+			return;
+		}
+
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(World, ActorClass, &FoundActors);
+
+		This->ClientMessage("Found " + std::to_string(FoundActors.Num()) + " actors of class: " + ActorClass->GetName().ToString());
+		This->ClientMessage("=== Actor List ===");
+		for (AActor* Actor : FoundActors) {
+			This->ClientMessage("");
+			This->ClientMessage("Actor: " + Actor->GetName().ToString());
+			FVector ActorLocation = Actor->K2_GetActorLocation();
+			This->ClientMessage("Location: X=" + std::to_string(ActorLocation.X) + " Y=" + std::to_string(ActorLocation.Y) + " Z=" + std::to_string(ActorLocation.Z));
+			This->ClientMessage("");
+		}
+		This->ClientMessage("=== End of Actor List ===");
+		return;
+	}
+	else if (Parser.IsCommand("TeleportToLocation")) {
+		if (Parser.GetArgCount() < 3)
+		{
+			This->ClientMessage("Usage: TeleportToLocation <X> <Y> <Z>");
+			return;
+		}
+
+		float X = Parser.GetArgFloat(0, 0.0f);
+		float Y = Parser.GetArgFloat(1, 0.0f);
+		float Z = Parser.GetArgFloat(2, 0.0f);
+
+		if (!This->MyFortPawn) {
+			This->ClientMessage("MyFortPawn is null!");
+			return;
+		}
+
+		FVector NewLocation(X, Y, Z);
+
+		FHitResult HitResult;
+		This->MyFortPawn->K2_SetActorLocation(NewLocation, false, &HitResult, true);
+		This->ClientMessage("Teleported to location: X=" + std::to_string(X) + " Y=" + std::to_string(Y) + " Z=" + std::to_string(Z));
+		
+		return;
+	}
+	else if (Parser.IsCommand("DumpCurrentLocation")) {
+		if (!This->MyFortPawn) {
+			This->ClientMessage("MyFortPawn is null!");
+			return;
+		}
+
+		FVector CurrentLocation = This->MyFortPawn->K2_GetActorLocation();
+
+		This->ClientMessage("=== Current Location ===");
+		This->ClientMessage("X: " + std::to_string(CurrentLocation.X));
+		This->ClientMessage("Y: " + std::to_string(CurrentLocation.Y));
+		This->ClientMessage("Z: " + std::to_string(CurrentLocation.Z));
+		This->ClientMessage("=== End of Current Location ===");
+
+		return;
+	}
+	else if (Parser.IsCommand("SpawnQuickBars")) {
+		This->SpawnQuickBars();
+		This->SetupQuickBars();
+		This->ClientMessage("Spawned QuickBars.");
+
+		return;
+	}
+	else if (Parser.IsCommand("DestroyQuickBars")) {
+		if (This->QuickBars) {
+			This->QuickBars->K2_DestroyActor();
+			This->QuickBars = nullptr;
+			This->ForceNetUpdate();
+			This->ClientMessage("Destroyed QuickBars.");
+		}
+		else if (This->ClientQuickBars) {
+			This->ClientQuickBars->K2_DestroyActor();
+			This->ClientQuickBars = nullptr;
+			This->ForceNetUpdate();
+			This->ClientMessage("Destroyed ClientQuickBars.");
+		}
+		else {
+			This->ClientMessage("No QuickBars to destroy.");
+		}
+
+		return;
+		}
+	else if (Parser.IsCommand("DumpQuickBars")) {
+		if (This->QuickBars) {
+			This->ClientMessage("=== QuickBars ===");
+			This->ClientMessage("QuickBars: " + This->QuickBars->GetName().ToString());
+			This->ClientMessage("QuickBars Address: " + std::to_string((uintptr_t)This->QuickBars));
+			This->ClientMessage("=== End of QuickBars ===");
+		}
+		else if (This->ClientQuickBars) {
+			This->ClientMessage("=== ClientQuickBars ===");
+			This->ClientMessage("ClientQuickBars: " + This->ClientQuickBars->GetName().ToString());
+			This->ClientMessage("ClientQuickBars Address: " + std::to_string((uintptr_t)This->ClientQuickBars));
+			This->ClientMessage("=== End of ClientQuickBars ===");
+		}
+		else {
+			This->ClientMessage("No QuickBars to dump.");
+		}
+
+		return;
+	}
+	else if (Parser.IsCommand("ServerExecuteInventoryItem")) {
+		if (Parser.GetArgCount() < 1)
+		{
+			This->ClientMessage("Usage: ServerExecuteInventoryItem <ItemGuid>");
+			return;
+		}
+
+		std::string GuidA = Parser.GetArg(0);
+
+		FGuid ItemGuid = FGuid::ParseGUID(GuidA);
+
+		This->ServerExecuteInventoryItem(This, ItemGuid);
+
+		return;
+	}
+
+	if (Version::Fortnite_Version >= 2.2) {
+		UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), Msg, This);
 	}
 }
 
@@ -539,6 +740,13 @@ void AFortPlayerController::ServerExecuteInventoryItem(AFortPlayerController* Th
 		return;
 	}
 
+	AFortPawn* FortPawn = This->MyFortPawn;
+	if (!FortPawn) {
+		Log("AFortPlayerController::ServerExecuteInventoryItem: MyFortPawn is null!");
+		return;
+	}
+
+	//Log("ServerExecuteInventoryItem: " + ItemDef->GetName().ToString() + " (GUID: " + ItemGuid.FormatGuid() + ")");
 	ItemDef->ServerExecute(ItemInstance, This);
 }
 
@@ -596,25 +804,7 @@ void AFortPlayerController::ClientReportDamagedResourceBuilding(ABuildingSMActor
 	if (Func == nullptr)
 		Func = FindFunction("ClientReportDamagedResourceBuilding");
 
-	struct FortPlayerController_ClientReportDamagedResourceBuilding
-	{
-	public:
-		ABuildingSMActor* BuildingSMActor;
-		uint8 PotentialResourceType;
-		int32 PotentialResourceCount;
-		bool bDestroyed;
-		bool bJustHitWeakspot;
-	};
-
-	FortPlayerController_ClientReportDamagedResourceBuilding Parms{};
-
-	Parms.BuildingSMActor = BuildingSMActor;
-	Parms.PotentialResourceType = PotentialResourceType;
-	Parms.PotentialResourceCount = PotentialResourceCount;
-	Parms.bDestroyed = bDestroyed;
-	Parms.bJustHitWeakspot = bJustHitWeakspot;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, BuildingSMActor, PotentialResourceType, PotentialResourceCount, bDestroyed, bJustHitWeakspot);
 }
 
 void AFortPlayerController::ServerAttemptInventoryDrop(AFortPlayerController* This, FGuid& ItemGuid, int Count, bool bTrash) {
@@ -629,34 +819,46 @@ void AFortPlayerController::ServerAttemptInventoryDrop(AFortPlayerController* Th
 		return;
 	}
 
-	FVector PawnLocation = This->MyFortPawn->K2_GetActorLocation();
+	FVector FinalLoc = This->MyFortPawn->K2_GetActorLocation();
 
 	Log("AFortPlayerController::ServerAttemptInventoryDrop: Attempting to drop item with GUID: " + ItemGuid.FormatGuid() + ", Count: " + std::to_string(Count) + ", bTrash: " + std::to_string(bTrash));
 	FFortItemEntry* ItemEntry = This->FindItemEntry(ItemGuid);
-	if (ItemEntry) {
-		if (ItemEntry->ItemDefinition) {
-			if (!bTrash) {
-				AFortPickup* Pickup = UFortKismetLibrary::K2_SpawnPickupInWorld(
-					World,
-					ItemEntry->ItemDefinition,
-					Count,
-					PawnLocation,
-					FVector(),
-					-1,
-					true,
-					true,
-					true,
-					-1,
-					EFortPickupSourceTypeFlag::GetPlayer(),
-					EFortPickupSpawnSource::GetTossedByPlayer(),
-					This,
-					false
-				);
-				Pickup->PrimaryPickupItemEntry.LoadedAmmo = ItemEntry->LoadedAmmo;
-			}
-			This->WorldInventory->RemoveItem(ItemEntry->ItemGuid, Count);
-		}
+	if (!ItemEntry) {
+		Log("AFortPlayerController::ServerAttemptInventoryDrop: ItemEntry not found for GUID: " + ItemGuid.FormatGuid());
+		return;
 	}
+
+	if (!ItemEntry->ItemDefinition) {
+		Log("AFortPlayerController::ServerAttemptInventoryDrop: ItemDefinition is null for GUID: " + ItemGuid.FormatGuid());
+		return;
+	}
+
+	if (!bTrash) {
+		AFortPickup* Pickup = UFortKismetLibrary::K2_SpawnPickupInWorld(
+			World,
+			ItemEntry->ItemDefinition,
+			Count,
+			FinalLoc,
+			This->GetDropFinalLocation(),
+			-1,
+			true,
+			true,
+			true,
+			-1,
+			EFortPickupSourceTypeFlag::GetPlayer(),
+			EFortPickupSpawnSource::GetTossedByPlayer(),
+			This,
+			false
+		);
+		Pickup->PrimaryPickupItemEntry.LoadedAmmo = ItemEntry->LoadedAmmo;
+		Pickup->PrimaryPickupItemEntry.Durability = ItemEntry->Durability;
+		Pickup->PrimaryPickupItemEntry.bIsDirty = true;
+
+		Pickup->PrimaryPickupItemEntry.ReplicationKey++;
+		Pickup->OnRep_PrimaryPickupItemEntry();
+	}
+
+	This->WorldInventory->RemoveItem(ItemEntry->ItemGuid, Count);
 }
 
 void AFortPlayerController::ClientForceUpdateQuickbar(uint8 QuickbarToRefresh)
@@ -666,17 +868,7 @@ void AFortPlayerController::ClientForceUpdateQuickbar(uint8 QuickbarToRefresh)
 	if (Func == nullptr)
 		Func = FindFunction("ClientForceUpdateQuickbar");
 
-	struct FortPlayerController_ClientForceUpdateQuickbar
-	{
-	public:
-		uint8 QuickbarToRefresh;
-	};
-
-	FortPlayerController_ClientForceUpdateQuickbar Parms{};
-
-	Parms.QuickbarToRefresh = QuickbarToRefresh;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, QuickbarToRefresh);
 }
 
 void AFortPlayerController::OnRep_QuickBar()
@@ -686,7 +878,7 @@ void AFortPlayerController::OnRep_QuickBar()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_QuickBar");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 bool AFortPlayerController::IsUsingOldQuickBars() {
@@ -756,14 +948,12 @@ void AFortPlayerController::ServerCreateBuildingActorOld(AFortPlayerController* 
 	}
 
 	if (!This->CanAffordToPlaceBuildableClass(&BuildingClassData)) {
-		Log("ServerCreateBuildingActor: Cannot afford to place building!");
 		return;
 	}
 
 	TArray<ABuildingActor*> BuildingsToRemove;
 	uint8 OptionalAdjustment;
 	if (UFortKismetLibrary::CanPlaceBuildableClassInStructuralGrid(World, BuildingClassData.BuildingClass.Get(), BuildLoc, BuildRot, bMirrored, &BuildingsToRemove, &OptionalAdjustment)) {
-		Log("ServerCreateBuildingActor: Cannot place building at location!");
 		return;
 	}
 
@@ -971,21 +1161,6 @@ void AFortPlayerController::ServerEndEditingBuildingActor(AFortPlayerController*
 	EditingTool->OnRep_EditActor();
 }
 
-void AFortPlayerController::ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType) {
-	ServerAttemptInteractOG(This, ReceivingActor, InteractComponent, InteractType);
-
-	UWorld* World = UWorld::GetWorld();
-	if (!World) {
-		Log("AFortPlayerController::ServerAttemptInteract: World is null!");
-		return;
-	}
-
-	if (ReceivingActor) {
-		//Log("ReceivingActor: " + ReceivingActor->GetFullName());
-		ReceivingActor->ForceNetUpdate();
-	}
-}
-
 void AFortPlayerController::ServerRemoveInventoryStateValue(AFortPlayerController* This, FGuid& ItemGuid, uint8 StateValueType) {
 	if (!This->WorldInventory) {
 		Log("ServerRemoveInventoryStateValue: WorldInventory is null!");
@@ -1038,17 +1213,7 @@ UFortRegisteredPlayerInfo* AFortPlayerController::GetRegisteredPlayerInfo() cons
 	if (Func == nullptr)
 		Func = FindFunction("GetRegisteredPlayerInfo");
 
-	struct FortPlayerController_GetRegisteredPlayerInfo
-	{
-	public:
-		UFortRegisteredPlayerInfo* ReturnValue;
-	};
-
-	FortPlayerController_GetRegisteredPlayerInfo Parms{};
-
-	const_cast<AFortPlayerController*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AFortPlayerController*>(this)->Call<UFortRegisteredPlayerInfo*>(Func);
 }
 
 UFortQuestManager* AFortPlayerController::GetQuestManager(uint8 SubGame) const
@@ -1058,28 +1223,10 @@ UFortQuestManager* AFortPlayerController::GetQuestManager(uint8 SubGame) const
 	if (Func == nullptr)
 		Func = FindFunction("GetQuestManager");
 
-	struct FortPlayerController_GetQuestManager
-	{
-	public:
-		uint8 SubGame;
-		uint8 Pad_1[0x7];
-		UFortQuestManager* ReturnValue;
-	};
-
-	FortPlayerController_GetQuestManager Parms{};
-
-	Parms.SubGame = SubGame;
-
-	const_cast<AFortPlayerController*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AFortPlayerController*>(this)->Call<UFortQuestManager*>(Func, SubGame);
 }
 
-void AFortPlayerController::ServerRepairBuildingActor(AFortPlayerController* This, ABuildingSMActor* BuildingActorToRepair) {
-	if (Version::Fortnite_Version <= 1.8 && Version::Fortnite_Version != 1.10 && Version::Fortnite_Version != 1.11) {
-		return ServerRepairBuildingActorOG(This, BuildingActorToRepair);
-	}
-
+void AFortPlayerController::ServerRepairBuildingActor(ABuildingSMActor* BuildingActorToRepair) {
 	UWorld* World = UWorld::GetWorld();
 	if (!World) {
 		Log("ServerRepairBuildingActor: World is null!");
@@ -1090,8 +1237,22 @@ void AFortPlayerController::ServerRepairBuildingActor(AFortPlayerController* Thi
 		return;
 	}
 
-	if (int32 RepairCost = This->PayBuildingRepairCost(BuildingActorToRepair)) {
-		BuildingActorToRepair->RepairBuilding(This, RepairCost);
+	if (int32 RepairCost = PayBuildingRepairCost(BuildingActorToRepair)) {
+		BuildingActorToRepair->RepairBuilding(this, RepairCost);
+	}
+}
+
+void AFortPlayerController::execServerRepairBuildingActor(AFortPlayerController* Context, FFrame& Stack) {
+	struct FortPlayerController_ServerRepairBuildingActor
+	{
+	public:
+		ABuildingSMActor* BuildingActorToRepair;
+	};
+	FortPlayerController_ServerRepairBuildingActor* Parms = (FortPlayerController_ServerRepairBuildingActor*)Stack.Locals;
+
+	execServerRepairBuildingActorOG(Context, Stack);
+	if (Version::Fortnite_Version >= 1.8 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
+		Context->ServerRepairBuildingActor(Parms->BuildingActorToRepair);
 	}
 }
 
@@ -1100,7 +1261,7 @@ int32 AFortPlayerController::PayBuildingRepairCost(ABuildingSMActor* BuildingToR
 	return PayBuildingRepairCostInternal(this, BuildingToRepair);
 }
 
-void AFortPlayerController::ServerPlayEmoteItem(AFortPlayerController* This, UFortMontageItemDefinitionBase* EmoteAsset) {
+void AFortPlayerController::ServerPlayEmoteItem(AFortPlayerController* This, UFortMontageItemDefinitionBase* EmoteAsset, float EmoteRandomNumber) {
 	ServerPlayEmoteItemOG(This, EmoteAsset);
 	if (Version::Fortnite_Version <= 1.82 && Version::Fortnite_Version != 1.10 && Version::Fortnite_Version != 1.11) {
 		return;
@@ -1161,15 +1322,77 @@ FUniqueNetIdRepl AFortPlayerController::GetGameAccountId() const
 	if (Func == nullptr)
 		Func = FindFunction("GetGameAccountId");
 
-	struct FortPlayerController_GetGameAccountId
+	return const_cast<AFortPlayerController*>(this)->Call<FUniqueNetIdRepl>(Func);
+}
+
+void AFortPlayerController::ServerAttemptInteract(AFortPlayerController* This, AActor* ReceivingActor, UPrimitiveComponent* InteractComponent, uint8 InteractType, UObject* OptionalObjectData) {
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPlayerController::ServerAttemptInteract: World is null!");
+		return;
+	}
+
+	if (!ReceivingActor) {
+		Log("AFortPlayerController::ServerAttemptInteract: ReceivingActor is null!");
+		return;
+	}
+
+	if (ABuildingItemCollectorActor* ItemCollector = ReceivingActor->Cast<ABuildingItemCollectorActor>()) {
+		ItemCollector->ControllingPlayer = This;
+		ItemCollector->bCurrentInteractionSuccess = ItemCollector->GrantOutput();
+		ItemCollector->ControllingPlayer = nullptr;
+	}
+
+	//Log("ReceivingActor: " + ReceivingActor->GetName().ToString());
+	ReceivingActor->ForceNetUpdate();
+}
+
+void AFortPlayerController::execServerAttemptInteract(AFortPlayerController* Context, FFrame& Stack) {
+	struct FortPlayerController_ServerAttemptInteract
 	{
 	public:
-		FUniqueNetIdRepl ReturnValue;
+		AActor* ReceivingActor;
+		UPrimitiveComponent* InteractComponent;
+		uint8 InteractType;
+		UObject* OptionalObjectData;
 	};
+	FortPlayerController_ServerAttemptInteract* Parms = (FortPlayerController_ServerAttemptInteract*)Stack.Locals;
 
-	FortPlayerController_GetGameAccountId Parms{};
+	ServerAttemptInteract(Context, Parms->ReceivingActor, Parms->InteractComponent, Parms->InteractType, Parms->OptionalObjectData);
+	execServerAttemptInteractOG(Context, Stack);
+}
 
-	const_cast<AFortPlayerController*>(this)->ProcessEvent(Func, &Parms);
+FVector AFortPlayerController::GetDropFinalLocation()
+{
+	if (!MyFortPawn)
+		return FVector{};
 
-	return Parms.ReturnValue;
+	FVector FinalLoc = MyFortPawn->K2_GetActorLocation();
+	const FVector Forward = MyFortPawn->GetActorForwardVector();
+
+	FinalLoc += Forward * 450.0f;
+	FinalLoc.Z += 50.0f;
+
+	const float AngleDeg = UKismetMathLibrary::RandomFloatInRange(0.0f, 360.0f);
+	const float AngleRad = AngleDeg * 0.017453292519943295f;
+	const float Radius = UKismetMathLibrary::RandomFloatInRange(0.0f, 100.0f);
+
+	FinalLoc.X += std::cos(AngleRad) * Radius;
+	FinalLoc.Y += std::sin(AngleRad) * Radius;
+
+	return FinalLoc;
+}
+
+void AFortPlayerController::ClientExecuteInventoryItem(FGuid& ItemGuid, float Delay, bool bForceExecute, bool bActivateSlotAfterSettingFocused)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("ClientExecuteInventoryItem");
+
+	if (!Func) {
+		return;
+	}
+
+	Call(Func, ItemGuid, Delay, bForceExecute, bActivateSlotAfterSettingFocused);
 }

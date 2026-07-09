@@ -6,4 +6,5 @@
 class UCheatManager : public UObject {
 public:
 	DefineUnrealClass(UCheatManager);
+	void DestroyTarget();
 };

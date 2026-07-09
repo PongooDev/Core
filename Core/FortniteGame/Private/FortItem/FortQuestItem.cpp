@@ -8,17 +8,7 @@ bool UFortQuestItem::HasCompletedQuest() const
 	if (Func == nullptr)
 		Func = FindFunction("HasCompletedQuest");
 
-	struct FortQuestItem_HasCompletedQuest
-	{
-	public:
-		bool ReturnValue;
-	};
-
-	FortQuestItem_HasCompletedQuest Parms{};
-
-	const_cast<UFortQuestItem*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UFortQuestItem*>(this)->Call<bool>(Func);
 }
 
 bool UFortQuestItem::HasCompletedObjectiveWithName(class FName BackendName) const
@@ -28,20 +18,7 @@ bool UFortQuestItem::HasCompletedObjectiveWithName(class FName BackendName) cons
 	if (Func == nullptr)
 		Func = FindFunction("HasCompletedObjectiveWithName");
 
-	struct FortQuestItem_HasCompletedObjectiveWithName
-	{
-	public:
-		FName BackendName;
-		bool ReturnValue;
-	};
-
-	FortQuestItem_HasCompletedObjectiveWithName Parms{};
-
-	Parms.BackendName = BackendName;
-
-	const_cast<UFortQuestItem*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UFortQuestItem*>(this)->Call<bool>(Func, BackendName);
 }
 
 UFortQuestObjectiveInfo* UFortQuestItem::GetObjectiveInfo(const FDataTableRowHandle& ObjectiveStatHandle) const
@@ -51,18 +28,5 @@ UFortQuestObjectiveInfo* UFortQuestItem::GetObjectiveInfo(const FDataTableRowHan
 	if (Func == nullptr)
 		Func = FindFunction("GetObjectiveInfo");
 
-	struct FortQuestItem_GetObjectiveInfo
-	{
-	public:
-		FDataTableRowHandle ObjectiveStatHandle;
-		UFortQuestObjectiveInfo* ReturnValue;
-	};
-
-	FortQuestItem_GetObjectiveInfo Parms{};
-
-	Parms.ObjectiveStatHandle = std::move(ObjectiveStatHandle);
-
-	const_cast<UFortQuestItem*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UFortQuestItem*>(this)->Call<UFortQuestObjectiveInfo*>(Func, ObjectiveStatHandle);
 }

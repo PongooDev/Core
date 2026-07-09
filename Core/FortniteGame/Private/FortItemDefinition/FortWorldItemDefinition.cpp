@@ -13,15 +13,5 @@ UFortWorldItemDefinition* UFortWorldItemDefinition::GetAmmoWorldItemDefinition_B
 	if (Func == nullptr)
 		Func = FindFunction("GetAmmoWorldItemDefinition_BP");
 
-	struct FortWorldItemDefinition_GetAmmoWorldItemDefinition_BP final
-	{
-	public:
-		UFortWorldItemDefinition* ReturnValue;
-	};
-
-	FortWorldItemDefinition_GetAmmoWorldItemDefinition_BP Parms{};
-
-	const_cast<UFortWorldItemDefinition*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UFortWorldItemDefinition*>(this)->Call<UFortWorldItemDefinition*>(Func);
 }

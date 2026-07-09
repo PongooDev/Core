@@ -230,6 +230,7 @@ namespace ServerOffsets {
 	inline uintptr_t AGameModeBase_InitGame = 0;
 	inline uintptr_t AGameModeBase_InitGameVFT = 0;
 	inline uintptr_t AGameModeBase_InitGameState = 0;
+	inline uintptr_t AGameModeBase_InitGameStateVFT = 0;
 	inline uintptr_t AGameModeBase_CanServerTravel = 0;
 	inline uintptr_t AGameModeBase_SpawnDefaultPawnFor = 0;
 	inline uintptr_t AGameModeBase_SpawnDefaultPawnAtTransform = 0;
@@ -351,6 +352,9 @@ namespace ServerOffsets {
 	inline uintptr_t AFortGameMode_PickTeam = 0;
 	inline uintptr_t AFortGameMode_PickTeamVFT = 0;
 	inline uintptr_t AFortGameMode_ProcessServerTravelPatch1 = 0;
+	inline uintptr_t AFortGameMode_InitializeTeams = 0;
+	inline uintptr_t AFortGameMode_InitializeTeamsVFT = 0;
+	inline uintptr_t AFortGameMode_PlacePlayerOnTeamVFT = 0;
 
 	inline uintptr_t AFortWorldManager_HandleWorldQueryComplete = 0;
 
@@ -407,6 +411,7 @@ namespace ServerOffsets {
 	inline uintptr_t AFortGameModeAthena_FinishWorldInitialization = 0;
 	inline uintptr_t AFortGameModeAthena_AddToAlivePlayers = 0;
 	inline uintptr_t AFortGameModeAthena_RemoveFromAlivePlayers = 0;
+	inline uintptr_t AFortGameModeAthena_PlacePlayerOnTeam = 0;
 
 	inline uintptr_t AFortGameStateAthena_OnRep_CurrentPlaylistInfo = 0;
 	inline uintptr_t AFortGameStateAthena_OnPlaylistDataLoadCompleted = 0;
@@ -545,6 +550,8 @@ namespace ServerOffsets {
 	inline uintptr_t AActor_IsNetRelevantForVFT = 0;
 	inline uintptr_t AActor_GetWorld = 0;
 	inline uintptr_t AActor__CreationTime = 0;
+	inline uintptr_t AActor_PreInitializeComponents = 0;
+	inline uintptr_t AActor_PreInitializeComponentsVFT = 0;
 
 	inline uintptr_t FDebug_AssertFailed = 0;
 
@@ -663,4 +670,11 @@ namespace ServerOffsets {
 	inline uintptr_t FMsg_Logf = 0;
 
 	inline uintptr_t UFortAssetManager_Get = 0;
+
+	inline uintptr_t UDemoNetDriver_TickFlushInternal = 0;
+
+	inline uintptr_t AFortAthenaMapInfo_PickSupplyDropLocation = 0;
+
+	inline uintptr_t AFortDecoTool_ShouldAllowServerSpawnDecoVFT = 0;
+	inline uintptr_t AFortDecoTool_SpawnDecoVFT = 0;
 }

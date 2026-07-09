@@ -13,19 +13,7 @@ void ABuildingSMActor::RepairBuilding(AFortPlayerController* RepairingController
 	if (Func == nullptr)
 		Func = FindFunction("RepairBuilding");
 
-	struct BuildingSMActor_RepairBuilding
-	{
-	public:
-		AFortPlayerController* RepairingController;
-		int32 ResourcesSpent;
-	};
-
-	BuildingSMActor_RepairBuilding Parms{};
-
-	Parms.RepairingController = RepairingController;
-	Parms.ResourcesSpent = ResourcesSpent;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, RepairingController, ResourcesSpent);
 }
 
 void ABuildingSMActor::SetEditingPlayer(AFortPlayerStateZone* NewEditingPlayer) {

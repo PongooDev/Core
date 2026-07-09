@@ -42,6 +42,8 @@ public:
 	DefineUProperty(UFortHealthSet*, HealthSet);
 	DefineBitfieldUProperty(bIsDBNO);
 	DefineBitfieldUProperty(bWasDBNOOnDeath);
+	DefineUProperty(bool, bPlayedDying);
+	DefineUProperty(bool, bIsDying);
 public:
 	AFortWeapon* EquipWeaponDefinition(const UFortWeaponItemDefinition* WeaponData, const FGuid& ItemEntryGuid);
 
@@ -63,4 +65,6 @@ public:
 	AFortWeapon* FindWeapon(FGuid ItemDef);
 
 	void OnRep_IsDBNO();
+
+	bool IsDBNO() const;
 };

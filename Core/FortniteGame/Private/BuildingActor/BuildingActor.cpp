@@ -15,24 +15,22 @@
 
 void ABuildingActor::InitializeKismetSpawnedBuildingActor(ABuildingActor* BuildingOwner, AFortPlayerController* SpawningController, bool bUsePlayerBuildAnimations, ABuildingActor* ReplacedBuilding)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName("InitializeKismetSpawnedBuildingActor"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&InitializeKismetSpawnedBuildingActorInternal)(ABuildingActor*, ABuildingActor*, AFortPlayerController*, bool, ABuildingActor*) = decltype(InitializeKismetSpawnedBuildingActorInternal)(VTable[VTableIdx]);
-		return InitializeKismetSpawnedBuildingActorInternal(this, BuildingOwner, SpawningController, bUsePlayerBuildAnimations, ReplacedBuilding);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("InitializeKismetSpawnedBuildingActor");
+
+	return const_cast<ABuildingActor*>(this)->Call<void>(Func, BuildingOwner, SpawningController, bUsePlayerBuildAnimations, ReplacedBuilding);
 }
 
 float ABuildingActor::GetHealthPercent() const
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName("GetHealthPercent"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		float (*&GetHealthPercentInternal)(const ABuildingActor*) = decltype(GetHealthPercentInternal)(VTable[VTableIdx]);
-		return GetHealthPercentInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("GetHealthPercent");
+
+	return const_cast<ABuildingActor*>(this)->Call<float>(Func);
 }
 
 float ABuildingActor::GetMaxHealth() const
@@ -46,17 +44,7 @@ float ABuildingActor::GetMaxHealth() const
 		return 0.0f;
 	}
 
-	struct BuildingActor_GetMaxHealth
-	{
-	public:
-		float ReturnValue;
-	};
-
-	BuildingActor_GetMaxHealth Parms{};
-
-	const_cast<ABuildingActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<ABuildingActor*>(this)->Call<float>(Func);
 }
 
 void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FGameplayTagContainer& DamageTags, const FVector& Momentum, const FHitResult& HitInfo, AController* InstigatedBy, AActor* DamageCauser, const FGameplayEffectContextHandle& EffectContext) {
@@ -106,8 +94,12 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 	UCurveTable* ResourceRates = nullptr;
 
 	if (FortGameModeAthena && FortGameStateAthena) {
-		if (FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist) {
-			ResourceRates = FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist->ResourceRates.Get();
+		UFortPlaylistAthena* CurrentPlaylist = FortGameStateAthena->CurrentPlaylistData;
+		if (!CurrentPlaylist) {
+			CurrentPlaylist = FortGameStateAthena->CurrentPlaylistInfo.BasePlaylist;
+		}
+		if (CurrentPlaylist) {
+			ResourceRates = CurrentPlaylist->ResourceRates.Get();
 		}
 	}
 	if (!ResourceRates)
@@ -157,17 +149,7 @@ float ABuildingActor::GetHealth() const
 	if (Func == nullptr)
 		Func = FindFunction("GetHealth");
 
-	struct BuildingActor_GetHealth final
-	{
-	public:
-		float ReturnValue;
-	};
-
-	BuildingActor_GetHealth Parms{};
-
-	const_cast<ABuildingActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<ABuildingActor*>(this)->Call<float>(Func);
 }
 
 void ABuildingActor::OnRep_CurrentBuildingLevel()
@@ -177,5 +159,5 @@ void ABuildingActor::OnRep_CurrentBuildingLevel()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_CurrentBuildingLevel");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }

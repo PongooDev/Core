@@ -5,6 +5,8 @@
 #include "FortniteGame/Public/FortItem/FortWorldItem.h"
 #include "FortniteGame/Public/FortPlayerController/FortPlayerControllerAthena.h"
 #include "FortniteGame/Public/FortInventory/FortInventory.h"
+#include "FortniteGame/Public/FortInventory/FortQuickBarsAthena.h"
+#include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
 
 void AFortQuickBars::ServerAddItemInternal(const FGuid& Item, uint8 InQuickBar, int32 Slot)
 {
@@ -16,127 +18,75 @@ void AFortQuickBars::ServerAddItemInternal(const FGuid& Item, uint8 InQuickBar, 
 		Func = FindFunction("ServerAddItemInternal");
 
 	if (!Func) {
-		Log("AFortQuickBars::ServerAddItemInternal: Failed to find function!");
 		return;
 	}
 
-	struct FortQuickBars_ServerAddItemInternal
-	{
-	public:
-		FGuid Item;
-		uint8 InQuickBar;
-		int32 Slot;
-	};
-
-	FortQuickBars_ServerAddItemInternal Parms{};
-
-	Parms.Item = std::move(Item);
-	Parms.InQuickBar = InQuickBar;
-	Parms.Slot = Slot;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, Item, InQuickBar, Slot);
 }
 
 void AFortQuickBars::ServerRemoveItemInternal(const FGuid& Item, bool bFindReplacement, bool bForce)
 {
+	if (!this) return;
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("ServerRemoveItemInternal");
 
-	struct FortQuickBars_ServerRemoveItemInternal final
-	{
-	public:
-		FGuid Item;
-		bool bFindReplacement;
-		bool bForce;
-	};
+	if (!Func) {
+		return;
+	}
 
-	FortQuickBars_ServerRemoveItemInternal Parms{};
-
-	Parms.Item = std::move(Item);
-	Parms.bFindReplacement = bFindReplacement;
-	Parms.bForce = bForce;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, Item, bFindReplacement, bForce);
 }
 
 void AFortQuickBars::EmptySlot(uint8 InQuickBar, int32 SlotIndex)
 {
+	if (!this) return;
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("EmptySlot");
 
-	struct FortQuickBars_EmptySlot final
-	{
-	public:
-		uint8 InQuickBar;
-		uint8 Pad_1[0x3];
-		int32 SlotIndex;
-	};
+	if (!Func) {
+		return;
+	}
 
-	FortQuickBars_EmptySlot Parms{};
-
-	Parms.InQuickBar = InQuickBar;
-	Parms.SlotIndex = SlotIndex;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, InQuickBar, SlotIndex);
 }
 
 void AFortQuickBars::ServerActivateSlotInternal(uint8 InQuickBar, int32 Slot, float ActivateDelay, bool bUpdatePreviousFocusedSlot)
 {
+	if (!this) return;
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("ServerActivateSlotInternal");
 
-	struct FortQuickBars_ServerActivateSlotInternal final
-	{
-	public:
-		uint8 InQuickBar;
-		uint8 Pad_1[0x3];
-		int32 Slot;
-		float ActivateDelay;
-		bool bUpdatePreviousFocusedSlot;
-		uint8 Pad_D[0x3];
-	};
+	if (!Func) {
+		return;
+	}
 
-	FortQuickBars_ServerActivateSlotInternal Parms{};
-
-	Parms.InQuickBar = InQuickBar;
-	Parms.Slot = Slot;
-	Parms.ActivateDelay = ActivateDelay;
-	Parms.bUpdatePreviousFocusedSlot = bUpdatePreviousFocusedSlot;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, InQuickBar, Slot, ActivateDelay, bUpdatePreviousFocusedSlot);
 }
 
 void AFortQuickBars::EnableSlot(uint8 InQuickBar, int32 SlotIndex)
 {
+	if (!this) return;
 	static class UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("EnableSlot");
 
-	struct FortQuickBars_EnableSlot final
-	{
-	public:
-		uint8 InQuickBar;
-		uint8 Pad_1[0x3];
-		int32 SlotIndex;
-	};
+	if (!Func) {
+		return;
+	}
 
-	FortQuickBars_EnableSlot Parms{};
-
-	Parms.InQuickBar = InQuickBar;
-	Parms.SlotIndex = SlotIndex;
-
-	ProcessEvent(Func, &Parms);
+	return Call(Func, InQuickBar, SlotIndex);
 }
 
 int32 AFortQuickBars::FindQuickBarSlotForItem(uint8 QuickBar, FGuid Guid) const
 {
+	if (!this) return -1;
 	if (!Guid.IsValid())
 		return -1;
 
@@ -171,6 +121,7 @@ int32 AFortQuickBars::FindQuickBarSlotForItem(uint8 QuickBar, FGuid Guid) const
 
 void AFortQuickBars::EmptyQuickbarSlot(FGuid Guid)
 {
+	if (!this) return;
 	if (!Guid.IsValid())
 		return;
 
@@ -200,15 +151,18 @@ void AFortQuickBars::EmptyQuickbarSlot(FGuid Guid)
 
 AFortPlayerController* AFortQuickBars::GetOwnerPlayerController() const
 {
+	if (!this) return nullptr;
 	return Owner ? Owner->Cast<AFortPlayerController>() : nullptr;
 }
 
 void AFortQuickBars::EquipHarvestingTool() {
+	if (!this) return;
 	ServerActivateSlotInternal(EFortQuickBars::GetPrimary(), 0, 0.f, true);
 }
 
 void AFortQuickBars::AddItemToQuickBar(FGuid Guid, uint8 QuickBar)
 {
+	if (!this) return;
 	if (!Guid.IsValid())
 		return;
 
@@ -217,25 +171,36 @@ void AFortQuickBars::AddItemToQuickBar(FGuid Guid, uint8 QuickBar)
 
 void AFortQuickBars::OnRep_PrimaryQuickBar()
 {
+	if (!this) return;
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_PrimaryQuickBar");
 
-	ProcessEvent(Func, nullptr);
+	if (!Func) {
+		return;
+	}
+
+	Call(Func);
 }
 
 void AFortQuickBars::OnRep_SecondaryQuickBar()
 {
+	if (!this) return;
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_SecondaryQuickBar");
 
-	ProcessEvent(Func, nullptr);
+	if (!Func) {
+		return;
+	}
+
+	Call(Func);
 }
 
 bool AFortQuickBars::EquipItem(FGuid Guid) {
+	if (!this) return false;
 	if (!Guid.IsValid())
 		return false;
 
@@ -256,7 +221,30 @@ bool AFortQuickBars::EquipItem(FGuid Guid) {
 	}
 
 	uint8 ItemDefQuickBar = ItemDef->GetQuickBarForItem();
-	ServerActivateSlotInternal(ItemDefQuickBar, FindQuickBarSlotForItem(ItemDefQuickBar, Guid), 0.f, true);
+	int32 ResolvedSlot = FindQuickBarSlotForItem(ItemDefQuickBar, Guid);
+	if (ResolvedSlot == -1) {
+		return true;
+	}
+	ServerActivateSlotInternal(ItemDefQuickBar, ResolvedSlot, 0.f, true);
 
 	return true;
+}
+
+UClass* AFortQuickBars::GetDefaultQuickBarsClass()
+{
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		return AFortQuickBars::StaticClass();
+	}
+
+	AFortGameModeAthena* FortGameModeAthena = World->AuthorityGameMode->Cast<AFortGameModeAthena>();
+	if (FortGameModeAthena) {
+		if (!AFortQuickBarsAthena::StaticClass()) {
+			return AFortQuickBars::StaticClass();
+		}
+
+		return AFortQuickBarsAthena::StaticClass();
+	}
+
+	return AFortQuickBars::StaticClass();
 }

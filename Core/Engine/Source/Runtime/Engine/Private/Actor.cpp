@@ -7,6 +7,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Pawn.h"
 #include "Engine/Plugins/Online/OnlineSubsystemUtils/Source/OnlineSubsystemUtils/Public/OnlineBeaconClient.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/HitResult.h"
 
 ENetMode AActor::InternalGetNetMode(AActor* This)
 {
@@ -54,17 +55,7 @@ FVector AActor::GetActorForwardVector() const
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetActorForwardVector"));
 
-	struct Actor_GetActorForwardVector final
-	{
-	public:
-		FVector ReturnValue;
-	};
-
-	Actor_GetActorForwardVector Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<FVector>(Func);
 }
 
 FVector AActor::GetActorRightVector() const
@@ -74,17 +65,7 @@ FVector AActor::GetActorRightVector() const
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetActorRightVector"));
 
-	struct Actor_GetActorRightVector final
-	{
-	public:
-		FVector ReturnValue;
-	};
-
-	Actor_GetActorRightVector Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<FVector>(Func);
 }
 
 FVector AActor::GetActorUpVector() const
@@ -94,17 +75,7 @@ FVector AActor::GetActorUpVector() const
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetActorUpVector"));
 
-	struct Actor_GetActorUpVector final
-	{
-	public:
-		FVector ReturnValue;
-	};
-
-	Actor_GetActorUpVector Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<FVector>(Func);
 }
 
 FVector AActor::K2_GetActorLocation() const
@@ -118,17 +89,7 @@ FVector AActor::K2_GetActorLocation() const
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"K2_GetActorLocation"));
 
-	struct Actor_K2_GetActorLocation final
-	{
-	public:
-		FVector ReturnValue;
-	};
-
-	Actor_K2_GetActorLocation Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<FVector>(Func);
 }
 
 FRotator AActor::K2_GetActorRotation() const
@@ -138,17 +99,7 @@ FRotator AActor::K2_GetActorRotation() const
 	if (Func == nullptr)
 		Func = FindFunction("K2_GetActorRotation");
 
-	struct Actor_K2_GetActorRotation final
-	{
-	public:
-		FRotator ReturnValue;
-	};
-
-	Actor_K2_GetActorRotation Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<FRotator>(Func);
 }
 
 ENetRole AActor::GetRemoteRole() const
@@ -167,17 +118,7 @@ ENetRole AActor::GetRemoteRole() const
 		return ROLE_None;
 	}
 
-	struct Actor_GetRemoteRole final
-	{
-	public:
-		ENetRole ReturnValue;
-	};
-
-	Actor_GetRemoteRole Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<ENetRole>(Func);
 }
 
 void AActor::CallPreReplication(UNetDriver* NetDriver)
@@ -188,12 +129,19 @@ void AActor::CallPreReplication(UNetDriver* NetDriver)
 
 void AActor::ForceNetUpdate()
 {
+	if (!this) {
+		return;
+	}
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("ForceNetUpdate");
 
-	ProcessEvent(Func, nullptr);
+	if (!Func) {
+		return;
+	}
+
+	Call(Func);
 }
 
 const AActor* AActor::GetNetOwner() const
@@ -219,7 +167,7 @@ void AActor::K2_DestroyActor()
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"K2_DestroyActor"));
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 FTransform AActor::GetTransform() const
@@ -229,17 +177,7 @@ FTransform AActor::GetTransform() const
 	if (Func == nullptr)
 		Func = FindFunction("GetTransform");
 
-	struct Actor_GetTransform final
-	{
-	public:
-		FTransform ReturnValue;
-	};
-
-	Actor_GetTransform Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<AActor*>(this)->Call<FTransform>(Func);
 }
 
 void AActor::SetNetDormancy(ENetDormancy NewDormancy)
@@ -249,42 +187,17 @@ void AActor::SetNetDormancy(ENetDormancy NewDormancy)
 	if (Func == nullptr)
 		Func = FindFunction("SetNetDormancy");
 
-	struct Actor_SetNetDormancy final
-	{
-	public:
-		ENetDormancy NewDormancy;
-	};
-
-	Actor_SetNetDormancy Parms{};
-
-	Parms.NewDormancy = NewDormancy;
-
-	ProcessEvent(Func, &Parms);
+	Call(Func, NewDormancy);
 }
 
-void AActor::GetActorEyesViewPoint(struct FVector* OutLocation, struct FRotator* OutRotation) const
+void AActor::GetActorEyesViewPoint(FVector* OutLocation, FRotator* OutRotation) const
 {
 	static UFunction* Func = nullptr;
 
 	if (Func == nullptr)
 		Func = FindFunction("GetActorEyesViewPoint");
 
-	struct Actor_GetActorEyesViewPoint
-	{
-	public:
-		FVector OutLocation;
-		FRotator OutRotation;
-	};
-
-	Actor_GetActorEyesViewPoint Parms{};
-
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
-
-	if (OutLocation != nullptr)
-		*OutLocation = std::move(Parms.OutLocation);
-
-	if (OutRotation != nullptr)
-		*OutRotation = std::move(Parms.OutRotation);
+	return const_cast<AActor*>(this)->Call(Func, OutLocation, OutRotation);
 }
 
 void AActor::Reset()
@@ -300,18 +213,57 @@ float AActor::GetDistanceTo(const AActor* OtherActor) const
 	if (Func == nullptr)
 		Func = FindFunction("GetDistanceTo");
 
-	struct Actor_GetDistanceTo
-	{
-	public:
-		const AActor* OtherActor;
-		float ReturnValue;
-	};
+	return const_cast<AActor*>(this)->Call<float>(Func, OtherActor);
+}
 
-	Actor_GetDistanceTo Parms{};
+bool AActor::K2_SetActorLocation(FVector& NewLocation, bool bSweep, FHitResult* SweepHitResult, bool bTeleport)
+{
+	static UFunction* Func = nullptr;
 
-	Parms.OtherActor = OtherActor;
+	if (Func == nullptr)
+		Func = FindFunction("K2_SetActorLocation");
 
-	const_cast<AActor*>(this)->ProcessEvent(Func, &Parms);
+	return Call<bool>(Func, NewLocation, bSweep, SweepHitResult, bTeleport);
+}
 
-	return Parms.ReturnValue;
+void AActor::FlushNetDormancy()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("FlushNetDormancy");
+
+	if (!Func) {
+		return;
+	}
+
+	Call(Func);
+}
+
+void AActor::SetOwner(class AActor* NewOwner)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("SetOwner");
+
+	if (!Func) {
+		return;
+	}
+
+	Call(Func, NewOwner);
+}
+
+void AActor::SetReplicateMovement(bool bInReplicateMovement)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("SetReplicateMovement");
+
+	if (!Func) {
+		return;
+	}
+
+	Call(Func, bInReplicateMovement);
 }

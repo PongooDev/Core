@@ -19,7 +19,8 @@ public:
 	DefineUProperty(float, GarbageCollectionFrequency);
 
 	DefineUProperty(int32, MaxPlayers);
-
+	DefineUProperty(int32, MaxTeamCount);
+	DefineUProperty(int32, MaxTeamSize);
 	DefineUProperty(int32, MaxSquadSize);
 
 	DefineUProperty(TArray<TSoftObjectPtr<UWorld>>, AdditionalLevels);
@@ -29,4 +30,8 @@ public:
 	DefineUProperty(TSoftObjectPtr<UDataTable>, LootPackages);
 
 	DefineUProperty(TSoftObjectPtr<UCurveTable>, ResourceRates);
+	DefineUProperty(TSoftObjectPtr<UCurveTable>, GameData);
+public:
+	int32& GetPlaylistId();
+	FName& GetPlaylistName();
 };

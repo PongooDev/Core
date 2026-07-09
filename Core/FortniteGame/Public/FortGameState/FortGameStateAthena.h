@@ -8,6 +8,7 @@ class AFortAthenaMapInfo;
 class APlayerState;
 class UAthenaBattleBusItemDefinition;
 class AFortAthenaPlaylistBase;
+class UFortPlaylistAthena;
 
 class AFortGameStateAthena : public AFortGameStateZone {
 public:
@@ -24,11 +25,14 @@ public:
 	DefineUProperty(int32, FiftyFiftyTeam2PlayersLeft);
 	DefineUProperty(int32, TeamsLeft);
 	DefineUProperty(FPlaylistPropertyArray, CurrentPlaylistInfo);
+	DefineUProperty(UFortPlaylistAthena*, CurrentPlaylistData);
 	DefineUProperty(int32, CurrentPlaylistId);
 	DefineUProperty(UAthenaBattleBusItemDefinition*, DefaultBattleBus);
 	DefineUProperty(AFortAthenaPlaylistBase*, FortAthenaPlaylistCDO);
+	DefineUProperty(uint8, AirCraftBehavior);
+	DefineUProperty(uint8, CachedSafeZoneStartUp);
+	DefineUProperty(bool, bIsLargeTeamGame);
 public:
-	void OnRep_CurrentPlaylistInfo();
 	void OnRep_CurrentPlaylistId();
 
 	void OnPlaylistDataLoadCompleted();
@@ -46,6 +50,10 @@ public:
 	void OnRep_WinningPlayerList();
 
 	void OnRep_WinningPlayerState();
+
+	void OnRep_CurrentPlaylistData();
+
+	void OnRep_CurrentPlaylistInfo();
 
 	static void Hook();
 };

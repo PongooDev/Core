@@ -8,7 +8,7 @@ void UFortHealthSet::OnRep_CurrentShield()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_CurrentShield");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void UFortHealthSet::OnRep_Health()
@@ -18,7 +18,7 @@ void UFortHealthSet::OnRep_Health()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_Health");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void UFortHealthSet::OnRep_MaxHealth()
@@ -28,7 +28,7 @@ void UFortHealthSet::OnRep_MaxHealth()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_MaxHealth");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }
 
 void UFortHealthSet::OnRep_Shield()
@@ -38,5 +38,5 @@ void UFortHealthSet::OnRep_Shield()
 	if (Func == nullptr)
 		Func = FindFunction("OnRep_Shield");
 
-	ProcessEvent(Func, nullptr);
+	Call(Func);
 }

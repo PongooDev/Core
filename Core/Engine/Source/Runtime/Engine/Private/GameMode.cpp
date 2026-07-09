@@ -13,46 +13,42 @@ namespace MatchState
 
 bool AGameMode::ReadyToStartMatch()
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"ReadyToStartMatch"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&ReadyToStartMatchInternal)(AGameMode*) = decltype(ReadyToStartMatchInternal)(VTable[VTableIdx]);
-		ReadyToStartMatchInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("ReadyToStartMatch");
+
+	return Call<bool>(Func);
 }
 
 void AGameMode::Say(const FString& Msg)
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"Say"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&SayInternal)(AGameMode*, const FString&) = decltype(SayInternal)(VTable[VTableIdx]);
-		SayInternal(this, Msg);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("Say");
+
+	Call(Func, Msg);
 }
 
 bool AGameMode::IsMatchInProgress() const
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"IsMatchInProgress"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&IsMatchInProgressInternal)(const AGameMode*) = decltype(IsMatchInProgressInternal)(VTable[VTableIdx]);
-		IsMatchInProgressInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("IsMatchInProgress");
+
+	return const_cast<AGameMode*>(this)->Call<bool>(Func);
 }
 
 bool AGameMode::HasMatchEnded() const
 {
-	static UFunction* Function = FindFunction(UKismetStringLibrary::Conv_StringToName(L"HasMatchEnded"));
-	if (Function) {
-		static uintptr_t VTableIdx = GetVTableIndex(Function);
+	static UFunction* Func = nullptr;
 
-		void (*&HasMatchEndedInternal)(const AGameMode*) = decltype(HasMatchEndedInternal)(VTable[VTableIdx]);
-		HasMatchEndedInternal(this);
-	}
+	if (Func == nullptr)
+		Func = FindFunction("HasMatchEnded");
+
+	return const_cast<AGameMode*>(this)->Call<bool>(Func);
 }
 
 void AGameMode::AddInactivePlayer(APlayerState* PlayerState, APlayerController* PC)

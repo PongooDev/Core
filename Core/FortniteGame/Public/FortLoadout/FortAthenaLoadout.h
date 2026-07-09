@@ -29,5 +29,5 @@ public:
 	DefineStructProperty(UAthenaDanceItemDefinition*, Dance);
 	DefineStructProperty(UAthenaVictoryPoseItemDefinition*, VictoryPose);
 public:
-	uint8 Padding[0x68];
+	uint8 Padding[0x88];
 };

@@ -162,7 +162,7 @@ void HookEveryVTableIdx(UClass* Base, int Idx, void* Detour, void** OG, bool bSi
 	}
 }
 
-void HookEveryVTable(UClass* Base, class UFunction* Func, void* Detour, void** OG)
+void HookEveryVTable(UClass* Base, class UFunction* Func, void* Detour, void** OG, bool bSilent)
 {
 	if (!Base || !Detour || !Func)
 	{
@@ -186,7 +186,9 @@ void HookEveryVTable(UClass* Base, class UFunction* Func, void* Detour, void** O
 		{
 			HookVTableIdx(Object, VTableIndex, Detour, OGSet ? nullptr : (LPVOID*)OG);
 			if (!OGSet) OGSet = true;
-			Log("Hooked " + Func->GetName().ToString() + " in " + Object->GetName().ToString() + " at index " + std::to_string(VTableIndex));
+			if (!bSilent) {
+				Log("Hooked " + Func->GetName().ToString() + " in " + Object->GetName().ToString() + " at index " + std::to_string(VTableIndex));
+			}
 		}
 	}
 }

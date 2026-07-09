@@ -111,3 +111,27 @@ TArray<UObject*> FUObjectArray::GetObjectsOfClass(UClass* TargetClass, std::stri
 
 	return Objects;
 }
+
+TArray<UObject*> FUObjectArray::FindObjects(const std::string& SearchString)
+{
+	TArray<UObject*> Objects;
+
+	for (int i = 0; i < Num(); i++)
+	{
+		FUObjectItem* Item = IndexToObject(i);
+		if (!Item)
+			continue;
+
+		UObject* Object = (UObject*)Item->Object;
+		if (!Object)
+			continue;
+
+		std::string objectFullName = Utils::StringToLower(Object->GetFullName());
+		if (objectFullName.contains(Utils::StringToLower(SearchString)))
+		{
+			Objects.Add(Object);
+		}
+	}
+
+	return Objects;
+}

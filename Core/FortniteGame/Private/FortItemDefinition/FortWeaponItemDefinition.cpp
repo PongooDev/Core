@@ -7,12 +7,28 @@
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
 
 FFortBaseWeaponStats* UFortWeaponItemDefinition::GetWeaponStats() const {
-	FFortBaseWeaponStats WeaponStats;
-	if (UFortKismetLibrary::GetWeaponStatsRow(WeaponStatHandle, &WeaponStats)) {
-		return &WeaponStats;
+	if (!WeaponStatHandle.DataTable)
+		return nullptr;
+
+	auto DataTable = WeaponStatHandle.DataTable;
+	auto RowName = WeaponStatHandle.RowName;
+
+	auto& RowMap = DataTable->RowMap;
+
+	for (int i = 0; i < RowMap.Num(); i++)
+	{
+		auto& Pair = RowMap[i];
+
+		FName CurrentRowName = Pair.Key();
+		FFortRangedWeaponStats* PackageData = (FFortRangedWeaponStats*)Pair.Value();
+
+		if (CurrentRowName == RowName && PackageData)
+		{
+			return PackageData;
+		}
 	}
 
-	Log("UFortWeaponItemDefinition::GetWeaponStats: GetWeaponStatsRow Failed!");
+	Log("UFortWeaponItemDefinition::GetWeaponStats: Row not found in DataTable or PackageData is null.");
 	return nullptr;
 }
 
@@ -62,15 +78,5 @@ TSubclassOf<AFortWeapon> UFortWeaponItemDefinition::GetWeaponActorClass() const
 	if (Func == nullptr)
 		Func = FindFunction("GetWeaponActorClass");
 
-	struct FortWeaponItemDefinition_GetWeaponActorClass
-	{
-	public:
-		TSubclassOf<AFortWeapon> ReturnValue;
-	};
-
-	FortWeaponItemDefinition_GetWeaponActorClass Parms{};
-
-	const_cast<UFortWeaponItemDefinition*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UFortWeaponItemDefinition*>(this)->Call<TSubclassOf<AFortWeapon>>(Func);
 }

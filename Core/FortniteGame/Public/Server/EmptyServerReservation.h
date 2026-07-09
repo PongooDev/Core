@@ -15,5 +15,5 @@ public:
 	DefineStructProperty(bool, bMakePrivate);
 	DefineStructProperty(uint8, MatchmakingPool);
 public:
-	uint8 Padding[0x50];
+	uint8 Padding[0x58];
 };

@@ -30,6 +30,8 @@ public:
 	FORCEINLINE FVector operator*(float Scale) const;
 
 	FORCEINLINE FVector operator*(const FVector& V) const;
+
+	FORCEINLINE FVector operator+=(const FVector& V);
 public:
 	float SizeSquared() const;
 
@@ -89,6 +91,12 @@ FORCEINLINE FVector FVector::operator*(float Scale) const
 FORCEINLINE FVector FVector::operator*(const FVector& V) const
 {
 	return FVector(X * V.X, Y * V.Y, Z * V.Z);
+}
+
+FORCEINLINE FVector FVector::operator+=(const FVector& V)
+{
+	X += V.X; Y += V.Y; Z += V.Z;
+	return *this;
 }
 
 FORCEINLINE float FVector::SizeSquared() const

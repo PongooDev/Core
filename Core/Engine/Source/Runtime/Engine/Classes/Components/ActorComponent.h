@@ -25,15 +25,5 @@ FORCEINLINE AActor* UActorComponent::GetOwner() const
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetOwner"));
 
-	struct ActorComponent_GetOwner final
-	{
-	public:
-		AActor* ReturnValue;
-	};
-
-	ActorComponent_GetOwner Parms{};
-
-	const_cast<UActorComponent*>(this)->ProcessEvent(Func, &Parms);
-
-	return Parms.ReturnValue;
+	return const_cast<UActorComponent*>(this)->Call<AActor*>(Func);
 }

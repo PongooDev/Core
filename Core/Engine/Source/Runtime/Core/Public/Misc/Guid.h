@@ -245,4 +245,33 @@ public:
 	{
 		return std::format("{{{:08X}-{:08X}-{:08X}-{:08X}}}", A, B, C, D);
 	}
+
+	static FGuid ParseGUID(std::string GuidString) {
+		FGuid Guid;
+
+		if (GuidString.empty()) {
+			return Guid;
+		}
+
+		if (GuidString.front() == '{' && GuidString.back() == '}') {
+			GuidString = GuidString.substr(1, GuidString.size() - 2);
+		}
+
+		std::replace(GuidString.begin(), GuidString.end(), '-', ' ');
+
+		std::istringstream iss(GuidString);
+
+		uint32_t a, b, c, d;
+
+		if (!(iss >> std::hex >> a >> b >> c >> d)) {
+			return FGuid();
+		}
+
+		Guid.A = a;
+		Guid.B = b;
+		Guid.C = c;
+		Guid.D = d;
+
+		return Guid;
+	}
 };
