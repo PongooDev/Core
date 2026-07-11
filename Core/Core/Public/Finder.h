@@ -1102,6 +1102,8 @@ public:
 	static uintptr_t FindAFortGameModeAthena_PlacePlayerOnTeam();
 
 	static uintptr_t FindAFortGameMode_PlacePlayerOnTeamVFT();
+
+	static uintptr_t FindAActor_PostInitializeComponentsVFT();
 public:
 	static void SetupCoreOffsets();
 

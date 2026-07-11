@@ -60,6 +60,9 @@ public:
 	static inline void (*PlacePlayerOnTeamOG)(AFortGameModeAthena* This, AFortPlayerController* FortPC);
 	static void PlacePlayerOnTeam(AFortGameModeAthena* This, AFortPlayerController* FortPC);
 
+	static inline void (*PreInitializeComponentsOG)(AFortGameModeAthena* This);
+	static void PreInitializeComponents(AFortGameModeAthena* This);
+
 	static void Hook() {
 		//MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortGameModeAthena_ReadyToStartMatch()), ReadyToStartMatch, (LPVOID*)&ReadyToStartMatchOG);
 		HookEveryVTable(
@@ -112,6 +115,12 @@ public:
 			Finder::FindAFortGameMode_PlacePlayerOnTeamVFT(),
 			PlacePlayerOnTeam,
 			(LPVOID*)&PlacePlayerOnTeamOG
+		);
+
+		MH_CreateHook(
+			(LPVOID)(GetOffsetFromVTable(AFortGameModeAthena::GetDefaultObj(), Finder::FindAActor_PreInitializeComponentsVFT())),
+			PreInitializeComponents,
+			(LPVOID*)&PreInitializeComponentsOG
 		);
 
 		Log("Hooked AFortGameModeAthena");

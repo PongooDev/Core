@@ -138,7 +138,7 @@ void ABuildingActor::OnDamageServer(ABuildingActor* This, float Damage, const FG
 
 	PC->WorldInventory->AddItemAndHandleOverflow(ResourceDef, ResourceCount);
 
-	//This->ForceNetUpdate();
+	This->ForceNetUpdate();
 	return OnDamageServerOG(This, Damage, DamageTags, Momentum, HitInfo, InstigatedBy, DamageCauser, EffectContext);
 }
 

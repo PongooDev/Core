@@ -129,10 +129,9 @@ void AFortQuickBars::EmptyQuickbarSlot(FGuid Guid)
 	if (!PC)
 		return;
 
-	if (PC->WorldInventory->IsCurrentItem(Guid))
-	{
-		PC->WorldInventory->EquipHarvestingTool();
-	}
+	bool bIsCurrentItem = PC->WorldInventory->IsCurrentItem(Guid);
+
+	ServerRemoveItemInternal(Guid, true, true);
 
 	const int32 PrimarySlotIndex = FindQuickBarSlotForItem(EFortQuickBars::GetPrimary(), Guid);
 	if (PrimarySlotIndex != -1)
@@ -146,7 +145,10 @@ void AFortQuickBars::EmptyQuickbarSlot(FGuid Guid)
 		EmptySlot(EFortQuickBars::GetSecondary(), SecondarySlotIndex);
 	}
 
-	ServerRemoveItemInternal(Guid, false, true);
+	if (bIsCurrentItem)
+	{
+		EquipHarvestingTool();
+	}
 }
 
 AFortPlayerController* AFortQuickBars::GetOwnerPlayerController() const

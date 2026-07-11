@@ -17,6 +17,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Pawn.h"
 #include "Engine/Source/Runtime/Core/Public/Misc/AssertionMacros.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/PackageMapClient.h"
+#include "Engine/Source/Runtime/Core/Public/Math/UnrealMathUtility.h"
 
 static int32* CVarSetNetDormancyEnabled = Finder::FindCVarDirect<int32>(L"net.DormancyEnable");
 static int32 MaxConnectionsToTickPerServerFrame = 10; // its a cvar, idk how to get it so i just hardcoded it for now (can somebody help me with this)
@@ -27,7 +28,7 @@ static float ServerReplicateActorsTimeMs = 1.f;
 FActorPriority::FActorPriority(UNetConnection* InConnection, UActorChannel* InChannel, FNetworkObjectInfo* InActorInfo, const TArray<struct FNetViewer>& Viewers, bool bLowBandwidth)
 	: ActorInfo(InActorInfo), Channel(InChannel), DestructionInfo(NULL)
 {
-	if (!ActorInfo || !InConnection || !InChannel)
+	if (!ActorInfo || !InConnection)
 	{
 		Priority = 0;
 		return;
@@ -39,7 +40,7 @@ FActorPriority::FActorPriority(UNetConnection* InConnection, UActorChannel* InCh
 		Priority = 0;
 		for (int32 i = 0; i < Viewers.Num(); i++)
 		{
-			Priority = UKismetMathLibrary::Max(Priority, UKismetMathLibrary::Round(65536.0f * ActorInfo->Actor->GetNetPriority(Viewers[i].ViewLocation, Viewers[i].ViewDir, Viewers[i].InViewer, Viewers[i].ViewTarget, InChannel, Time, bLowBandwidth)));
+			Priority = FMath::Max(Priority, FMath::RoundToInt(65536.0f * ActorInfo->Actor->GetNetPriority(Viewers[i].ViewLocation, Viewers[i].ViewDir, Viewers[i].InViewer, Viewers[i].ViewTarget, InChannel, Time, bLowBandwidth)));
 		}
 	}
 }
@@ -67,7 +68,7 @@ FActorPriority::FActorPriority(class UNetConnection* InConnection, struct FActor
 		else if (DistSq > MEDSIGHTTHRESHOLDSQUARED)
 			Time *= 0.4f;
 
-		Priority = UKismetMathLibrary::Max(Priority, 65536.0f * Time);
+		Priority = FMath::Max<int32>(FMath::TruncToInt(65536.0f * Time), Priority);
 	}
 }
 
@@ -215,6 +216,34 @@ bool UNetDriver::IsLevelInitializedForActor(const AActor* InActor, const UNetCon
 	return IsLevelInitializedForActorInternal(this, InActor, InConnection);
 }
 
+typedef std::unordered_map<AActor*, UActorChannel*> FActorChannelLookup;
+
+static void BuildActorChannelLookup(UNetConnection* Connection, FActorChannelLookup& OutChannelsByActor)
+{
+	OutChannelsByActor.clear();
+
+	TMap<TWeakObjectPtr<AActor>, UActorChannel*>& ActorChannels = Connection->ActorChannels();
+	if (!ActorChannels.IsValid())
+		return;
+
+	OutChannelsByActor.reserve(ActorChannels.Num());
+
+	for (int32 Idx = 0; Idx < ActorChannels.NumAllocated(); Idx++)
+	{
+		if (!ActorChannels.IsValidIndex(Idx))
+			continue;
+
+		auto& Pair = ActorChannels[Idx];
+		OutChannelsByActor[Pair.Key().Get()] = Pair.Value();
+	}
+}
+
+static FORCEINLINE UActorChannel* FindChannel(const FActorChannelLookup& ChannelsByActor, AActor* Actor)
+{
+	auto It = ChannelsByActor.find(Actor);
+	return It != ChannelsByActor.end() ? It->second : nullptr;
+}
+
 void UNetDriver::TickDispatch(UNetDriver* This, float DeltaTime)
 {
 	TickDispatchOG(This, DeltaTime);
@@ -357,6 +386,9 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 
 			if (i >= NumClientsToTick)
 			{
+				static FActorChannelLookup ChannelsByActor;
+				BuildActorChannelLookup(Connection, ChannelsByActor);
+
 				for (int32 ConsiderIdx = 0; ConsiderIdx < ConsiderList.Num(); ConsiderIdx++)
 				{
 					FNetworkObjectInfo* ActorInfo = ConsiderList[ConsiderIdx];
@@ -364,13 +396,7 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 					AActor* Actor = ActorInfo->Actor;
 					if (Actor != NULL && !ActorInfo->bPendingNetUpdate)
 					{
-						UActorChannel* Channel = nullptr;
-						if (Version::Engine_Version >= 4.20) {
-							Channel = Connection->FindActorChannelRef(ConsiderList[ConsiderIdx]->WeakActor);
-						}
-						else {
-							Channel = Connection->ActorChannels().FindRef(Actor);
-						}
+						UActorChannel* Channel = FindChannel(ChannelsByActor, Actor);
 
 						if (Channel != NULL && Channel->LastUpdateTime < ActorInfo->LastNetUpdateTime)
 						{
@@ -436,10 +462,14 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 						ActorInfo->bPendingNetUpdate = true;
 						if (Channel != NULL)
 						{
-							Channel->RelevantTime = Time + 0.5f * UKismetMathLibrary::RandomFloat();
+							Channel->RelevantTime = Time + 0.5f * FMath::SRand();
 						}
 					}
 				}
+
+				// This gets freed at scope exit in ue but we dont have the FMemStack so we just free it here
+				delete[] PriorityActors;
+				delete[] PriorityList;
 
 				ConnectionViewers.Free();
 			}
@@ -456,6 +486,11 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 				NumConnectionsToMove--;
 			}
 		}
+
+		/*if (ReplicationFrame % 150 == 0)
+		{
+			Log(std::format("ServerReplicateActors: {:.2f}ms | Considered={} | Updated={}", (Utils::NowSeconds() - ServerReplicateActorsTimeStart) * 1000.0, ConsiderList.Num(), Updated));
+		}*/
 	}
 
 	ServerReplicateActorsTimeMs = (Utils::NowSeconds() - ServerReplicateActorsTimeStart) * 1000.0;
@@ -476,7 +511,7 @@ int32 UNetDriver::ServerReplicateActors_PrepConnections(const float DeltaSeconds
 			static bool LanPlay = FParse::Param(GetCommandLineW(), TEXT("lanplay"));
 
 			float ClientUpdatesThisFrame = GEngine->NetClientTicksPerSecond * (DeltaSeconds + DeltaTimeOverflow) * (LanPlay ? 2.f : 1.f);
-			NumClientsToTick = UKismetMathLibrary::Min(NumClientsToTick, UKismetMathLibrary::FTrunc(ClientUpdatesThisFrame));
+			NumClientsToTick = FMath::Min<int32>(NumClientsToTick, FMath::TruncToInt(ClientUpdatesThisFrame));
 
 			if (NumClientsToTick == 0)
 			{
@@ -488,7 +523,7 @@ int32 UNetDriver::ServerReplicateActors_PrepConnections(const float DeltaSeconds
 
 		if (MaxConnectionsToTickPerServerFrame > 0)
 		{
-			NumClientsToTick = UKismetMathLibrary::Min(ClientConnections.Num(), MaxConnectionsToTickPerServerFrame);
+			NumClientsToTick = FMath::Min(ClientConnections.Num(), MaxConnectionsToTickPerServerFrame);
 		} 
 
 		bool bFoundReadyConnection = false;
@@ -639,17 +674,17 @@ void UNetDriver::ServerReplicateActors_BuildConsiderList(TArray<FNetworkObjectIn
 				}
 
 				const float MinOptimalDelta = 1.0f / Actor->NetUpdateFrequency;
-				const float MaxOptimalDelta = UKismetMathLibrary::Max(1.0f / Actor->MinNetUpdateFrequency, MinOptimalDelta);
+				const float MaxOptimalDelta = FMath::Max(1.0f / Actor->MinNetUpdateFrequency, MinOptimalDelta);
 
-				const float Alpha = UKismetMathLibrary::Clamp((LastReplicateDelta - ScaleDownStartTime) / ScaleDownTimeRange, 0.0f, 1.0f);
-				ActorInfo->OptimalNetUpdateDelta = UKismetMathLibrary::Lerp(MinOptimalDelta, MaxOptimalDelta, Alpha);
+				const float Alpha = FMath::Clamp((LastReplicateDelta - ScaleDownStartTime) / ScaleDownTimeRange, 0.0f, 1.0f);
+				ActorInfo->OptimalNetUpdateDelta = FMath::Lerp(MinOptimalDelta, MaxOptimalDelta, Alpha);
 			}
 
 			if (!ActorInfo->bPendingNetUpdate)
 			{
 				const float NextUpdateDelta = bUseAdapativeNetFrequency ? ActorInfo->OptimalNetUpdateDelta : 1.0f / Actor->NetUpdateFrequency;
 
-				ActorInfo->NextUpdateTime = World->TimeSeconds + UKismetMathLibrary::RandomFloat() * ServerTickTime + NextUpdateDelta;
+				ActorInfo->NextUpdateTime = World->TimeSeconds + FMath::SRand() * ServerTickTime + NextUpdateDelta;
 
 				ActorInfo->LastNetUpdateTime = Time;
 			}
@@ -700,18 +735,15 @@ int32 UNetDriver::ServerReplicateActors_PrioritizeActors(UNetConnection* Connect
 
 			AGameNetworkManager* const NetworkManager = World->NetworkManager;
 			const bool bLowNetBandwidth = NetworkManager ? NetworkManager->IsInLowBandwidthMode() : false;
+
+			static FActorChannelLookup ChannelsByActor;
+			BuildActorChannelLookup(Connection, ChannelsByActor);
 			
 			for (FNetworkObjectInfo* ActorInfo : ConsiderList)
 			{
 				AActor* Actor = ActorInfo->Actor;
 
-				UActorChannel* Channel = nullptr;
-				if (Version::Engine_Version >= 4.20) {
-					Channel = Connection->FindActorChannelRef(ActorInfo->WeakActor);
-				}
-				else {
-					Channel = Connection->ActorChannels().FindRef(Actor);
-				}
+				UActorChannel* Channel = FindChannel(ChannelsByActor, Actor);
 
 				if (!Channel)
 				{
@@ -876,7 +908,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 						else if (Actor->NetUpdateFrequency < 1.0f)
 						{
 							Log("Unable to replicate " + Actor->GetName().ToString());
-							ActorInfo->NextUpdateTime = Actor->GetWorld()->TimeSeconds + 0.2f * UKismetMathLibrary::RandomFloat();
+							ActorInfo->NextUpdateTime = Actor->GetWorld()->TimeSeconds + 0.2f * FMath::FRand();
 						}
 					}
 
@@ -884,7 +916,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 					{
 						if (Channel && bIsRelevant)
 						{
-							Channel->RelevantTime = Time + 0.5f * UKismetMathLibrary::RandomFloat();
+							Channel->RelevantTime = Time + 0.5f * FMath::SRand();
 						}
 						if (Channel && Channel->IsNetReady(0))
 						{
@@ -895,10 +927,10 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 								ActorUpdatesThisConnectionSent++;
 
 								const float MinOptimalDelta = 1.0f / Actor->NetUpdateFrequency;
-								const float MaxOptimalDelta = UKismetMathLibrary::Max(1.0f / Actor->MinNetUpdateFrequency, MinOptimalDelta);
+								const float MaxOptimalDelta = FMath::Max(1.0f / Actor->MinNetUpdateFrequency, MinOptimalDelta);
 								const float DeltaBetweenReplications = (World->TimeSeconds - ActorInfo->LastNetReplicateTime);
 
-								ActorInfo->OptimalNetUpdateDelta = UKismetMathLibrary::Clamp(DeltaBetweenReplications * 0.7f, MinOptimalDelta, MaxOptimalDelta);
+								ActorInfo->OptimalNetUpdateDelta = FMath::Clamp(DeltaBetweenReplications * 0.7f, MinOptimalDelta, MaxOptimalDelta);
 								ActorInfo->LastNetReplicateTime = World->TimeSeconds;
 							}
 							ActorUpdatesThisConnection++;

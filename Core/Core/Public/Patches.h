@@ -32,7 +32,7 @@ public:
 			}
 		}*/
 
-		if (Version::Fortnite_Version >= 3.5 && Version::Fortnite_Version <= 3.6) {
+		if (Version::Fortnite_Version >= 3.5 && Version::Fortnite_Version <= 4.1) {
 			uintptr_t Patch8 = Memcury::Scanner::FindPattern("48 8B C4 57 48 81 EC ? ? ? ? 4C 8B 82").Get();
 			if (Patch8) {
 				MH_CreateHook((LPVOID)Patch8, True, nullptr);

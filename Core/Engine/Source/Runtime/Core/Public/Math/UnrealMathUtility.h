@@ -73,3 +73,71 @@ class TRange;
 
 #define THRESH_VECTOR_NORMALIZED		(0.01f)		/** Allowed error for a normalized vector (against squared magnitude) */
 #define THRESH_QUAT_NORMALIZED			(0.01f)		/** Allowed error for a normalized quaternion (against squared magnitude) */
+
+/*-----------------------------------------------------------------------------
+	FMath - minimal native port of Epic's FGenericPlatformMath / FMath scalar
+	primitives (GenericPlatformMath.h / UnrealMathUtility.h / UnrealMath.cpp).
+
+	Unlike most of this codebase, these functions are NOT gated behind
+	Version::Engine_Version checks. Epic has kept this exact layer -- the
+	SRand LCG constants, RoundToInt's rounding rule, RandHelper, Clamp/Lerp --
+	byte-identical from UE4.0 through current UE5, specifically because so
+	much downstream content (replication jitter, procedural generation seeds,
+	particle systems) depends on a given seed producing the same sequence.
+	The only related engine change across that span is UE5's large-world-
+	coordinates move to double-precision FVector/FRotator, which added new
+	vector/double overloads but did not alter these int32/float scalar ones.
+	So there is nothing to branch on here -- if a future engine version is
+	ever found to actually diverge, gate it the same way the rest of this
+	file does, but don't add a branch that doesn't correspond to a real
+	documented engine change.
+-----------------------------------------------------------------------------*/
+
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <ctime>
+
+// This header is pulled in before HAL/Platform.h defines the engine int types;
+// re-declare the one we need (identical typedefs are legal to repeat).
+typedef int32_t int32;
+
+struct FMath
+{
+	static FORCEINLINE int32 TruncToInt(float F) { return (int32)F; }
+	static FORCEINLINE float TruncToFloat(float F) { return (float)TruncToInt(F); }
+	static FORCEINLINE int32 FloorToInt(float F) { return TruncToInt(floorf(F)); }
+	static FORCEINLINE int32 RoundToInt(float F) { return FloorToInt(F + 0.5f); }
+	static FORCEINLINE float Fractional(float Value) { return Value - TruncToFloat(Value); }
+
+	template<class T> static FORCEINLINE T Min(const T A, const T B) { return (A <= B) ? A : B; }
+	template<class T> static FORCEINLINE T Max(const T A, const T B) { return (A >= B) ? A : B; }
+	template<class T> static FORCEINLINE T Clamp(const T X, const T Min, const T Max) { return X < Min ? Min : X < Max ? X : Max; }
+	template<class T, class U> static FORCEINLINE T Lerp(const T& A, const T& B, const U& Alpha) { return (T)(A + Alpha * (B - A)); }
+
+	// FGenericPlatformMath::Rand/FRand - CRT-based, seeded once (the engine seeds these
+	// at startup with FPlatformTime::Cycles(); we seed at static init instead).
+	static inline const bool bRandSeeded = ([] { srand((unsigned int)time(nullptr)); return true; })();
+	static FORCEINLINE void RandInit(int32 Seed) { srand(Seed); }
+	static FORCEINLINE int32 Rand() { return rand(); }
+	static FORCEINLINE float FRand() { return Rand() / (float)RAND_MAX; }
+
+	// FMath::SRand - seeded LCG, bit-exact port of UnrealMath.cpp
+	static inline int32 GSRandSeed = (int32)time(nullptr);
+	static FORCEINLINE void SRandInit(int32 Seed) { GSRandSeed = Seed; }
+	static FORCEINLINE int32 GetRandSeed() { return GSRandSeed; }
+	static float SRand()
+	{
+		GSRandSeed = (GSRandSeed * 196314165) + 907633515;
+		union { float f; int32 i; } Result;
+		union { float f; int32 i; } Temp;
+		const float SRandTemp = 1.0f;
+		Temp.f = SRandTemp;
+		Result.i = (Temp.i & 0xff800000) | (GSRandSeed & 0x007fffff);
+		return Fractional(Result.f);
+	}
+
+	static FORCEINLINE int32 RandHelper(int32 A) { return A > 0 ? Min(TruncToInt(FRand() * A), A - 1) : 0; }
+	static FORCEINLINE int32 RandRange(int32 Min, int32 Max) { const int32 Range = (Max - Min) + 1; return Min + RandHelper(Range); }
+	static FORCEINLINE float FRandRange(float InMin, float InMax) { return InMin + (InMax - InMin) * FRand(); }
+};

@@ -801,6 +801,9 @@
     <ClInclude Include="FortniteGame\Public\FortSupplyDrop\FortSupplyDropInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\FortAthenaAircraft.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">

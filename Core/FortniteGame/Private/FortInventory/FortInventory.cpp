@@ -535,7 +535,7 @@ bool AFortInventory::RemoveItem(FGuid Guid, int32 Count, bool bDeferUpdate)
 		return bDeferUpdate ? true : Update(Entry);
 	}
 
-	if (PC->IsUsingOldQuickBars() && floor(Version::Fortnite_Version) < 3)
+	if (PC->IsUsingOldQuickBars())
 	{
 		PC->QuickBars->EmptyQuickbarSlot(Guid);
 	}

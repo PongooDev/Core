@@ -10992,6 +10992,36 @@ uintptr_t Finder::FindAFortGameMode_PlacePlayerOnTeamVFT() {
 	return ServerOffsets::AFortGameMode_PlacePlayerOnTeamVFT;
 }
 
+uintptr_t Finder::FindAActor_PostInitializeComponentsVFT() {
+	if (ServerOffsets::AActor_PostInitializeComponentsVFT)
+		return ServerOffsets::AActor_PostInitializeComponentsVFT;
+
+	uintptr_t Addr = 0;
+
+	auto StringAddr = Memcury::Scanner::FindStringRef(L"&AEmitter::OnParticleSystemFinished");
+	if (StringAddr.IsValid()) {
+		Addr = StringAddr.FindFunctionStart().Get();
+	}
+
+	if (!Addr) {
+		return 0;
+	}
+	
+	void** VFT = ((UClass*)FUObjectArray::FindObject("Class /Script/Engine.Emitter"))->GetDefaultObject()->VTable;
+
+	for (int i = 0; i < 2048; i++)
+	{
+		if (VFT[i] == (void*)(Addr))
+		{
+			ServerOffsets::AActor_PostInitializeComponentsVFT = i;
+			break;
+		}
+	}
+
+	Log("AActor_PostInitializeComponentsVFT found at: 0x" + std::format("{:X}", ServerOffsets::AActor_PostInitializeComponentsVFT));
+	return ServerOffsets::AActor_PostInitializeComponentsVFT;
+}
+
 void Finder::SetupCoreOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -11395,6 +11425,8 @@ void Finder::SetupOffsets() {
 	FindAFortGameModeAthena_PlacePlayerOnTeam();
 
 	FindAFortGameMode_PlacePlayerOnTeamVFT();
+
+	FindAActor_PostInitializeComponentsVFT();
 
 	return;
 }

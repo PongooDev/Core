@@ -30,6 +30,10 @@
 #include "FortniteGame/Public/QuickChat/AthenaQuickChatBank.h"
 
 void AFortPlayerControllerAthena::EnterAircraft(AFortPlayerControllerAthena* This, AFortAircraft* InAircraft) {
+	if (This->WorldInventory) {
+		This->WorldInventory->DropAllItems(false);
+	}
+
 	EnterAircraftOG(This, InAircraft);
 }
 

@@ -89,7 +89,7 @@ DWORD Main(LPVOID)
         if (!Config.bListenServer) {
             *GIsClient = false;
         }
-        if (Version::Fortnite_Version >= 4) {
+        if (Version::Engine_Version > 4.20) {
             *GIsServer = true;
         }
 

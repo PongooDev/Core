@@ -22,6 +22,10 @@ public:
 	DefineUProperty(FName, StateName);
 public:
 	void Possess(APawn* InPawn);
+	void PossessVFT(APawn* InPawn);
+
+	void UnPossess();
+	void UnPossessVFT();
 
 	APawn* K2_GetPawn() const;
 

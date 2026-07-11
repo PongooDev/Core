@@ -9,6 +9,7 @@ class APlayerState;
 class UAthenaBattleBusItemDefinition;
 class AFortAthenaPlaylistBase;
 class UFortPlaylistAthena;
+class AFortAthenaAircraft;
 
 class AFortGameStateAthena : public AFortGameStateZone {
 public:
@@ -30,6 +31,7 @@ public:
 	DefineUProperty(UAthenaBattleBusItemDefinition*, DefaultBattleBus);
 	DefineUProperty(AFortAthenaPlaylistBase*, FortAthenaPlaylistCDO);
 	DefineUProperty(uint8, AirCraftBehavior);
+	DefineUProperty(TArray<AFortAthenaAircraft*>, Aircrafts);
 	DefineUProperty(uint8, CachedSafeZoneStartUp);
 	DefineUProperty(bool, bIsLargeTeamGame);
 public:

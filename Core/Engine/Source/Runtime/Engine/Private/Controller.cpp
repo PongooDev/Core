@@ -11,6 +11,46 @@ void AController::Possess(APawn* InPawn)
 	return Call(Func, InPawn);
 }
 
+void AController::PossessVFT(APawn* InPawn)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("Possess");
+
+	uintptr_t VFT = GetVTableIndex(Func);
+	if (VFT == -1)
+		return;
+
+	void (*&PossessInternal)(AController*, APawn*) = decltype(PossessInternal)(VTable[VFT]);
+	PossessInternal(this, InPawn);
+}
+
+void AController::UnPossess()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("UnPossess");
+
+	return Call(Func);
+}
+
+void AController::UnPossessVFT()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("UnPossess");
+
+	uintptr_t VFT = GetVTableIndex(Func);
+	if (VFT == -1)
+		return;
+
+	void (*&UnPossessInternal)(AController*) = decltype(UnPossessInternal)(VTable[VFT]);
+	UnPossessInternal(this);
+}
+
 APawn* AController::K2_GetPawn() const
 {
 	static UFunction* Func = nullptr;

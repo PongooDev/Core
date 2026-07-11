@@ -165,6 +165,9 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString& Ms
 		This->ClientMessage("DestroyQuickBars - Destroys the player's quickbars.");
 		This->ClientMessage("DumpQuickBars - Dumps the player's quickbars.");
 		This->ClientMessage("ServerExecuteInventoryItem <ItemGuid> - Executes an inventory item by its GUID.");
+		This->ClientMessage("PossessPawnByIndex <PawnIndex> - Possesses a pawn by its index in the array.");
+		This->ClientMessage("PossessPawnByName <PawnName> - Possesses a pawn by its name.");
+		This->ClientMessage("DumpAllPawns - Dumps all the pawns in the world.");
 		return;
 	}
 	else if (Parser.IsCommand("GiveItem")) {
@@ -718,6 +721,158 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString& Ms
 		FGuid ItemGuid = FGuid::ParseGUID(GuidA);
 
 		This->ServerExecuteInventoryItem(This, ItemGuid);
+
+		return;
+		}
+	else if (Parser.IsCommand("PossessPawnByIndex")) {
+		if (Parser.GetArgCount() < 1)
+		{
+			This->ClientMessage("Usage: PossessPawnByIndex <PawnIndex>");
+			return;
+		}
+
+		int32 PawnIndex = Parser.GetArgInt(0, 0);
+
+		TArray<AActor*> Pawns;
+		UGameplayStatics::GetAllActorsOfClass(World, APawn::StaticClass(), &Pawns);
+
+		if (PawnIndex < 0 || PawnIndex >= Pawns.Num()) {
+			This->ClientMessage("Invalid PawnIndex. Must be between 0 and " + std::to_string(Pawns.Num() - 1));
+			return;
+		}
+
+		APawn* TargetPawn = (APawn*)Pawns[PawnIndex];
+		if (!TargetPawn) {
+			This->ClientMessage("TargetPawn is null!");
+			return;
+		}
+
+		if (TargetPawn == This->K2_GetPawn()) {
+			This->ClientMessage("Already possessing that pawn.");
+			return;
+		}
+
+		if (TargetPawn->Controller && TargetPawn->Controller != This) {
+			This->ClientMessage("Warning: pawn is currently controlled by " + TargetPawn->Controller->GetName().ToString() + " -- taking it over.");
+		}
+
+		APawn* PreviousPawn = This->K2_GetPawn();
+
+		This->PossessVFT(TargetPawn);
+
+		This->ForceNetUpdate();
+		TargetPawn->ForceNetUpdate();
+
+		This->ClientMessage("Possessed pawn: " + TargetPawn->GetName().ToString() + " (" + TargetPawn->GetClass()->GetName().ToString() + ") at index " + std::to_string(PawnIndex));
+		if (PreviousPawn) {
+			This->ClientMessage("Left behind: " + PreviousPawn->GetName().ToString());
+			if (PreviousPawn->Controller) {
+				Log("PossessPawnByIndex: previous pawn " + PreviousPawn->GetName().ToString() + " still has a Controller (" + PreviousPawn->Controller->GetName().ToString() + ") after UnPossessVFT!");
+				This->ClientMessage("Warning: previous pawn did not fully detach.");
+			}
+		}
+
+		return;
+	}
+	else if (Parser.IsCommand("PossessPawnByName")) {
+		if (Parser.GetArgCount() < 1)
+		{
+			This->ClientMessage("Usage: PossessPawnByName <PawnName> (case-insensitive, matches substrings)");
+			return;
+		}
+
+		std::string PawnName = Parser.GetArg(0);
+		std::string PawnNameLower = Utils::StringToLower(PawnName);
+
+		TArray<AActor*> Pawns;
+		UGameplayStatics::GetAllActorsOfClass(World, APawn::StaticClass(), &Pawns);
+
+		APawn* ExactMatch = nullptr;
+		TArray<APawn*> PartialMatches;
+
+		for (AActor* Actor : Pawns) {
+			if (!Actor)
+				continue;
+
+			std::string ActorNameLower = Utils::StringToLower(Actor->GetName().ToString());
+
+			if (ActorNameLower == PawnNameLower) {
+				ExactMatch = (APawn*)Actor;
+				break;
+			}
+
+			if (ActorNameLower.find(PawnNameLower) != std::string::npos) {
+				PartialMatches.Add((APawn*)Actor);
+			}
+		}
+
+		APawn* TargetPawn = nullptr;
+
+		if (ExactMatch) {
+			TargetPawn = ExactMatch;
+		}
+		else if (PartialMatches.Num() == 1) {
+			TargetPawn = PartialMatches[0];
+		}
+		else if (PartialMatches.Num() > 1) {
+			This->ClientMessage("'" + PawnName + "' is ambiguous, matches " + std::to_string(PartialMatches.Num()) + " pawns:");
+			for (int32 i = 0; i < PartialMatches.Num(); i++) {
+				This->ClientMessage("  " + PartialMatches[i]->GetName().ToString());
+			}
+			This->ClientMessage("Be more specific.");
+			return;
+		}
+		else {
+			This->ClientMessage("Pawn with name '" + PawnName + "' not found.");
+			return;
+		}
+
+		if (TargetPawn == This->K2_GetPawn()) {
+			This->ClientMessage("Already possessing that pawn.");
+			return;
+		}
+
+		if (TargetPawn->Controller && TargetPawn->Controller != This) {
+			This->ClientMessage("Warning: pawn is currently controlled by " + TargetPawn->Controller->GetName().ToString() + " -- taking it over.");
+		}
+
+		APawn* PreviousPawn = This->K2_GetPawn();
+
+		This->PossessVFT(TargetPawn);
+
+		This->ForceNetUpdate();
+		TargetPawn->ForceNetUpdate();
+
+		This->ClientMessage("Possessed pawn: " + TargetPawn->GetName().ToString() + " (" + TargetPawn->GetClass()->GetName().ToString() + ")");
+		if (PreviousPawn) {
+			This->ClientMessage("Left behind: " + PreviousPawn->GetName().ToString());
+			if (PreviousPawn->Controller) {
+				Log("PossessPawnByName: previous pawn " + PreviousPawn->GetName().ToString() + " still has a Controller (" + PreviousPawn->Controller->GetName().ToString() + ") after UnPossessVFT!");
+				This->ClientMessage("Warning: previous pawn did not fully detach.");
+			}
+		}
+
+		return;
+	}
+	else if (Parser.IsCommand("DumpAllPawns")) {
+		TArray<AActor*> Pawns;
+		UGameplayStatics::GetAllActorsOfClass(World, APawn::StaticClass(), &Pawns);
+
+		This->ClientMessage("Found " + std::to_string(Pawns.Num()) + " pawns in the world.");
+		
+		This->ClientMessage("=== Pawn List ===");
+
+		for (int32 i = 0; i < Pawns.Num(); ++i) {
+			AActor* Actor = Pawns[i];
+			if (Actor) {
+				This->ClientMessage("");
+				This->ClientMessage("Pawn: " + Actor->GetName().ToString());
+				This->ClientMessage("Pawn Index: " + std::to_string(i));
+				This->ClientMessage("");
+			}
+		}
+
+		This->ClientMessage("=== End of Pawn List ===");
 
 		return;
 	}
