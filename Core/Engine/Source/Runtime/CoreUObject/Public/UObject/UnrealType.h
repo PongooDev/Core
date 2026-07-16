@@ -579,11 +579,15 @@ public: \
         if (!Name##__Initialized) \
         { \
             UEnum* Enum = StaticEnum(); \
+            \
             if (Enum) \
             { \
-                Name##__Value = static_cast<uint8>(Enum->GetValue(#Name)); \
-                Name##__Initialized = true; \
+                Name##__Value = \
+                    static_cast<uint8>(Enum->GetValue(#Name)); \
             } \
+            \
+            Name##__Initialized = true; \
         } \
+        \
         return Name##__Value; \
     }

@@ -521,7 +521,14 @@ Ret UObject::Call(UFunction* Function, Args&&... args)
     static UEnum* StaticEnum() \
     { \
         static UEnum* CachedStaticEnum = nullptr; \
-        if (!CachedStaticEnum) \
-            CachedStaticEnum = (UEnum*)FUObjectArray::FindObjectFast(#__Class); \
+        static bool bLookupAttempted = false; \
+        \
+        if (!bLookupAttempted) \
+        { \
+            bLookupAttempted = true; \
+            CachedStaticEnum = \
+                (UEnum*)FUObjectArray::FindObjectFast(#__Class); \
+        } \
+        \
         return CachedStaticEnum; \
     }
