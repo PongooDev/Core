@@ -10,6 +10,8 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class ABuildingActor;
 class ABuildingSMActor;
@@ -18,6 +20,11 @@ class AFortPlayerStateZone;
 class UFortWorldItemDefinition;
 class UFortBuildingActorSet;
 class USceneComponent;
+
+class EBuildingAttachmentType {
+public:
+	DefineUnrealEnum(EBuildingAttachmentType);
+};
 
 struct FBuildingClassData
 {

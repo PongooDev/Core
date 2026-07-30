@@ -1575,9 +1575,6 @@
     <ClInclude Include="FortniteGame\Public\Customization\FortCharacterType.h">
       <Filter>FortniteGame\Public\Customization</Filter>
     </ClInclude>
-    <ClInclude Include="FortniteGame\Public\FortEnums.h">
-      <Filter>FortniteGame\Public</Filter>
-    </ClInclude>
     <ClInclude Include="FortniteGame\Public\FortGameMode.h">
       <Filter>FortniteGame\Public</Filter>
     </ClInclude>

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "FortniteGame/Public/Mcp/McpProfileGroup.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 void UMcpProfileGroup::SendRequestNow(UMcpProfileGroup* This, void* HttpRequest, EContextCredentials ContextCredentials)
 {

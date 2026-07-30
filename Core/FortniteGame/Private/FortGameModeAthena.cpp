@@ -32,7 +32,6 @@
 #include "FortniteGame/Public/Athena/FortAthenaMapInfo.h"
 #include "FortniteGame/Public/Athena/FortSupplyDropInfo.h"
 #include "FortniteGame/Public/Items/Definitions/AthenaBattleBusItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 bool AFortGameModeAthena::ReadyToStartMatch(AFortGameModeAthena* This) {
 	if (This->bWorldIsReady

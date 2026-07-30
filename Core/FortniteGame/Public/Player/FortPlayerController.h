@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Core/Public/Utils.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/FortGlobals.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"

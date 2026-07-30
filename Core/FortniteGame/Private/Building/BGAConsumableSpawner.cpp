@@ -13,7 +13,6 @@
 #include "FortniteGame/Public/Pawns/FortPlayerPawnAthena.h"
 #include "FortniteGame/Public/Building/BuildingGameplayActorConsumable.h"
 #include "FortniteGame/Public/Items/Definitions/BGAConsumableWrapperItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 bool ABGAConsumableSpawner::AttemptSpawn() {
 	UWorld* World = UWorld::GetWorld();

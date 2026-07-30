@@ -2,14 +2,40 @@
 #include "pch.h"
 
 #include "FortniteGame/Public/Building/BuildingGameplayActor.h"
-#include "FortniteGame/Public/FortEnums.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class AAthenaBarrierFlag;
 class UCustomCharacterPart;
 class UMaterialInterface;
 class UStaticMesh;
+
+class EBarrierFoodTeam {
+public:
+	DefineUnrealEnum(EBarrierFoodTeam);
+
+	DefineEnumProperty(Burger);
+	DefineEnumProperty(Tomato);
+	DefineEnumProperty(MAX);
+};
+
+class EBarrierObjectiveDamageState {
+public:
+	DefineUnrealEnum(EBarrierObjectiveDamageState);
+
+	DefineEnumProperty(Health_75);
+	DefineEnumProperty(Health_50);
+	DefineEnumProperty(Health_25);
+	DefineEnumProperty(Health_10);
+	DefineEnumProperty(Health_5);
+	DefineEnumProperty(Health_4);
+	DefineEnumProperty(Health_3);
+	DefineEnumProperty(Health_2);
+	DefineEnumProperty(Health_1);
+	DefineEnumProperty(MAX);
+};
 
 struct FBarrierObjectiveDisplayData {
 public:

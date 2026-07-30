@@ -4,7 +4,6 @@
 #include "Engine/Source/Runtime/Core/Public/Templates/SharedPointer.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/GameInstance.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Analytics/AnalyticsProvider.h"
 
 class UFortGameInstance : public UGameInstance {

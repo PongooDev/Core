@@ -524,7 +524,6 @@
     <ClInclude Include="FortniteGame\Public\Customization\CustomCharacterPart.h" />
     <ClInclude Include="FortniteGame\Public\Pawns\FortCharacter.h" />
     <ClInclude Include="FortniteGame\Public\Customization\FortCharacterType.h" />
-    <ClInclude Include="FortniteGame\Public\FortEnums.h" />
     <ClInclude Include="FortniteGame\Public\FortGameMode.h" />
     <ClInclude Include="FortniteGame\Public\FortGameModeAthena.h" />
     <ClInclude Include="FortniteGame\Public\FortGameModeZone.h" />

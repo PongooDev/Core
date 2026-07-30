@@ -2,7 +2,17 @@
 #include "pch.h"
 
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+
+class EWorldItemDropBehavior {
+public:
+	DefineUnrealEnum(EWorldItemDropBehavior);
+
+	DefineEnumProperty(DropAsPickup);
+	DefineEnumProperty(DestroyOnDrop);
+	DefineEnumProperty(DropAsPickupDestroyOnEmpty);
+};
 
 class UFortWorldItemDefinition : public UFortItemDefinition {
 public:

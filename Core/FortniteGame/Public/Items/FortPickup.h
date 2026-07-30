@@ -11,14 +11,60 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptInterface.h"
 
 #include "FortniteGame/Public/Items/FortItemEntry.h"
-#include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Items/FortPickupLocationData.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+#include "FortniteGame/Public/FortSpecialActorReplicationInfo.h"
 
 class UFortItemDefinition;
 class AFortPawn;
 class AFortPickupEffect;
 class IFortInventoryOwnerInterface;
 class AFortPlayerPawn;
+
+class EFortPickupSourceTypeFlag {
+public:
+	DefineUnrealEnum(EFortPickupSourceTypeFlag);
+
+	DefineEnumProperty(Other);
+	DefineEnumProperty(Player);
+	DefineEnumProperty(Destruction);
+	DefineEnumProperty(Container);
+	DefineEnumProperty(AI);
+	DefineEnumProperty(Tossed);
+	DefineEnumProperty(FloorLoot);
+	DefineEnumProperty(Fishing);
+	DefineEnumProperty(NPCService);
+};
+
+class EFortPickupSpawnSource {
+public:
+	DefineUnrealEnum(EFortPickupSpawnSource);
+
+	DefineEnumProperty(Unset);
+	DefineEnumProperty(PlayerElimination);
+	DefineEnumProperty(Chest);
+	DefineEnumProperty(SupplyDrop);
+	DefineEnumProperty(AmmoBox);
+	DefineEnumProperty(Drone);
+	DefineEnumProperty(ItemSpawner);
+	DefineEnumProperty(BotElimination);
+	DefineEnumProperty(NPCElimination);
+	DefineEnumProperty(LootDrop);
+	DefineEnumProperty(TossedByPlayer);
+	DefineEnumProperty(NPC);
+	DefineEnumProperty(NPCGift);
+	DefineEnumProperty(CraftingBench);
+	DefineEnumProperty(VendingMachine);
+};
+
+enum class EFortPickupTossState : uint8
+{
+	NotTossed = 0,
+	InProgress = 1,
+	AtRest = 2,
+	EFortPickupTossState_MAX = 3,
+};
 
 class AFortPickup : public AActor {
 public:

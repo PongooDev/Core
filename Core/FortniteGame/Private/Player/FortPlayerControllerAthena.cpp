@@ -31,7 +31,7 @@
 #include "FortniteGame/Public/Abilities/FortAbilitySystemComponent.h"
 #include "FortniteGame/Public/Player/AthenaQuickChatBank.h"
 #include "FortniteGame/Public/Abilities/FortAbilitySystemComponentAthena.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/Player/DeathInfo.h"
 
 void AFortPlayerControllerAthena::EnterAircraft(AFortPlayerControllerAthena* This, AFortAircraft* InAircraft) {
 	EnterAircraftOG(This, InAircraft);

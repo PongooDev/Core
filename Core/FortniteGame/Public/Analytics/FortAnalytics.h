@@ -6,7 +6,6 @@
 #include "Engine/Source/Runtime/Core/Public/Templates/SharedPointer.h"
 
 #include "FortniteGame/Public/Analytics/AnalyticsProvider.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 class UFortAnalytics {
 public:

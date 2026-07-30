@@ -6,7 +6,7 @@
 #include "Engine/Source/Runtime/Core/Public/Containers/Map.h"
 #include "FortniteGame/Public/Athena/FortSpawnActorData.h"
 #include "FortniteGame/Public/Athena/FortSpawnActorInfo.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/FortGameStateAthena.h"
 
 class AFortPlayerControllerAthena;
 struct FVector;

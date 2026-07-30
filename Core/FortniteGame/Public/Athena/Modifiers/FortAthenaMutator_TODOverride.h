@@ -12,11 +12,12 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Source/Runtime/SlateCore/Public/Styling/SlateBrush.h"
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
-#include "FortniteGame/Public/FortEnums.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
 #include "FortniteGame/Public/Items/ItemAndCount.h"
 #include "FortniteGame/Public/Athena/AthenaGameMessageData.h"
 #include "FortniteGame/Public/Athena/Modifiers/MutatorObjectData.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class AActor;
 class AAthenaBarrierFlag;
@@ -55,6 +56,42 @@ class USkeletalMesh;
 class USoundCue;
 class UStaticMesh;
 class UTexture2D;
+
+class EAthenaTimeOfDayOverride {
+public:
+	DefineUnrealEnum(EAthenaTimeOfDayOverride);
+
+	DefineEnumProperty(NoOverride);
+	DefineEnumProperty(ForceDay);
+	DefineEnumProperty(ForceNight);
+	DefineEnumProperty(Custom);
+	DefineEnumProperty(Hour0);
+	DefineEnumProperty(Hour1);
+	DefineEnumProperty(Hour2);
+	DefineEnumProperty(Hour3);
+	DefineEnumProperty(Hour4);
+	DefineEnumProperty(Hour5);
+	DefineEnumProperty(Hour6);
+	DefineEnumProperty(Hour7);
+	DefineEnumProperty(Hour8);
+	DefineEnumProperty(Hour9);
+	DefineEnumProperty(Hour10);
+	DefineEnumProperty(Hour11);
+	DefineEnumProperty(Hour12);
+	DefineEnumProperty(Hour13);
+	DefineEnumProperty(Hour14);
+	DefineEnumProperty(Hour15);
+	DefineEnumProperty(Hour16);
+	DefineEnumProperty(Hour17);
+	DefineEnumProperty(Hour18);
+	DefineEnumProperty(Hour19);
+	DefineEnumProperty(Hour20);
+	DefineEnumProperty(Hour21);
+	DefineEnumProperty(Hour22);
+	DefineEnumProperty(Hour23);
+	DefineEnumProperty(Random);
+	DefineEnumProperty(EAthenaTimeOfDayOverride_MAX);
+};
 
 struct FTimeOfDayPhase {
 public:

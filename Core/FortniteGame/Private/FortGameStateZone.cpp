@@ -8,7 +8,6 @@
 #include "FortniteGame/Public/Player/FortPlayerStateAthena.h"
 #include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
 #include "FortniteGame/Public/Athena/FortSafeZoneIndicator.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 void AFortGameStateZone::OnRep_GameDifficulty()
 {

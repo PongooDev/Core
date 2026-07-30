@@ -3,7 +3,7 @@
 
 #include "FortniteGame/Public/Weapons/FortWeaponItemDefinition.h"
 #include "FortniteGame/Public/Weapons/FortWeaponStats.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/Inventory/FortQuickBars.h"
 
 UFortItem* UFortItemDefinition::CreateTemporaryItemInstanceBP(int32 Count, int32 Level) const
 {

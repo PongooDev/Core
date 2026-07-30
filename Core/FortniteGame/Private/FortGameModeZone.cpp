@@ -20,7 +20,7 @@
 #include "FortniteGame/Public/Building/BuildingFoundation.h"
 #include "FortniteGame/Public/Building/BGAConsumableSpawner.h"
 #include "FortniteGame/Public/Building/BuildingContainer.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/FortGlobals.h"
 
 void AFortGameModeZone::HandleStartingNewPlayer(AFortGameModeZone* This, AFortPlayerControllerZone* NewPlayer) {
 	Log("HandleStartingNewPlayer Called!");

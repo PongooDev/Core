@@ -18,7 +18,7 @@
 #include "FortniteGame/Public/Building/BuildingGameplayActor.h"
 
 
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/Items/FortPickup.h"
 #include "FortniteGame/Public/Abilities/FortAbilitySet.h"
 #include "FortniteGame/Public/Items/FortItemEntry.h"
 

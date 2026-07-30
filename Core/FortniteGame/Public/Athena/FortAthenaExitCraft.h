@@ -8,13 +8,28 @@
 #include "Engine/Source/Runtime/SlateCore/Public/Styling/SlateBrush.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class UFortAthenaExitCraftInfo;
 
 class AFortAthenaExitCraft;
 class AFortAthenaExitCraftSpawner;
+
+class EExitCraftState {
+public:
+	DefineUnrealEnum(EExitCraftState);
+
+	DefineEnumProperty(None);
+	DefineEnumProperty(Spawned);
+	DefineEnumProperty(Landed);
+	DefineEnumProperty(SpawnBalloon);
+	DefineEnumProperty(GettingIntoPosition);
+	DefineEnumProperty(GettingIntoPosition_Simple);
+	DefineEnumProperty(WaitingForPawns);
+	DefineEnumProperty(Exiting);
+};
 
 class AFortAthenaExitCraft : public AActor {
 public:

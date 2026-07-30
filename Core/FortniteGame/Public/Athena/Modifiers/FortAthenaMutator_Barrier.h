@@ -12,7 +12,8 @@
 #include "FortniteGame/Public/Capture/AthenaBarrierFlag.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/Capture/AthenaBarrierObjective.h"
+#include "FortniteGame/Public/FortGameStateAthena.h"
 
 
 class AAthenaBarrierFlag;

@@ -2,11 +2,19 @@
 #include "pch.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/GameSession.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class FUniqueNetIdRepl;
 class FText;
+
+enum EFortPlayerValidationType : uint8
+{
+	NotValidated = 0,
+	ValidatedPlayer = 1,
+	ValidatedSpectator = 2,
+};
 
 class AFortGameSession : public AGameSession {
 public:

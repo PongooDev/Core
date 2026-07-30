@@ -4,14 +4,27 @@
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
 #include "Engine/Source/Runtime/Core/Public/Containers/Set.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+#include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class UFortItemDefinition;
 class UFortItem;
 class UFortWorldItem;
 class AFortPlayerController;
 class UFortWorldItemDefinition;
+
+class EFortQuickBars {
+public:
+	DefineUnrealEnum(EFortQuickBars);
+
+	DefineEnumProperty(Primary);
+	DefineEnumProperty(Secondary);
+	DefineEnumProperty(Creative);
+
+	DefineEnumProperty(Max_None);
+};
 
 struct FQuickBarSlot {
 public:

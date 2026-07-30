@@ -12,7 +12,6 @@
 #include "FortniteGame/Public/Athena/FortAthenaMapInfo.h"
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 bool ABuildingItemCollectorActor::GrantOutput() {
 	UWorld* World = UWorld::GetWorld();

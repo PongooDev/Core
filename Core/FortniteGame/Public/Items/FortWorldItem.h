@@ -6,7 +6,6 @@
 
 #include "FortniteGame/Public/Items/FortItemEntry.h"
 #include "FortniteGame/Public/Items/FortItem.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 class AFortPlayerController;
 class UFortItemDefinition;

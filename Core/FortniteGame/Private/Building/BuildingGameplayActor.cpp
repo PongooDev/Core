@@ -7,7 +7,6 @@
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
 #include "FortniteGame/Public/Building/FortAthenaSupplyDrop.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 AFortPickup* AFortAthenaSupplyDrop::SpawnPickup(UFortWorldItemDefinition* ItemDefinition, int32 NumberToSpawn, AFortPawn* TriggeringPawn, FVector& Position, FVector& Direction) {
 	UWorld* World = UWorld::GetWorld();

@@ -4,9 +4,20 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/WeakObjectPtr.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class AFortPlayerPawn;
+
+class ETInteractionType {
+public:
+	DefineUnrealEnum(ETInteractionType);
+
+	DefineEnumProperty(IT_NoInteraction);
+	DefineEnumProperty(IT_Simple);
+	DefineEnumProperty(IT_LongPress);
+	DefineEnumProperty(IT_BuildingEdit);
+	DefineEnumProperty(IT_BuildingImprovement);
+	DefineEnumProperty(IT_TrapPlacement);
+};
 
 struct FInteractionType {
 public:

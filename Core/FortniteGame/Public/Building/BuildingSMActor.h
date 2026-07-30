@@ -15,13 +15,48 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/CurveTable.h"
 
 #include "FortniteGame/Public/Building/BuildingActor.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class ABuildingActor;
 class ABuildingSMActor;
 class AFortPlayerController;
 class AFortPlayerStateZone;
 class UFortWorldItemDefinition;
+
+class EFortStructuralGridEditMode {
+public:
+	DefineUnrealEnum(EFortStructuralGridEditMode);
+
+	DefineEnumProperty(CanAdd);
+	DefineEnumProperty(ExistingActor);
+	DefineEnumProperty(NoStructuralSupport);
+	DefineEnumProperty(InvalidActor);
+	DefineEnumProperty(ReachedLimit);
+	DefineEnumProperty(NoEditPermission);
+	DefineEnumProperty(PatternNotPermittedByLayoutRequirement);
+	DefineEnumProperty(ResourceTypeNotPermittedByLayoutRequirement);
+	DefineEnumProperty(BuildingAtRequirementsDisabled);
+	DefineEnumProperty(BuildingOtherThanRequirementsDisabled);
+};
+
+class EFortBuildPreviewMarkerOptionalAdjustment {
+public:
+	DefineUnrealEnum(EFortBuildPreviewMarkerOptionalAdjustment);
+
+	DefineEnumProperty(None);
+	DefineEnumProperty(FreeWallPieceOnTop);
+	DefineEnumProperty(FreeWallPieceOnBottom);
+};
+
+class EBuildingReplacementType {
+public:
+	DefineUnrealEnum(EBuildingReplacementType);
+
+	DefineEnumProperty(BRT_None);
+	DefineEnumProperty(BRT_Edited);
+	DefineEnumProperty(BRT_Conversion);
+};
 
 class ABuildingSMActor : public ABuildingActor {
 public:

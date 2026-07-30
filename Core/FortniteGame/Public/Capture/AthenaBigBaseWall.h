@@ -4,7 +4,17 @@
 #include "FortniteGame/Public/Building/BuildingGameplayActor.h"
 
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+
+class EBarrierState {
+public:
+	DefineUnrealEnum(EBarrierState);
+
+	DefineEnumProperty(BarrierUp);
+	DefineEnumProperty(BarrierComingDown);
+	DefineEnumProperty(BarrierDown);
+};
 
 class AAthenaBigBaseWall : public ABuildingGameplayActor {
 public:

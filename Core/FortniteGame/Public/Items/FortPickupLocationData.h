@@ -11,7 +11,6 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptInterface.h"
 
 #include "FortniteGame/Public/Items/FortItemEntry.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 class UFortItemDefinition;
 class AFortPawn;

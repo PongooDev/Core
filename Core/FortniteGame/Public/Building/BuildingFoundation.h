@@ -29,7 +29,17 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/WorldSettings.h"
 #include "Engine\Source\Runtime\GameplayTags\Classes\GameplayTagAssetInterface.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+
+class EDynamicFoundationEnabledState {
+public:
+	DefineUnrealEnum(EDynamicFoundationEnabledState);
+
+	DefineEnumProperty(Unknown);
+	DefineEnumProperty(Enabled);
+	DefineEnumProperty(Disabled);
+};
 
 struct FDynamicBuildingFoundationRepData
 {

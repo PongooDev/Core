@@ -6,8 +6,9 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 
 #include "FortniteGame/Public/Items/FortItem.h"
-#include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Items/FortItemList.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class UFortItemDefinition;
 struct FFortItemEntry;
@@ -16,6 +17,14 @@ class AFortPlayerController;
 class IFortInventoryOwnerInterface;
 class UFortWorldItemDefinition;
 class AFortQuickBars;
+
+enum class EFortInventoryType : uint8
+{
+	World = 0,
+	Account = 1,
+	Outpost = 2,
+	MAX = 3,
+};
 
 class AFortInventory : public AActor
 {

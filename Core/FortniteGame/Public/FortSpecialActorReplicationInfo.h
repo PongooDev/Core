@@ -6,6 +6,23 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Source/Runtime/SlateCore/Public/Styling/SlateBrush.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+
+enum class ESpecialActorStatType : uint8
+{
+	NumEliminationsNearby = 0,
+	TimeInWorld = 1,
+	PickupNumSpawns = 2,
+	PickupNumDespawns = 3,
+	PickupNumDropped = 4,
+	PickupNumTaken = 5,
+	PlayerWon = 6,
+	PlayerNumEliminations = 7,
+	PlayerNum = 8,
+	TotalStats = 9,
+	ESpecialActorStatType_MAX = 10,
+};
 
 struct FSpecialActorInitData {
 public:

@@ -5,7 +5,6 @@
 #include "FortniteGame/Public/World/FortWorldManager.h"
 #include "FortniteGame/Public/World/FortWorldRecord.h"
 #include "FortniteGame/Public/World/FortZoneRecord.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 void ABuildingFoundation::OnRep_ServerStreamedInLevel()
 {

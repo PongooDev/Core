@@ -17,7 +17,6 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 
 #include "FortniteGame/Public/Weapons/FortWeapon.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 class ABuildingActor;
 class ABuildingSMActor;

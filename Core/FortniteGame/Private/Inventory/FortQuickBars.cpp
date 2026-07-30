@@ -8,7 +8,6 @@
 #include "FortniteGame/Public/Inventory/FortQuickBarsAthena.h"
 #include "FortniteGame/Public/FortGameModeAthena.h"
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 void AFortQuickBars::ServerAddItemInternal(const FGuid& Item, uint8 InQuickBar, int32 Slot)
 {

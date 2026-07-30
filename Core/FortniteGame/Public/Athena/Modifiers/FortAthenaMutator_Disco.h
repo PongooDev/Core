@@ -7,12 +7,22 @@
 #include "FortniteGame/Public/Athena/AthenaGameMessageData.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class AAthenaCapturePoint;
 class AFortPlayerStateAthena;
 
 class AFortTeamInfoAthena;
+
+class EControlPointState {
+public:
+	DefineUnrealEnum(EControlPointState);
+
+	DefineEnumProperty(None);
+	DefineEnumProperty(Disabled);
+	DefineEnumProperty(Enabled);
+};
 
 struct FFortPieSliceSpawnData {
 public:

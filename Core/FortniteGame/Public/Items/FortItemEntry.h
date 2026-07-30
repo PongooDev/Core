@@ -7,15 +7,33 @@
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/GameplayAbilitySpecHandle.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Mcp/FortGiftingInfo.h"
 #include "FortniteGame/Public/Items/FortItemEntryStateValue.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class UFortItemDefinition;
 class UFortWorldItem;
 class AFortInventory;
 class UFortAlterationItemDefinition;
 class UAthenaItemWrapDefinition;
+
+class EFortItemEntryState {
+public:
+	DefineUnrealEnum(EFortItemEntryState);
+
+	DefineEnumProperty(NoneState);
+	DefineEnumProperty(NewItemCount);
+	DefineEnumProperty(ShouldShowItemToast);
+	DefineEnumProperty(DurabilityInitialized);
+	DefineEnumProperty(DoNotShowSpawnParticles);
+	DefineEnumProperty(FromRecoveredBackpack);
+	DefineEnumProperty(FromGift);
+	DefineEnumProperty(PendingUpgradeCriteriaProgress);
+	DefineEnumProperty(OwnerBuildingHandle);
+	DefineEnumProperty(FromDroppedPickup);
+	DefineEnumProperty(CraftAndSlotTarget);
+};
 
 struct FFortItemEntry : public FFastArraySerializerItem {
 public:

@@ -4,7 +4,6 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Character.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class AFortWeapon;
 class UFortWeaponItemDefinition;

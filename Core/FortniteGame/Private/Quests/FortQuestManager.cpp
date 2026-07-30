@@ -11,7 +11,6 @@
 #include "FortniteGame/Public/Mcp/FortMcpProfileAthena.h"
 #include "FortniteGame/Public/Mcp/McpProfileSys.h"
 #include "FortniteGame/Public/Items/Definitions/FortQuestItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 void UFortQuestManager::SendCustomStatEvent(UFortQuestManager* This, FDataTableRowHandle& ObjectiveStat, int32 Count, bool bForceFlush) {
 	Log("SendCustomStatEvent Called!");

@@ -9,7 +9,6 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class UFortAthenaExitCraftInfo;
 

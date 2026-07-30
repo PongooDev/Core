@@ -6,7 +6,6 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 
 class UFortItemDefinition;
 struct FFortItemEntry;

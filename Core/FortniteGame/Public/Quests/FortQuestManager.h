@@ -20,13 +20,67 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 
 #include "FortniteGame/Public/Quests/FortQuestObjectiveCompletion.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
 
 class UFortQuestItem;
 struct FScriptContainerElement;
 class AFortPlayerController;
 struct FFortQuestObjectiveCompletion;
 class UFortQuestItemDefinition;
+
+class EFortQuestObjectiveStatEvent {
+public:
+	DefineUnrealEnum(EFortQuestObjectiveStatEvent);
+
+	DefineEnumProperty(Kill);
+	DefineEnumProperty(TeamKill);
+	DefineEnumProperty(KillContribution);
+	DefineEnumProperty(Build);
+	DefineEnumProperty(BuildingEdit);
+	DefineEnumProperty(BuildingRepair);
+	DefineEnumProperty(BuildingUpgrade);
+	DefineEnumProperty(Complete);
+	DefineEnumProperty(Craft);
+	DefineEnumProperty(Collect);
+	DefineEnumProperty(Win);
+	DefineEnumProperty(Interact);
+	DefineEnumProperty(Destroy);
+	DefineEnumProperty(Ability);
+	DefineEnumProperty(WaveComplete);
+	DefineEnumProperty(Custom);
+	DefineEnumProperty(Client);
+	DefineEnumProperty(AthenaRank);
+	DefineEnumProperty(AthenaOutlive);
+	DefineEnumProperty(NumGameplayEvents);
+	DefineEnumProperty(Acquire);
+	DefineEnumProperty(Consume);
+	DefineEnumProperty(OpenCardPack);
+	DefineEnumProperty(PurchaseCardPack);
+	DefineEnumProperty(Convert);
+	DefineEnumProperty(Upgrade);
+	DefineEnumProperty(QuestComplete);
+	DefineEnumProperty(AssignWorker);
+	DefineEnumProperty(CollectExpedition);
+	DefineEnumProperty(CollectSuccessfulExpedition);
+	DefineEnumProperty(LevelUpCollectionBook);
+	DefineEnumProperty(HasItem);
+	DefineEnumProperty(SlotInCollection);
+	DefineEnumProperty(HasCompletedQuest);
+	DefineEnumProperty(HasAssignedWorker);
+	DefineEnumProperty(HasUpgraded);
+	DefineEnumProperty(HasConverted);
+	DefineEnumProperty(HasLeveledUpCollectionBook);
+	DefineEnumProperty(Max_None);
+};
+
+class EStatMod {
+public:
+	DefineUnrealEnum(EStatMod);
+
+	DefineEnumProperty(Delta);
+	DefineEnumProperty(Set);
+	DefineEnumProperty(Maximum);
+};
 
 class UFortQuestManager : public UObject {
 public:

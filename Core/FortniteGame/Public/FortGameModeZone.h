@@ -5,7 +5,7 @@
 
 #include "FortniteGame/Public/FortGameMode.h"
 #include "FortniteGame/Public/Items/ItemAndCount.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/FortGlobals.h"
 
 class AFortPlayerController;
 class AFortAIGoalManager;

@@ -11,7 +11,6 @@
 #include "FortniteGame/Public/Athena/FortSafeZoneIndicator.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_Heist.h"
 #include "FortniteGame/Public/Athena/FortAthenaAircraft.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 void AFortGameStateAthena::OnRep_CurrentPlaylistId()
 {

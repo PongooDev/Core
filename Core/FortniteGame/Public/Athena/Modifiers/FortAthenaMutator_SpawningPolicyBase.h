@@ -12,7 +12,7 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Source/Runtime/SlateCore/Public/Styling/SlateBrush.h"
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "FortniteGame/Public/FortGameStateAthena.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
 #include "FortniteGame/Public/Items/ItemAndCount.h"
 #include "FortniteGame/Public/Athena/AthenaGameMessageData.h"

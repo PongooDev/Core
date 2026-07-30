@@ -12,11 +12,12 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Source/Runtime/SlateCore/Public/Styling/SlateBrush.h"
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
-#include "FortniteGame/Public/FortEnums.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
 #include "FortniteGame/Public/Items/ItemAndCount.h"
 #include "FortniteGame/Public/Athena/AthenaGameMessageData.h"
 #include "FortniteGame/Public/Athena/Modifiers/MutatorObjectData.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class UFortGadgetItemDefinition;
 class UFortWorldItemDefinition;
@@ -56,6 +57,29 @@ class USkeletalMesh;
 class USoundCue;
 class UStaticMesh;
 class UTexture2D;
+
+class EAshtonStoneStateType {
+public:
+	DefineUnrealEnum(EAshtonStoneStateType);
+
+	DefineEnumProperty(NotSpawned);
+	DefineEnumProperty(Spawned);
+	DefineEnumProperty(Captured);
+	DefineEnumProperty(MAX);
+};
+
+class EAshtonStoneType {
+public:
+	DefineUnrealEnum(EAshtonStoneType);
+
+	DefineEnumProperty(Purple);
+	DefineEnumProperty(Blue);
+	DefineEnumProperty(Red);
+	DefineEnumProperty(Orange);
+	DefineEnumProperty(Green);
+	DefineEnumProperty(Yellow);
+	DefineEnumProperty(MAX);
+};
 
 struct FAshtonStoneState {
 public:

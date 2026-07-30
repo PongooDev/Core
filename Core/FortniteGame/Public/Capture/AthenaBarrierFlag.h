@@ -5,13 +5,23 @@
 
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
-#include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+#include "FortniteGame/Public/Capture/AthenaBarrierObjective.h"
 
 class AAthenaBarrierObjective;
 class UStaticMesh;
 
 class UCustomCharacterPart;
 class UMaterialInterface;
+
+class EBarrierFlagState {
+public:
+	DefineUnrealEnum(EBarrierFlagState);
+
+	DefineEnumProperty(FlagUp);
+	DefineEnumProperty(FlagDown);
+};
 
 struct FBarrierFlagDisplayData {
 public:

@@ -8,11 +8,24 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
 #include "Engine/Source/Runtime/Core/Public/Misc/OutputDevice.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptDelegates.h"
+#include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 class AFortAIPawn;
 class UEnvQuery;
 class USphereComponent;
 class UFortDamageSet;
+
+class ERiftCosmeticState {
+public:
+	DefineUnrealEnum(ERiftCosmeticState);
+
+	DefineEnumProperty(None);
+	DefineEnumProperty(Intro);
+	DefineEnumProperty(Idle);
+	DefineEnumProperty(RampUp);
+	DefineEnumProperty(ShouldDie);
+};
 
 class ABuildingRift : public ABuildingActor {
 public:

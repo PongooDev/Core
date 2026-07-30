@@ -5,7 +5,6 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 
 #include "FortniteGame/Public/Building/BuildingAutoNav.h"
-#include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Building/FortSearchBounceData.h"
 #include "FortniteGame/Public/InteractionType.h"
 

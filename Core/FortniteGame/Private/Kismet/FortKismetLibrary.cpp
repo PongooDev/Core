@@ -20,7 +20,6 @@
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
 #include "FortniteGame/Public/Items/Definitions/FortResourceItemDefinition.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
-#include "FortniteGame/Public/FortEnums.h"
 
 UFortResourceItemDefinition* UFortKismetLibrary::K2_GetResourceItemDefinition(const uint8 ResourceType)
 {

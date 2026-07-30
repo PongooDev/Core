@@ -7,7 +7,6 @@
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/GameplayAbilitySpecHandle.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 
-#include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Items/FortItemEntry.h"
 
 class UFortItemDefinition;
