@@ -434,7 +434,6 @@
     <ClInclude Include="FortniteGame\Public\Capture\AthenaBigBaseWall.h" />
     <ClInclude Include="FortniteGame\Public\Items\ItemsToSpawn.h" />
     <ClInclude Include="FortniteGame\Public\Capture\AthenaCapturePoint.h" />
-    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\ControlPointTypes.h" />
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_Disco.h" />
     <ClInclude Include="FortniteGame\Public\Athena\FortAthenaExitCraft.h" />
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator.h" />
