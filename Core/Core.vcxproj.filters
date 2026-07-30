@@ -2229,6 +2229,99 @@
     <ClInclude Include="FortniteGame\Public\UI\FortSlateHUDIndicator.h">
       <Filter>FortniteGame\Public\UI</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAccountBuffCreditItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAlterableItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCampaignHeroLoadoutItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCardPackItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCloudSaveItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCodeTokenItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCollectedResourceItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortContextTrapItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortConversionControlItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCreativeRealEstatePlotItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortDefenderItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortDeployableBaseCloudSaveItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortEventItemDefinitionBase.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortEventPurchaseTrackerItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortExpeditionItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortFOBCoreDecoItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortHomebaseBannerColorItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortHomebaseBannerIconItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortHomebaseNodeItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortMetadataItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortMissionItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortOutpostItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPersistentResourceItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlayerSurveyTokenItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlaysetItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPrerollDataItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortProfileItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortQuotaItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortSchematicItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStampItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortTeamPerkItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">

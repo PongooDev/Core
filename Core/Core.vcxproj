@@ -741,6 +741,37 @@
     <ClInclude Include="FortniteGame\Public\Pawns\FortMovementComp_Character.h" />
     <ClInclude Include="FortniteGame\Public\UI\FortIndicator.h" />
     <ClInclude Include="FortniteGame\Public\UI\FortSlateHUDIndicator.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAccountBuffCreditItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAlterableItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCampaignHeroLoadoutItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCardPackItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCloudSaveItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCodeTokenItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCollectedResourceItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortContextTrapItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortConversionControlItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCreativeRealEstatePlotItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortDefenderItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortDeployableBaseCloudSaveItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortEventItemDefinitionBase.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortEventPurchaseTrackerItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortExpeditionItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortFOBCoreDecoItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortHomebaseBannerColorItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortHomebaseBannerIconItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortHomebaseNodeItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortMetadataItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortMissionItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortOutpostItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPersistentResourceItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlayerSurveyTokenItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlaysetItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPrerollDataItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortProfileItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortQuotaItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortSchematicItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStampItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortTeamPerkItemDefinition.h" />
 </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp" />
