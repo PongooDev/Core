@@ -1610,9 +1610,6 @@
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Heist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FortniteGame\Private\FortMutator\MutatorHeaderCheck.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Barrier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

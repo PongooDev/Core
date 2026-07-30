@@ -695,7 +695,6 @@
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Barrier.cpp" />
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Disco.cpp" />
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Heist.cpp" />
-    <ClCompile Include="FortniteGame\Private\FortMutator\MutatorHeaderCheck.cpp" />
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaExitCraft.cpp" />
     <ClCompile Include="FortniteGame\Private\FortSpecialActor\FortSpecialActorReplicationInfo.cpp" />
     <ClCompile Include="FortniteGame\Private\FortAnalytics\FortAnalytics.cpp" />
