@@ -659,6 +659,43 @@
     <ClInclude Include="FortniteGame\Public\Weapons\FortWeap_EditingTool.h" />
     <ClInclude Include="FortniteGame\Public\Weapons\FortWeaponMeleeItemDefinition.h" />
     <ClInclude Include="FortniteGame\Public\Weapons\FortWeaponRangedItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaBackpackItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaCallingCardItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaCharacterItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaCharacterPartItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaConsumableEmoteItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaEventTokenItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaGliderItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaHatItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaItemWrapDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaLoadingScreenItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaMapMarkerItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaMusicPackItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaPetCarrierItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaPetItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaSeasonItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaSeasonTreasureItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaSkyDiveContrailItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaVehicleCosmeticItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaVictoryPoseItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\CosmeticOnlyAlterationItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAccountBuffItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAlterationItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAwardItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortBackpackItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortBadgeItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortChallengeBundleItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortConsumableAccountItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortConsumableItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCurrencyItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortGiftBoxItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortIngredientItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortItemCacheItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortNeverPersistItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPersistableItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlaceableActorItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStatItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\PetSyncedDanceItemDefinition.h" />
 </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp" />
@@ -799,7 +836,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
+</ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

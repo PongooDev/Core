@@ -1980,6 +1980,117 @@
     <ClInclude Include="FortniteGame\Public\Weapons\FortWeaponRangedItemDefinition.h">
       <Filter>FortniteGame\Public\Weapons</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaBackpackItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaCallingCardItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaCharacterItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaCharacterPartItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaConsumableEmoteItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaEventTokenItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaGliderItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaHatItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaItemWrapDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaLoadingScreenItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaMapMarkerItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaMusicPackItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaPetCarrierItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaPetItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaSeasonItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaSeasonTreasureItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaSkyDiveContrailItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaVehicleCosmeticItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\AthenaVictoryPoseItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\CosmeticOnlyAlterationItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAccountBuffItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAlterationItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortAwardItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortBackpackItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortBadgeItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortChallengeBundleItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortConsumableAccountItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortConsumableItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortCurrencyItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortGiftBoxItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortIngredientItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortItemCacheItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortNeverPersistItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPersistableItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlaceableActorItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStatItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\Definitions\PetSyncedDanceItemDefinition.h">
+      <Filter>FortniteGame\Public\Items\Definitions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">

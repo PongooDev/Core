@@ -1,0 +1,19 @@
+#pragma once
+#include "pch.h"
+
+#include "FortniteGame/Public/Items/Definitions/FortAccountItemDefinition.h"
+
+class EEventTokenType {
+public:
+	DefineUnrealEnum(EEventTokenType);
+
+	DefineEnumProperty(Invite);
+	DefineEnumProperty(Creation);
+};
+
+class UAthenaEventTokenItemDefinition : public UFortAccountItemDefinition {
+public:
+	DefineUnrealClass(UAthenaEventTokenItemDefinition);
+
+	DefineUProperty(EEventTokenType, TokenType);
+};
