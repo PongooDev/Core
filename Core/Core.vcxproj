@@ -502,7 +502,6 @@
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_VehicleTrickScore.h" />
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_VoiceChat.h" />
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_WarmupTime.h" />
-    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\MutatorTypes.h" />
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_Barrier.h" />
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_Heist.h" />
     <ClInclude Include="FortniteGame\Public\Items\FortPickupAthena.h" />

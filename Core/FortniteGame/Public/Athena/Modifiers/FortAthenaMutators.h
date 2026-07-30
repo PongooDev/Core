@@ -3,7 +3,6 @@
 
 // Aggregate of every AFortAthenaMutator_* header, generated from the 8.51 dump.
 
-#include "FortniteGame/Public/Athena/Modifiers/MutatorTypes.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_AI.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_AllowADS.h"

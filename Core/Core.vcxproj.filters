@@ -1509,9 +1509,6 @@
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_WarmupTime.h">
       <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
     </ClInclude>
-    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\MutatorTypes.h">
-      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
-    </ClInclude>
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_Barrier.h">
       <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
     </ClInclude>
