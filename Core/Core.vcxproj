@@ -710,6 +710,37 @@
     <ClInclude Include="FortniteGame\Public\Player\FortBroadcastRemoteClientInfo.h" />
     <ClInclude Include="FortniteGame\Public\Weapons\FortDecoHelper.h" />
     <ClInclude Include="FortniteGame\Public\World\FortPoiCollisionComponent.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIAssignment.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIAssignmentSettings.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIDirectorDataManager.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIDirectorDataTrackingSettings.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIEncounterSequence.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroup.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupCapsCategorySet.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupProgressionInfo.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupUpgrade.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupUpgradeProbabilities.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortDifficultyEncounterSettings.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortDifficultyOptionCategory.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortDifficultyOptionCategoryEncounter.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortIntensityCurveSequence.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortIntensityCurveSequenceProgression.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortMovementComp_AIChar.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortPathCostEstimator.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortServerBotManagerAthena.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortSpawnPointsPercentageCurveSequence.h" />
+    <ClInclude Include="FortniteGame\Public\Abilities\FortDamageSet.h" />
+    <ClInclude Include="FortniteGame\Public\FortGameData.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileCampaign.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileSubgame.h" />
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileWorld.h" />
+    <ClInclude Include="FortniteGame\Public\Missions\FortBotMissionLogic.h" />
+    <ClInclude Include="FortniteGame\Public\Missions\FortMissionGenerator.h" />
+    <ClInclude Include="FortniteGame\Public\Missions\FortMissionState.h" />
+    <ClInclude Include="FortniteGame\Public\Missions\FortObjectiveBase.h" />
+    <ClInclude Include="FortniteGame\Public\Pawns\FortMovementComp_Character.h" />
+    <ClInclude Include="FortniteGame\Public\UI\FortIndicator.h" />
+    <ClInclude Include="FortniteGame\Public\UI\FortSlateHUDIndicator.h" />
 </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp" />

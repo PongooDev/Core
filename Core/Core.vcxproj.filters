@@ -409,6 +409,9 @@
     <Filter Include="FortniteGame\Public\Quests">
       <UniqueIdentifier>{C7BC3791-D647-5589-85C7-000EDBE87DD2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FortniteGame\Public\UI">
+      <UniqueIdentifier>{6217E87F-90AA-52E9-8994-40555766062B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="FortniteGame\Public\Weapons">
       <UniqueIdentifier>{DCB73DF3-755F-55DE-94F4-7ACFC9F7DB12}</UniqueIdentifier>
     </Filter>
@@ -2132,6 +2135,99 @@
     </ClInclude>
     <ClInclude Include="FortniteGame\Public\World\FortPoiCollisionComponent.h">
       <Filter>FortniteGame\Public\World</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIAssignment.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIAssignmentSettings.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIDirectorDataManager.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIDirectorDataTrackingSettings.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIEncounterSequence.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroup.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupCapsCategorySet.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupProgressionInfo.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupUpgrade.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAISpawnGroupUpgradeProbabilities.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortDifficultyEncounterSettings.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortDifficultyOptionCategory.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortDifficultyOptionCategoryEncounter.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortIntensityCurveSequence.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortIntensityCurveSequenceProgression.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortMovementComp_AIChar.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortPathCostEstimator.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortServerBotManagerAthena.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortSpawnPointsPercentageCurveSequence.h">
+      <Filter>FortniteGame\Public\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Abilities\FortDamageSet.h">
+      <Filter>FortniteGame\Public\Abilities</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortGameData.h">
+      <Filter>FortniteGame\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileCampaign.h">
+      <Filter>FortniteGame\Public\Mcp</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileSubgame.h">
+      <Filter>FortniteGame\Public\Mcp</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Mcp\McpProfileWorld.h">
+      <Filter>FortniteGame\Public\Mcp</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Missions\FortBotMissionLogic.h">
+      <Filter>FortniteGame\Public\Missions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Missions\FortMissionGenerator.h">
+      <Filter>FortniteGame\Public\Missions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Missions\FortMissionState.h">
+      <Filter>FortniteGame\Public\Missions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Missions\FortObjectiveBase.h">
+      <Filter>FortniteGame\Public\Missions</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Pawns\FortMovementComp_Character.h">
+      <Filter>FortniteGame\Public\Pawns</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\UI\FortIndicator.h">
+      <Filter>FortniteGame\Public\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\UI\FortSlateHUDIndicator.h">
+      <Filter>FortniteGame\Public\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
