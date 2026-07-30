@@ -18,7 +18,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
-#include "FortniteGame/Public/FortManager/FortCheatManager.h"
+#include "FortniteGame/Public/FortCheatManager.h"
 
 void Client::Init(FCoreConfig& Config) {
     Finder::SetupOffsets();

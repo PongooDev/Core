@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "FortniteGame/Public/AI/FortAIDirector.h"
 
-#include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
-#include "FortniteGame/Public/BuildingActor/BuildingActor.h"
+#include "FortniteGame/Public/FortGameModeAthena.h"
+#include "FortniteGame/Public/Building/BuildingActor.h"
 #include "Core/Public/StubCallsites.h"
 
 void AFortAIDirector::Activate()

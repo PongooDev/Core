@@ -4,7 +4,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 
-#include "FortRiftReservationHandle.h"
+#include "FortniteGame/Public/AI/FortRiftReservationHandle.h"
 
 class ABuildingRift;
 

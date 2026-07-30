@@ -1,0 +1,168 @@
+#include "pch.h"
+#include "FortniteGame/Public/Items/FortPickup.h"
+
+#include "FortniteGame/Public/Weapons/FortWeaponItemDefinition.h"
+#include "FortniteGame/Public/Items/FortItemEntry.h"
+#include "FortniteGame/Public/Inventory/FortInventory.h"
+#include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
+#include "FortniteGame/Public/Pawns/FortPlayerPawnAthena.h"
+#include "FortniteGame/Public/Player/FortPlayerStateAthena.h"
+#include "FortniteGame/Public/Weapons/FortWeapon.h"
+#include "FortniteGame/Public/Items/FortPickupAthena.h"
+#include "FortniteGame/Public/FortGameModeAthena.h"
+#include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
+
+void AFortPickup::OnRep_PrimaryPickupItemEntry()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_PrimaryPickupItemEntry"));
+
+	if (!Func) {
+		Log("AFortPickup::OnRep_PrimaryPickupItemEntry: Failed to find function!");
+		return;
+	}
+
+	Call(Func);
+}
+
+void AFortPickup::OnRep_TossedFromContainer()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_TossedFromContainer"));
+
+	Call(Func);
+}
+
+void AFortPickup::TossPickup(const struct FVector& FinalLocation, class AFortPawn* ItemOwner, int32 OverrideMaxStackCount, bool bToss, bool bShouldCombinePickupsWhenTossCompletes, const uint8 InPickupSourceTypeFlags, const uint8 InPickupSpawnSource)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"TossPickup"));
+
+	return Call(Func, FinalLocation, ItemOwner, OverrideMaxStackCount, bToss, bShouldCombinePickupsWhenTossCompletes, InPickupSourceTypeFlags, InPickupSpawnSource);
+}
+
+void AFortPickup::OnRep_bPickedUp()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_bPickedUp"));
+
+	Call(Func);
+}
+
+void AFortPickup::OnRep_PickupLocationData()
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"OnRep_PickupLocationData"));
+
+	Call(Func);
+}
+
+void AFortPickup::ForceFinishedTargetSpline()
+{
+	void (*ForceFinishedTargetSplineInternal)(AFortPickup * This) = decltype(ForceFinishedTargetSplineInternal)(ImageBase + Finder::FindAFortPickup_ForceFinishedTargetSpline());
+	ForceFinishedTargetSplineInternal(this);
+}
+
+void AFortPickup::SetPickupTarget(AFortPawn* PickupTarget, float InFlyTime, FVector InStartDirection, bool bPlayPickupSound)
+{
+	void (*SetPickupTargetInternal)(AFortPickup * This, AFortPawn * PickupTarget, float InFlyTime, FVector InStartDirection, bool bPlayPickupSound) = decltype(SetPickupTargetInternal)(ImageBase + Finder::FindAFortPickup_SetPickupTarget());
+	SetPickupTargetInternal(this, PickupTarget, InFlyTime, InStartDirection, bPlayPickupSound);
+}
+
+void AFortPickup::UpdateSpecialActorStat(ESpecialActorStatType InStat, double InValue, float InLogicCondition)
+{
+	void (*UpdateSpecialActorStatInternal)(AFortPickup * This, ESpecialActorStatType InStat, double InValue, float InLogicCondition) = decltype(UpdateSpecialActorStatInternal)(ImageBase + Finder::FindAFortPickup_UpdateSpecialActorStat());
+	UpdateSpecialActorStatInternal(this, InStat, InValue, InLogicCondition);
+}
+
+void AFortPickup::SetupForMovementCompToss()
+{
+	void (*SetupForMovementCompTossInternal)(AFortPickup * This) = decltype(SetupForMovementCompTossInternal)(ImageBase + Finder::FindAFortPickup_SetupForMovementCompToss());
+	SetupForMovementCompTossInternal(this);
+}
+
+void AFortPickup::SetPickupItems(FFortItemEntry* PrimaryEntry, TArray<FFortItemEntry>* AdditionalEntries, uint8 SourceTypeFlags, bool bInSplitOnPickup, uint8 SpawnSource)
+{
+	if (Version::Fortnite_Version >= 16) {
+		void (*&SetPickupItemsInternal)(AFortPickup * This, FFortItemEntry * PrimaryEntry, TArray<FFortItemEntry>*AdditionalEntries, uint8 SourceTypeFlags, bool bInSplitOnPickup, uint8 SpawnSource) = decltype(SetPickupItemsInternal)(VTable[Finder::FindAFortPickup_SetPickupItemsVFT()]);
+		SetPickupItemsInternal(this, PrimaryEntry, AdditionalEntries, SourceTypeFlags, bInSplitOnPickup, SpawnSource);
+	}
+	else {
+		void (*&SetPickupItemsInternal)(AFortPickup * This, FFortItemEntry * PrimaryEntry, TArray<FFortItemEntry>*AdditionalEntries, bool bInSplitOnPickup) = decltype(SetPickupItemsInternal)(VTable[Finder::FindAFortPickup_SetPickupItemsVFT()]);
+		SetPickupItemsInternal(this, PrimaryEntry, AdditionalEntries, bInSplitOnPickup);
+	}
+}
+
+void AFortPickup::GivePickupTo(AFortPickup* This, IFortInventoryOwnerInterface* InventoryOwner, bool DestroyAfterPickup) {
+	AFortInventory* Inventory = nullptr;
+
+	if (This->PickupLocationData.PickupTarget || This->PickupLocationData.ItemOwner) {
+		AFortPawn* PickupTargetPawn = This->PickupLocationData.PickupTarget ? This->PickupLocationData.PickupTarget : This->PickupLocationData.ItemOwner;
+		if (AFortPlayerController* PC = PickupTargetPawn->Controller->Cast<AFortPlayerController>()) {
+			Inventory = PC->WorldInventory;
+		}
+	}
+
+	if (Inventory) {
+		//Log(std::to_string(Inventory->GetOverflowFromAddingItem(This->PrimaryPickupItemEntry)));
+
+		Inventory->AddItemAndHandleOverflow(This->PrimaryPickupItemEntry);
+	}
+	else {
+		Log("AFortPickup::GivePickupTo: No valid inventory owner found for pickup!");
+	}
+
+	return GivePickupToOG(This, InventoryOwner, DestroyAfterPickup);
+}
+
+bool AFortPickup::CheckForRePickup(AFortPlayerPawn* FortPlayerPawn) {
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPickup::CheckForRePickup: World is null!");
+		return false;
+	}
+
+	UFortItemDefinition* ItemDef = PrimaryPickupItemEntry.ItemDefinition;
+	if (!ItemDef) {
+		Log("AFortPickup::CheckForRePickup: ItemDefinition is null!");
+		return true;
+	}
+
+	if (ItemDef->bForceAutoPickup) {
+		return true;
+	}
+
+	AFortPlayerPawn* PawnWhoDropped = PawnWhoDroppedPickup->Cast<AFortPlayerPawn>();
+	if (!PawnWhoDropped) {
+		return true;
+	}
+
+	if (PawnWhoDropped == FortPlayerPawn)
+		return false;
+
+	return true;
+}
+
+UClass* AFortPickup::GetDefaultPickupClass(const UFortItemDefinition* ItemDefinition)
+{
+	UWorld* World = UWorld::GetWorld();
+	if (!World) {
+		Log("AFortPickup::GetDefaultPickupClass: World is null!");
+		return AFortPickup::StaticClass();
+	}
+
+	if (World->AuthorityGameMode->IsA(AFortGameModeAthena::StaticClass()))
+		return AFortPickupAthena::StaticClass();
+	else
+		return AFortPickup::StaticClass();
+}

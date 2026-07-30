@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 
-#include "McpProfile.h"
+#include "FortniteGame/Public/Mcp/McpProfile.h"
 
 class UFortMcpProfile : public UMcpProfile {
 public:

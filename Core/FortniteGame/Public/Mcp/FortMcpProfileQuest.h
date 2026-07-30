@@ -1,9 +1,9 @@
 #pragma once
 #include "pch.h"
 
-#include "FortMcpProfile.h"
+#include "FortniteGame/Public/Mcp/FortMcpProfile.h"
 
-#include "FortniteGame/Public/FortQuest/FortQuestObjectiveCompletion.h"
+#include "FortniteGame/Public/Quests/FortQuestObjectiveCompletion.h"
 
 struct FDedicatedServerUrlContext;
 struct FFortQuestObjectiveCompletion;

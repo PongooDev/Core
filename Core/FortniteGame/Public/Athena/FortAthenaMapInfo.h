@@ -19,7 +19,7 @@
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
 
-#include "FortniteGame/Public/FortSafeZone/FortSafeZoneDefinition.h"
+#include "FortniteGame/Public/Athena/FortSafeZoneDefinition.h"
 
 class ABuildingItemCollectorActor;
 class AFortAthenaSupplyDrop;

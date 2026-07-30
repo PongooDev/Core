@@ -1,5 +1,10 @@
 #pragma once
 #include "pch.h"
+#include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <ctime>
+#include <intrin.h>
 
 struct  FVector;
 struct  FVector4;
@@ -93,11 +98,6 @@ class TRange;
 	documented engine change.
 -----------------------------------------------------------------------------*/
 
-#include <cmath>
-#include <cstdint>
-#include <cstdlib>
-#include <ctime>
-#include <intrin.h>
 
 typedef int32_t int32;
 

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "FortniteGame/Public/AI/FortAIGoalManager.h"
 
-#include "FortniteGame/Public/FortGameMode/FortGameModeZone.h"
+#include "FortniteGame/Public/FortGameModeZone.h"
 #include "Core/Public/StubCallsites.h"
 
 AFortAIGoalManager* AFortAIGoalManager::GetCurrent(UObject* WorldContextObject) {

@@ -16,13 +16,13 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/ReplicationDriver.h"
 #include "Engine/Plugins/Runtime/ReplicationGraph/Source/Public/ReplicationGraph.h"
 
-#include "FortniteGame/Public/FortItem/FortItemEntry.h"
-#include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
-#include "FortniteGame/Public/FortPlayerController/FortPlayerControllerAthena.h"
-#include "FortniteGame/Public/BuildingActor/BuildingSMActor.h"
-#include "FortniteGame/Public/FortGameSession/FortGameSessionDedicated.h"
-#include "FortniteGame/Public/FortWeapon/FortDecoTool.h"
-#include "FortniteGame/Public/FortGameState/FortGameStateAthena.h"
+#include "FortniteGame/Public/Items/FortItemEntry.h"
+#include "FortniteGame/Public/FortGameModeAthena.h"
+#include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
+#include "FortniteGame/Public/Building/BuildingSMActor.h"
+#include "FortniteGame/Public/FortGameSessionDedicated.h"
+#include "FortniteGame/Public/Weapons/FortDecoTool.h"
+#include "FortniteGame/Public/FortGameStateAthena.h"
 
 uintptr_t Finder::FindGUObjectArray() {
 	static uintptr_t Addr = 0;

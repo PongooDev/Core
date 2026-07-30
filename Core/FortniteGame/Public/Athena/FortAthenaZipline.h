@@ -3,7 +3,7 @@
 
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 
-#include "FortniteGame/Public/BuildingActor/BuildingGameplayActor.h"
+#include "FortniteGame/Public/Building/BuildingGameplayActor.h"
 
 class AFortAthenaZipline : public ABuildingGameplayActor {
 public:

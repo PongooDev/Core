@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 
-#include "FortMcpProfile.h"
+#include "FortniteGame/Public/Mcp/FortMcpProfile.h"
 
 struct FDedicatedServerUrlContext;
 

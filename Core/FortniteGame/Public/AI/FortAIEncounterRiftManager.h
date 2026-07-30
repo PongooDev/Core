@@ -4,10 +4,10 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Object.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
 
-#include "FortAIEncounterSpawnArea.h"
-#include "FortAIEncounterQueryDirectionTracker.h"
-#include "FortEncounterSettings.h"
-#include "EncounterEnvironmentQueryInfo.h"
+#include "FortniteGame/Public/AI/FortAIEncounterSpawnArea.h"
+#include "FortniteGame/Public/AI/FortAIEncounterQueryDirectionTracker.h"
+#include "FortniteGame/Public/AI/FortEncounterSettings.h"
+#include "FortniteGame/Public/AI/EncounterEnvironmentQueryInfo.h"
 
 class ABuildingRift;
 class AFortAIDirector;

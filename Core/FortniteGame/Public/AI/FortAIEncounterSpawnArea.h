@@ -3,7 +3,7 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
-#include "FortAIEncounterRift.h"
+#include "FortniteGame/Public/AI/FortAIEncounterRift.h"
 
 class UFortPathCostEstimator;
 

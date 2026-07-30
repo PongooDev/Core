@@ -3,7 +3,7 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
-#include "FortAIEncounterInfo.h"
+#include "FortniteGame/Public/AI/FortAIEncounterInfo.h"
 
 struct FFortPendingStoppedEncounterData {
 public:

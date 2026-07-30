@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 
-#include "FortniteGame/Public/FortPawn/FortPawn.h"
+#include "FortniteGame/Public/Pawns/FortPawn.h"
 
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 

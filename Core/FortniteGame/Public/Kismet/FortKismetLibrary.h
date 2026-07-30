@@ -15,12 +15,12 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
-#include "FortniteGame/Public/BuildingActor/BuildingGameplayActor.h"
+#include "FortniteGame/Public/Building/BuildingGameplayActor.h"
 
 
 #include "FortniteGame/Public/FortEnums.h"
-#include "FortniteGame/Public/FortAbility/FortAbilitySet.h"
-#include "FortniteGame/Public/FortItem/FortItemEntry.h"
+#include "FortniteGame/Public/Abilities/FortAbilitySet.h"
+#include "FortniteGame/Public/Items/FortItemEntry.h"
 
 class ABuildingActor;
 class ABuildingSMActor;

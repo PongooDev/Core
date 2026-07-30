@@ -2,7 +2,7 @@
 #include "pch.h"
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
-#include "FortCurveSequenceInstanceInfo.h"
+#include "FortniteGame/Public/AI/FortCurveSequenceInstanceInfo.h"
 
 class UFortIntensityCurveSequence;
 

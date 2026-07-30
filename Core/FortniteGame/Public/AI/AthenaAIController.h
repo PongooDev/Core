@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 
-#include "FortAIController.h"
+#include "FortniteGame/Public/AI/FortAIController.h"
 
 class AAthenaAIController : public AFortAIController {
 public:

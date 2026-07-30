@@ -1,0 +1,37 @@
+#pragma once
+#include "pch.h"
+
+#include "FortniteGame/Public/McpItemDefinitionBase.h"
+#include "FortniteGame/Public/FortEnums.h"
+
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/BlueprintFunctionLibrary.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
+#include "Engine/Source/Runtime/Core/Public/Misc/OutputDevice.h"
+#include "Engine/Source/Runtime/Core/Public/Templates/TypeCompatibleBytes.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/ScriptInterface.h"
+#include "Engine/Source/Runtime/Net/Core/Classes/Net/Serialization/FastArraySerializer.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DataAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/DataTable.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/CurveTable.h"
+#include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
+
+#include "FortniteGame/Public/Quests/FortMcpQuestObjectiveInfo.h"
+#include "FortniteGame/Public/Items/Definitions/AthenaCosmeticItemDefinition.h"
+
+class UFortWeaponMeleeItemDefinition;
+class USkeletalMesh;
+class UAnimInstance;
+class USoundBase;
+
+
+class UAthenaPickaxeItemDefinition : public UAthenaCosmeticItemDefinition {
+public:
+	DefineUnrealClass(UAthenaPickaxeItemDefinition);
+
+	DefineUProperty(UFortWeaponMeleeItemDefinition*, WeaponDefinition);
+};

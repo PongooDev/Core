@@ -8,7 +8,7 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
 #include "Engine/Source/Runtime/Core/Public/Misc/Guid.h"
 
-#include "FortAIEncounterInfo.h"
+#include "FortniteGame/Public/AI/FortAIEncounterInfo.h"
 class AFortAIPawn;
 class AFortPlayerController;
 class UFortAISpawnGroup;
