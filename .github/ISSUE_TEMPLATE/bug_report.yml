@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a crash or gameplay bug in Core.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Core is acts very different across all versions, so please add the **exact Fortnite version + CL** and
+        **evidence of the bug** (video, screenshots, or clear steps if you cant record it) Include the server log if relevant.
+  - type: input
+    id: version
+    attributes:
+      label: Fortnite version + CL
+      placeholder: e.g. 5.41 (CL 4363240)
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What's the bug?
+      description: What happens, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Videos, screenshots, and/or steps to reproduce.
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Server log (if applicable)
+      description: Paste the server log here if relevant.
+      render: text
+    validations:
+      required: false

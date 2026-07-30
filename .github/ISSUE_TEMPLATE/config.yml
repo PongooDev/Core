@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Core Discord
+    url: https://discord.gg/auzEaKs7AS
+    about: For more help, development discussion, and community interaction.
+  - name: Releases
+    url: https://github.com/PongooDev/Core/releases
+    about: Check the latest Core releases before reporting.
