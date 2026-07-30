@@ -57,6 +57,8 @@ public:
 
 	void SetMaxShield(float NewValue);
 
+	void LaunchCharacterJump(const FVector& LaunchVelocity, bool bXYOverride, bool bZOverride, bool bIgnoreFallDamage, bool bPlayFeedbackEvent);
+
 	float GetMaxHealth() const;
 
 	float GetMaxShield() const;

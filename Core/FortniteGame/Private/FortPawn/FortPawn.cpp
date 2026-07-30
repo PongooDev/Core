@@ -213,3 +213,17 @@ bool AFortPawn::IsAllowedToPickup() {
 
 	return true;
 }
+void AFortPawn::LaunchCharacterJump(const FVector& LaunchVelocity, bool bXYOverride, bool bZOverride, bool bIgnoreFallDamage, bool bPlayFeedbackEvent)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("LaunchCharacterJump");
+
+	if (!Func) {
+		Log("AFortPawn::LaunchCharacterJump: Failed to find function!");
+		return;
+	}
+
+	return Call<void>(Func, LaunchVelocity, bXYOverride, bZOverride, bIgnoreFallDamage, bPlayFeedbackEvent);
+}

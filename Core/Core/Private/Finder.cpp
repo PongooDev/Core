@@ -11225,7 +11225,6 @@ uintptr_t Finder::FindABuildingFoundation_StreamInMyBuilding() {
 }
 
 uintptr_t Finder::FindAFortGameModeAthena_SpawnFortSpawnActors() {
-
 	if (ServerOffsets::AFortGameModeAthena_SpawnFortSpawnActors)
 		return ServerOffsets::AFortGameModeAthena_SpawnFortSpawnActors;
 	uintptr_t Addr = 0;
@@ -11234,7 +11233,6 @@ uintptr_t Finder::FindAFortGameModeAthena_SpawnFortSpawnActors() {
 		return ServerOffsets::AFortGameModeAthena_SpawnFortSpawnActors;
 
 	auto sRef = Memcury::Scanner::FindStringRef(L"AFortGameModeAthena::SpawnFortSpawnActors");
-
 	if (!sRef.IsValid()) {
 		sRef = Memcury::Scanner::FindStringRef(L"%s: SafeZoneIndicator is invalid. Falling back to SafeZoneDef");
 	}
@@ -11252,6 +11250,34 @@ uintptr_t Finder::FindAFortGameModeAthena_SpawnFortSpawnActors() {
 	bInitialized = true;
 	Log("AFortGameModeAthena_SpawnFortSpawnActors found at: 0x" + std::format("{:X}", ServerOffsets::AFortGameModeAthena_SpawnFortSpawnActors));
 	return ServerOffsets::AFortGameModeAthena_SpawnFortSpawnActors;
+}
+
+uintptr_t Finder::FindAFortPlayerPawn_OnRep_ZiplineState() {
+	if (ServerOffsets::AFortPlayerPawn_OnRep_ZiplineState)
+		return ServerOffsets::AFortPlayerPawn_OnRep_ZiplineState;
+	uintptr_t Addr = 0;
+	static bool bInitialized = false;
+	if (bInitialized)
+		return ServerOffsets::AFortPlayerPawn_OnRep_ZiplineState;
+
+	auto sRef = Memcury::Scanner::FindStringRef(L"ZIPLINES!! Role(%s)  AFortPlayerPawn::OnRep_ZiplineState ZiplineState.bIsZiplining=%d");
+	if (!sRef.IsValid()) {
+		sRef = Memcury::Scanner::FindStringRef(L"ZIPLINES!! GetLocalRole()(%s)  AFortPlayerPawn::OnRep_ZiplineState ZiplineState.bIsZiplining=%d");
+	}
+	if (!sRef.IsValid()) {
+		sRef = Memcury::Scanner::FindStringRef(L"AFortPlayerPawn::HandleZiplineStateChanged");
+	}
+	if (sRef.IsValid()) {
+		Addr = sRef.FindFunctionStart().Get();
+	}
+
+	if (Addr) {
+		ServerOffsets::AFortPlayerPawn_OnRep_ZiplineState = Addr - ImageBase;
+	}
+
+	bInitialized = true;
+	Log("AFortPlayerPawn_OnRep_ZiplineState found at: 0x" + std::format("{:X}", ServerOffsets::AFortPlayerPawn_OnRep_ZiplineState));
+	return ServerOffsets::AFortPlayerPawn_OnRep_ZiplineState;
 }
 
 void Finder::SetupCoreOffsets() {
@@ -11685,6 +11711,8 @@ void Finder::SetupOffsets() {
 	FindABuildingFoundation_StreamInMyBuilding();
 
 	FindAFortGameModeAthena_SpawnFortSpawnActors();
+
+	FindAFortPlayerPawn_OnRep_ZiplineState();
 
 	return;
 }

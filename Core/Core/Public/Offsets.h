@@ -457,6 +457,7 @@ namespace ServerOffsets {
 
 	inline uintptr_t AFortPlayerPawn_ForceFinishIncomingPickups = 0;
 	inline uintptr_t AFortPlayerPawn_ForceFinishIncomingPickupsVFT = 0;
+	inline uintptr_t AFortPlayerPawn_OnRep_ZiplineState = 0;
 
 	inline uintptr_t AFortQuickBars_GetFocusedQuickBar = 0;
 

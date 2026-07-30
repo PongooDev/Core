@@ -12,6 +12,7 @@
 #include "FortniteGame/Public/FortGameMode/FortGameModeAthena.h"
 #include "FortniteGame/Public/FortPlayerState/FortPlayerStateAthena.h"
 #include "FortniteGame/Public/FortAbility/FortAbilitySystemComponent.h"
+#include "Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 
 void AFortPlayerPawn::BeginSkydiving(bool bFromBus)
 {
@@ -269,4 +270,42 @@ void AFortPlayerPawn::OnRep_IsDBNO()
 	}
 
 	return const_cast<AFortPlayerPawn*>(this)->Call<void>(Func);
+}
+
+void AFortPlayerPawn::OnRep_ZiplineState()
+{
+	void (*OnRep_ZiplineStateInternal)(AFortPlayerPawn*) = decltype(OnRep_ZiplineStateInternal)(ImageBase + Finder::FindAFortPlayerPawn_OnRep_ZiplineState());
+	OnRep_ZiplineStateInternal(this);
+}
+
+void AFortPlayerPawn::ServerSendZiplineState(const FZiplinePawnState& InZiplineState)
+{
+	if (!_HasZiplineState()) {
+		return;
+	}
+
+	FZiplinePawnState::Copy(&ZiplineState, &InZiplineState);
+	OnRep_ZiplineState();
+
+	if (InZiplineState.bJumped && CharacterMovement)
+	{
+		constexpr float JumpXYLimit = 750.f;
+		constexpr float JumpZVelocity = 1200.f;
+
+		const FVector& Velocity = CharacterMovement->Velocity;
+
+		LaunchCharacterJump(FVector{
+			FMath::Clamp(Velocity.X * -0.5f, -JumpXYLimit, JumpXYLimit),
+			FMath::Clamp(Velocity.Y * -0.5f, -JumpXYLimit, JumpXYLimit),
+			JumpZVelocity
+		}, false, false, true, true);
+	}
+}
+
+void AFortPlayerPawn::execServerSendZiplineState(AFortPlayerPawn* Context, FFrame& Stack)
+{
+	FZiplinePawnState& InZiplineState = Stack.StepCompiledInRef<FZiplinePawnState>();
+	Stack.IncrementCode();
+
+	Context->ServerSendZiplineState(InZiplineState);
 }

@@ -97,7 +97,7 @@ void AFortAthenaMutator_Barrier::SpawnObjectiveActor(TSubclassOf<AAthenaBarrierF
 	if (!TeamState)
 		return;
 
-	FTransform Transform(InActorRotation, InActorLocation, FVector(1, 1, 1));
+	FTransform Transform(FRotator(), InActorLocation, FVector(1, 1, 1));
 	auto Flag = (AAthenaBarrierFlag*)GetWorld()->SpawnActor(InActorClass.Class, Transform, this);
 
 	if (!Flag)
@@ -122,6 +122,8 @@ void AFortAthenaMutator_Barrier::SpawnObjectiveActor(TSubclassOf<AAthenaBarrierF
 		Objective->SetFoodTeam(FoodTeam);
 
 		Objective->bAllowDamage = true;
+		Objective->HeadRotationYaw = InActorRotation.Yaw;
+		Objective->OnRep_HeadRotationYaw();
 	}
 
 	TeamState->ObjectiveFlag = Flag;

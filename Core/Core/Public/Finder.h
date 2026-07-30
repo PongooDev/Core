@@ -1114,6 +1114,8 @@ public:
 	static uintptr_t FindABuildingFoundation_StreamInMyBuilding();
 
 	static uintptr_t FindAFortGameModeAthena_SpawnFortSpawnActors();
+
+	static uintptr_t FindAFortPlayerPawn_OnRep_ZiplineState();
 public:
 	static void SetupCoreOffsets();
 

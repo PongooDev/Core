@@ -19,6 +19,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/HitResult.h"
 
 #include "FortPawn.h"
+#include "ZiplinePawnState.h"
 
 class UFortHero;
 class UFortAbilitySystemComponent;
@@ -30,6 +31,7 @@ public:
 	DefineUProperty(float, PickupSpeedMultiplier);
 	DefineUProperty(TWeakObjectPtr<UFortHero>, Hero);
 	DefineUProperty(UFortAbilitySystemComponent*, AbilitySystemComponent);
+	DefineUProperty(FZiplinePawnState, ZiplineState);
 public:
 	void BeginSkydiving(bool bFromBus);
 
@@ -50,6 +52,12 @@ public:
 	static inline void (*execOnCapsuleBeginOverlapOG)(UObject* Context, FFrame& Stack);
 	static void execOnCapsuleBeginOverlap(AFortPlayerPawn* Context, FFrame& Stack);
 	void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComp, AFortPickup* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, FHitResult& SweepResult);
+
+	static inline void (*execServerSendZiplineStateOG)(UObject* Context, FFrame& Stack);
+	static void execServerSendZiplineState(AFortPlayerPawn* Context, FFrame& Stack);
+	void ServerSendZiplineState(const FZiplinePawnState& InZiplineState);
+
+	void OnRep_ZiplineState();
 
 	void TryToAutoPickup(AFortPickup* Pickup);
 
@@ -76,7 +84,9 @@ public:
 			ExecHook("Function /Script/FortniteGame.FortPlayerPawnAthena.OnCapsuleBeginOverlap", execOnCapsuleBeginOverlap, execOnCapsuleBeginOverlapOG);
 			ExecHook("Function /Script/FortniteGame.FortPlayerPawn.OnCapsuleBeginOverlap", execOnCapsuleBeginOverlap, execOnCapsuleBeginOverlapOG);
 		}
-		
+
+		ExecHook("Function /Script/FortniteGame.FortPlayerPawn.ServerSendZiplineState", execServerSendZiplineState, execServerSendZiplineStateOG);
+
 		Log("AFortPlayerPawn Hooked!");
 	}
 };

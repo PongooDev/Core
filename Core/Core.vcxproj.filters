@@ -432,6 +432,9 @@
     <ClInclude Include="FortniteGame\Public\FortPawn\FortPlayerPawn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortPawn\ZiplinePawnState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="FortniteGame\Public\FortPawn\FortPlayerPawnAthena.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -924,6 +927,198 @@
     <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_AI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_AllowADS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Ashton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_BlockBuilding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Bots.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_BotsWinCondition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_ButterflyEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Carmine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_CreativeInfiniteResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_CreativeTutorial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_DBNOSetting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_DeimosSurvival.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_EnvironmentalDamage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_FallDamageMultiplier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Fill.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Flag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_GameDifficulty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_GiveItemsAtGamePhase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_GiveItemsAtGamePhaseStep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_GliderRedeploy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Goose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_GravityMultiplier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Hardcore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_HealthAndShield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Hover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_InfiniteAmmo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_InfiniteResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_InventoryOverride.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_ItemDropOnDeath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_JumpPenalty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Mash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_MinigameDamageSupression.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Missions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_MovementSpeed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_NamePlate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Omaha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_POIOverride.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_PickaxeDamage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_PlayerDamage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_PlayerFly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_PreloadAssets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_RespawnLocation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_RespawnTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Score.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_ShowSafeZoneCircle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SiphonValues.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SkyCap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SpawnLocationQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SpawningPolicyBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SpawningPolicySafezone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SpecialEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_StartingInventory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Storm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_SupplyDrop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_TDM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_TODOverride.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_TeamPartSwapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_TeamSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_TimeStep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_VehicleTrickScore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_VoiceChat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_WarmupTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortMutator\MutatorTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="FortniteGame\Public\FortMutator\FortAthenaMutator_Heist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1075,6 +1270,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FortniteGame\Public\Athena\FortAthenaMapInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\FortAthenaZipline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FortniteGame\Public\FortAthenaVehicle\FortAthenaVehicle.h">
@@ -1412,6 +1610,9 @@
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Heist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FortniteGame\Private\FortMutator\MutatorHeaderCheck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="FortniteGame\Private\FortMutator\FortAthenaMutator_Barrier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1566,6 +1767,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\Athena\FortAthenaMapInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\Athena\FortAthenaZipline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FortniteGame\Private\FortAthenaVehicle\FortAthenaVehicle.cpp">

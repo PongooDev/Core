@@ -6,6 +6,7 @@
 #include "FortniteGame/Public/FortPlaylist/PlaylistPropertyArray.h"
 #include "FortniteGame/Public/FortEnums.h"
 #include "FortniteGame/Public/Athena/AircraftFlightInfo.h"
+#include "FortniteGame/Public/FortMutator/MutatorObjectData.h"
 
 class AFortAthenaMapInfo;
 class APlayerState;
@@ -17,6 +18,8 @@ class UCurveTable;
 class AFortPlayerState;
 class AFortSafeZoneIndicator;
 class AFortAthenaMutator;
+class AFortAthenaMutator_AI;
+class UFortMutatorListComponent;
 class AFortSpecialActorReplicationInfo;
 
 class AFortGameStateAthena : public AFortGameStateZone {
@@ -42,6 +45,13 @@ public:
 	DefineUProperty(bool, bUseSameDirectionForOpposingAircraft);
 	DefineUProperty(TArray<AFortAthenaAircraft*>, Aircrafts);
 	DefineUProperty(TArray<AFortAthenaMutator*>, GameplayMutators);
+	DefineUProperty(FGameplayMutatorEventData, MutatorEventData);
+	DefineUProperty(FGameplayMutatorObjectDataArray, MutatorObjectDataArray);
+	DefineUProperty(int32, MutatorGenericInt_0);
+	DefineUProperty(int32, MutatorGenericInt_1);
+	DefineUProperty(int32, MutatorGenericInt_2);
+	DefineUProperty(AFortAthenaMutator_AI*, GameplayMutator_AI);
+	DefineUProperty(UFortMutatorListComponent*, MutatorListComponent);
 	DefineUProperty(AFortSpecialActorReplicationInfo*, SpecialActorData);
 	DefineUProperty(uint8, GamePhase);
 	DefineUProperty(uint8, SafeZonePhase);

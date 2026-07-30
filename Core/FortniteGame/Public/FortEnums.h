@@ -537,3 +537,149 @@ public:
 	DefineEnumProperty(Enabled);
 	DefineEnumProperty(Disabled);
 };
+
+class EAshtonStoneStateType {
+public:
+	DefineUnrealEnum(EAshtonStoneStateType);
+
+	DefineEnumProperty(NotSpawned);
+	DefineEnumProperty(Spawned);
+	DefineEnumProperty(Captured);
+	DefineEnumProperty(MAX);
+};
+
+class EAshtonStoneType {
+public:
+	DefineUnrealEnum(EAshtonStoneType);
+
+	DefineEnumProperty(Purple);
+	DefineEnumProperty(Blue);
+	DefineEnumProperty(Red);
+	DefineEnumProperty(Orange);
+	DefineEnumProperty(Green);
+	DefineEnumProperty(Yellow);
+	DefineEnumProperty(MAX);
+};
+
+class EAthenaInventorySpawnOverride {
+public:
+	DefineUnrealEnum(EAthenaInventorySpawnOverride);
+
+	DefineEnumProperty(NoOverride);
+	DefineEnumProperty(Always);
+	DefineEnumProperty(IntialSpawn);
+	DefineEnumProperty(AircraftPhaseOnly);
+	DefineEnumProperty(EAthenaInventorySpawnOverride_MAX);
+};
+
+class EAthenaLootDropOverride {
+public:
+	DefineUnrealEnum(EAthenaLootDropOverride);
+
+	DefineEnumProperty(NoOverride);
+	DefineEnumProperty(ForceDrop);
+	DefineEnumProperty(ForceKeep);
+	DefineEnumProperty(EAthenaLootDropOverride_MAX);
+};
+
+class EAthenaMutatorEvaluators {
+public:
+	DefineUnrealEnum(EAthenaMutatorEvaluators);
+
+	DefineEnumProperty(NoOverride);
+	DefineEnumProperty(ForceOverride);
+	DefineEnumProperty(Add);
+	DefineEnumProperty(Multiply);
+	DefineEnumProperty(EAthenaMutatorEvaluators_MAX);
+};
+
+class EAthenaTimeOfDayOverride {
+public:
+	DefineUnrealEnum(EAthenaTimeOfDayOverride);
+
+	DefineEnumProperty(NoOverride);
+	DefineEnumProperty(ForceDay);
+	DefineEnumProperty(ForceNight);
+	DefineEnumProperty(Custom);
+	DefineEnumProperty(Hour0);
+	DefineEnumProperty(Hour1);
+	DefineEnumProperty(Hour2);
+	DefineEnumProperty(Hour3);
+	DefineEnumProperty(Hour4);
+	DefineEnumProperty(Hour5);
+	DefineEnumProperty(Hour6);
+	DefineEnumProperty(Hour7);
+	DefineEnumProperty(Hour8);
+	DefineEnumProperty(Hour9);
+	DefineEnumProperty(Hour10);
+	DefineEnumProperty(Hour11);
+	DefineEnumProperty(Hour12);
+	DefineEnumProperty(Hour13);
+	DefineEnumProperty(Hour14);
+	DefineEnumProperty(Hour15);
+	DefineEnumProperty(Hour16);
+	DefineEnumProperty(Hour17);
+	DefineEnumProperty(Hour18);
+	DefineEnumProperty(Hour19);
+	DefineEnumProperty(Hour20);
+	DefineEnumProperty(Hour21);
+	DefineEnumProperty(Hour22);
+	DefineEnumProperty(Hour23);
+	DefineEnumProperty(Random);
+	DefineEnumProperty(EAthenaTimeOfDayOverride_MAX);
+};
+
+class EDBNOMutatorType {
+public:
+	DefineUnrealEnum(EDBNOMutatorType);
+
+	DefineEnumProperty(Default);
+	DefineEnumProperty(On);
+	DefineEnumProperty(Off);
+	DefineEnumProperty(EDBNOMutatorType_MAX);
+};
+
+class EFortAthenaMutator_VoiceChatChannelType {
+public:
+	DefineUnrealEnum(EFortAthenaMutator_VoiceChatChannelType);
+
+	DefineEnumProperty(Default);
+	DefineEnumProperty(None);
+	DefineEnumProperty(SquadOnly);
+	DefineEnumProperty(TeamOnly);
+	DefineEnumProperty(WholeServer);
+	DefineEnumProperty(ScopeOnly);
+	DefineEnumProperty(ScopeSquadOnly);
+	DefineEnumProperty(ScopeTeamOnly);
+	DefineEnumProperty(EFortAthenaMutator_MAX);
+};
+
+class EIndicatorDisplayMode {
+public:
+	DefineUnrealEnum(EIndicatorDisplayMode);
+
+	DefineEnumProperty(Default);
+	DefineEnumProperty(Always);
+	DefineEnumProperty(Never);
+	DefineEnumProperty(EIndicatorDisplayMode_MAX);
+};
+
+class EMashDifficulty {
+public:
+	DefineUnrealEnum(EMashDifficulty);
+
+	DefineEnumProperty(Easy);
+	DefineEnumProperty(Medium);
+	DefineEnumProperty(Hard);
+	DefineEnumProperty(EMashDifficulty_MAX);
+};
+
+class ERespawnRequirements {
+public:
+	DefineUnrealEnum(ERespawnRequirements);
+
+	DefineEnumProperty(RespawnOnly);
+	DefineEnumProperty(NoRespawnOnly);
+	DefineEnumProperty(Both);
+	DefineEnumProperty(ERespawnRequirements_MAX);
+};
