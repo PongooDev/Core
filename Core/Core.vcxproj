@@ -696,6 +696,20 @@
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortPlaceableActorItemDefinition.h" />
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStatItemDefinition.h" />
     <ClInclude Include="FortniteGame\Public\Items\Definitions\PetSyncedDanceItemDefinition.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\AthenaFillFloor.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\AthenaGoosePickup.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\AthenaSkyCap.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_SpawningPolicyData.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortGameplayMutator_AIEncounterModifierTags.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortGameplayMutator_AILevelVariance.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortMutatorListComponent.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortTeamSettingsComponent.h" />
+    <ClInclude Include="FortniteGame\Public\Building\BuildingGameplayActorSpawnMachine.h" />
+    <ClInclude Include="FortniteGame\Public\FortTeamInfoAthena.h" />
+    <ClInclude Include="FortniteGame\Public\Items\FortPickupEffect.h" />
+    <ClInclude Include="FortniteGame\Public\Player\FortBroadcastRemoteClientInfo.h" />
+    <ClInclude Include="FortniteGame\Public\Weapons\FortDecoHelper.h" />
+    <ClInclude Include="FortniteGame\Public\World\FortPoiCollisionComponent.h" />
 </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp" />

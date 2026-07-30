@@ -2091,6 +2091,48 @@
     <ClInclude Include="FortniteGame\Public\Items\Definitions\PetSyncedDanceItemDefinition.h">
       <Filter>FortniteGame\Public\Items\Definitions</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\AthenaFillFloor.h">
+      <Filter>FortniteGame\Public\Athena</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\AthenaGoosePickup.h">
+      <Filter>FortniteGame\Public\Athena</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\AthenaSkyCap.h">
+      <Filter>FortniteGame\Public\Athena</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_SpawningPolicyData.h">
+      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortGameplayMutator_AIEncounterModifierTags.h">
+      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortGameplayMutator_AILevelVariance.h">
+      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortMutatorListComponent.h">
+      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortTeamSettingsComponent.h">
+      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Building\BuildingGameplayActorSpawnMachine.h">
+      <Filter>FortniteGame\Public\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\FortTeamInfoAthena.h">
+      <Filter>FortniteGame\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Items\FortPickupEffect.h">
+      <Filter>FortniteGame\Public\Items</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Player\FortBroadcastRemoteClientInfo.h">
+      <Filter>FortniteGame\Public\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\Weapons\FortDecoHelper.h">
+      <Filter>FortniteGame\Public\Weapons</Filter>
+    </ClInclude>
+    <ClInclude Include="FortniteGame\Public\World\FortPoiCollisionComponent.h">
+      <Filter>FortniteGame\Public\World</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
