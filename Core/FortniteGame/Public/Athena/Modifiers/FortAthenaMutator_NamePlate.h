@@ -3,6 +3,7 @@
 
 
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 class AFortAthenaMutator_NamePlate : public AFortAthenaMutator {
 public:

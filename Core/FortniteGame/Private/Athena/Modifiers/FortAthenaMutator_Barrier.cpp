@@ -5,6 +5,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "FortniteGame/Public/Capture/AthenaBarrierObjective.h"
 #include "FortniteGame/Public/Playlists/FortPlaylistAthena.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AFortAthenaMutator_Barrier::CheckHealthThreshold(uint8 TeamNum)
 {

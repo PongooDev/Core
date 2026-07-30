@@ -29,6 +29,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/WorldSettings.h"
 #include "Engine\Source\Runtime\GameplayTags\Classes\GameplayTagAssetInterface.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 struct FDynamicBuildingFoundationRepData
 {

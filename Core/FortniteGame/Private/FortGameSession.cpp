@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "FortniteGame/Public/FortGameSession.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 EFortPlayerValidationType AFortGameSession::ValidatePlayer(AFortGameSession* This, const FUniqueNetIdRepl* UniqueId, bool bIsLocalPlayer, FText* ReturnReason) {
 	FCoreConfig& Config = ConfigurationManager::GetConfig();

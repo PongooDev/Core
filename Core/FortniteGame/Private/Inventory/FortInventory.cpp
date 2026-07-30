@@ -17,6 +17,7 @@
 #include "FortniteGame/Public/Items/FortPickup.h"
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AFortInventory::HandleInventoryLocalUpdate()
 {

@@ -11,6 +11,7 @@
 #include "FortniteGame/Public/Items/FortPickupAthena.h"
 #include "FortniteGame/Public/FortGameModeAthena.h"
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AFortPickup::OnRep_PrimaryPickupItemEntry()
 {

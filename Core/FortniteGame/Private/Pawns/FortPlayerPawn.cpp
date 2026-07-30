@@ -14,6 +14,7 @@
 #include "FortniteGame/Public/Abilities/FortAbilitySystemComponent.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/CharacterMovementComponent.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AFortPlayerPawn::BeginSkydiving(bool bFromBus)
 {

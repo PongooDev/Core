@@ -2,6 +2,7 @@
 #include "FortniteGame/Public/Player/FortPlayerStateAthena.h"
 
 #include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AFortPlayerStateAthena::OnRep_TeamKillScore()
 {

@@ -16,6 +16,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 struct FFortQuestObjectiveStatTableRow : public FTableRowBase {
 public:

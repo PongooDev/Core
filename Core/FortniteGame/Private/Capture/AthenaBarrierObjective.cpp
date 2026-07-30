@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "FortniteGame/Public/Capture/AthenaBarrierObjective.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AAthenaBarrierObjective::OnGeneratorDestroyed()
 {

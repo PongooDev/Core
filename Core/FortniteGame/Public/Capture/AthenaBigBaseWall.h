@@ -2,9 +2,9 @@
 #include "pch.h"
 
 #include "FortniteGame/Public/Building/BuildingGameplayActor.h"
-#include "FortniteGame/Public/Athena/Modifiers/BarrierTypes.h"
 
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 class AAthenaBigBaseWall : public ABuildingGameplayActor {
 public:

@@ -45,6 +45,7 @@
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
 #include "FortniteGame/Public/Weapons/FortEditToolItemDefinition.h"
 #include "FortniteGame/Public/Weapons/FortWeap_EditingTool.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AFortPlayerController::ClientForceProfileQuery()
 {

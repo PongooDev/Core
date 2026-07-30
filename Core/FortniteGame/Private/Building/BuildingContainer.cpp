@@ -8,6 +8,7 @@
 #include "FortniteGame/Public/Items/FortItemEntry.h"
 #include "FortniteGame/Public/Weapons/FortWeaponItemDefinition.h"
 #include "FortniteGame/Public/Pawns/FortPlayerPawnAthena.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* PlayerPawn, uint8 InSourceTypeFlag, uint8 InSpawnSource) {
 	if (!This) {

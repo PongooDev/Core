@@ -2,8 +2,26 @@
 #include "pch.h"
 
 #include "FortniteGame/Public/Building/BuildingGameplayActor.h"
-#include "FortniteGame/Public/Athena/Modifiers/BarrierTypes.h"
 #include "FortniteGame/Public/FortEnums.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
+
+class AAthenaBarrierFlag;
+class UCustomCharacterPart;
+class UMaterialInterface;
+class UStaticMesh;
+
+struct FBarrierObjectiveDisplayData {
+public:
+	DefineUnrealStruct(FBarrierObjectiveDisplayData);
+
+	DefineStructProperty(UStaticMesh*, HeadMesh);
+	DefineStructProperty(FVector, MeshScale);
+	DefineStructProperty(FVector, MeshRelativeOffset);
+	DefineStructProperty(TArray<UMaterialInterface*>, MaterialsToSwap);
+public:
+	uint8 Padding[0x30];
+};
 
 class AAthenaBarrierObjective : public ABuildingGameplayActor {
 public:

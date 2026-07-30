@@ -1305,9 +1305,6 @@
     <ClInclude Include="FortniteGame\Public\Capture\AthenaCapturePoint.h">
       <Filter>FortniteGame\Public\Capture</Filter>
     </ClInclude>
-    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\BarrierTypes.h">
-      <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
-    </ClInclude>
     <ClInclude Include="FortniteGame\Public\Athena\Modifiers\ControlPointTypes.h">
       <Filter>FortniteGame\Public\Athena\Modifiers</Filter>
     </ClInclude>

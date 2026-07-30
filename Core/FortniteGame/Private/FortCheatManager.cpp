@@ -44,6 +44,7 @@
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
 #include "FortniteGame/Public/Items/Definitions/FortMontageItemDefinitionBase.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void UFortCheatManager::AddAllScores(int32 Amount)
 {

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "FortniteGame/Public/FortGameSessionDedicated.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 bool AFortGameSessionDedicated::FinalizeCreation() {
 	bool (*&FinalizeCreationInternal)(AFortGameSessionDedicated * This) = decltype(FinalizeCreationInternal)(VTable[Finder::FindAFortGameSessionDedicated_FinalizeCreationVFT()]);

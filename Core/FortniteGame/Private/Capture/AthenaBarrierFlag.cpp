@@ -3,6 +3,7 @@
 
 #include "FortniteGame/Public/Capture/AthenaBarrierObjective.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/ChildActorComponent.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 void AAthenaBarrierFlag::OnRep_CurrentState()
 {

@@ -5,15 +5,54 @@
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
 
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator.h"
-#include "FortniteGame/Public/Athena/Modifiers/BarrierTypes.h"
 #include "FortniteGame/Public/Athena/AthenaGameMessageData.h"
 #include "FortniteGame/Public/Items/ItemsToSpawn.h"
 #include "FortniteGame/Public/Capture/AthenaBigBaseWall.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TransformNonVectorized.h"
 #include "FortniteGame/Public/Capture/AthenaBarrierFlag.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 
 class AAthenaBarrierFlag;
+
+class AAthenaBarrierObjective;
+class UCustomCharacterPart;
+class UMaterialInterface;
+class UStaticMesh;
+
+struct FBarrierHeadData {
+public:
+	DefineUnrealStruct(FBarrierHeadData);
+
+	DefineStructProperty(TArray<UCustomCharacterPart*>, PartsToSwapIn);
+public:
+	uint8 Padding[0x10];
+};
+
+struct FBarrierMountedTurretData {
+public:
+	DefineUnrealStruct(FBarrierMountedTurretData);
+
+	DefineStructProperty(TArray<UMaterialInterface*>, MaterialOverrides);
+	DefineStructProperty(UMaterialInterface*, BaseMaterialOverride);
+public:
+	uint8 Padding[0x18];
+};
+
+struct FBarrierTeamState {
+public:
+	DefineUnrealStruct(FBarrierTeamState);
+
+	DefineStructProperty(uint8, TeamNum);
+	DefineStructProperty(EBarrierFoodTeam, FoodTeam);
+	DefineStructProperty(AAthenaBarrierFlag*, ObjectiveFlag);
+	DefineStructProperty(AAthenaBarrierObjective*, ObjectiveObject);
+	DefineStructProperty(bool, bRespawnEnabled);
+public:
+	uint8 Padding[0x28];
+};
 
 class AFortAthenaMutator_Barrier : public AFortAthenaMutator {
 public:

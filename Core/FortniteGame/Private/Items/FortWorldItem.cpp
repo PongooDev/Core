@@ -4,6 +4,7 @@
 #include "FortniteGame/Public/Items/Definitions/FortItemDefinition.h"
 #include "FortniteGame/Public/Inventory/FortInventory.h"
 #include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
+#include "FortniteGame/Public/FortEnums.h"
 
 uint8 UFortWorldItem::GetQuickBarForItem() {
 	if (!ItemEntry.ItemDefinition) {
