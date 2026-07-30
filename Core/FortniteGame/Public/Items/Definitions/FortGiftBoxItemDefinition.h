@@ -3,6 +3,8 @@
 
 #include "Engine/Source/Runtime/Core/Public/Containers/UnrealString.h"
 #include "Engine/Source/Runtime/Core/Public/Internationalization/Text.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "FortniteGame/Public/FortGlobals.h"
 #include "FortniteGame/Public/Items/Definitions/FortAccountItemDefinition.h"
 

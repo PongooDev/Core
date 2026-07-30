@@ -5,12 +5,14 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Core/Public/UObject/NameTypes.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/PrimaryAssetId.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/CurveTable.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/DataAsset.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/DataTable.h"
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
+#include "Engine/Source/Runtime/Core/Public/Containers/UnrealString.h"
 
 class UCurveFloat;
 class UCurveVector;
@@ -47,6 +49,205 @@ class USoundBase;
 class USoundMix;
 class UStaticMesh;
 
+using TFPrimaryAssetIdToint32Map = TMap<FPrimaryAssetId, int32>;
+
+class UEnvQuery;
+
+struct FConditionalFoundationQuota {
+public:
+	DefineUnrealStruct(FConditionalFoundationQuota);
+
+};
+
+struct FItemDefinitionAndCount {
+public:
+	DefineUnrealStruct(FItemDefinitionAndCount);
+
+	DefineStructProperty(int32, Count);
+	DefineStructProperty(TSoftObjectPtr<UFortItemDefinition>, ItemDefinition);
+public:
+	uint8 Padding[0x30];
+};
+
+struct FFortPlayerSpawnPadPlacementData {
+public:
+	DefineUnrealStruct(FFortPlayerSpawnPadPlacementData);
+
+	DefineStructProperty(UEnvQuery*, PlacementQuery);
+	DefineStructProperty(TSoftClassPtr<UClass>, ActorToPlace);
+	DefineStructProperty(bool, bSnapToGrid);
+	DefineStructProperty(bool, bAdjustPlacementForFloors);
+	DefineStructProperty(FGameplayTagContainer, TagsToAddToChosenPlacementActor);
+public:
+	uint8 Padding[0x58];
+};
+
+class ESlateVisibility {
+public:
+	DefineUnrealEnum(ESlateVisibility);
+
+	DefineEnumProperty(Visible);
+	DefineEnumProperty(Collapsed);
+	DefineEnumProperty(Hidden);
+	DefineEnumProperty(HitTestInvisible);
+	DefineEnumProperty(SelfHitTestInvisible);
+};
+
+struct FSettingsHUDVisibilityAndText {
+public:
+	DefineUnrealStruct(FSettingsHUDVisibilityAndText);
+
+	DefineStructProperty(FGameplayTag, HUDVisibilityGameplayTag);
+	DefineStructProperty(ESlateVisibility, DefaultHUDVisibility);
+	DefineStructProperty(FText, DisplayText);
+	DefineStructProperty(FText, ToolTipText);
+public:
+	uint8 Padding[0x40];
+};
+
+struct FOnlineAccountTexts {
+public:
+	DefineUnrealStruct(FOnlineAccountTexts);
+
+	DefineStructProperty(FText, AllGiftCodesUsed);
+	DefineStructProperty(FText, AssociateConsoleAuth);
+	DefineStructProperty(FText, AutoLoginFailed);
+	DefineStructProperty(FText, AutoLoginFailedMobile);
+	DefineStructProperty(FText, BannedFromGame);
+	DefineStructProperty(FText, CheckEntitledToPlay);
+	DefineStructProperty(FText, CheckingRejoin);
+	DefineStructProperty(FText, CheckServiceAvailability);
+	DefineStructProperty(FText, ConsolePrivileges);
+	DefineStructProperty(FText, CreateAccountCompleted);
+	DefineStructProperty(FText, CreateAccountFailure);
+	DefineStructProperty(FText, CreateHeadless);
+	DefineStructProperty(FText, DoQosPingTests);
+	DefineStructProperty(FText, DowntimeMinutesWarningText);
+	DefineStructProperty(FText, DowntimeSecondsWarningText);
+	DefineStructProperty(FText, DuplicateAuthAssociaton);
+	DefineStructProperty(FText, EulaCheck);
+	DefineStructProperty(FText, ExchangeConsoleGiftsForAccess);
+	DefineStructProperty(FText, ExchangeConsolePurchaseForAccess);
+	DefineStructProperty(FText, FailedAccountCreate);
+	DefineStructProperty(FText, FailedEulaCheck_EulaAcceptanceFailed);
+	DefineStructProperty(FText, FailedEulaCheck_MustAcceptEula);
+	DefineStructProperty(FText, FailedLoginCredentialsMsg);
+	DefineStructProperty(FText, FailedLoginParentalLock);
+	DefineStructProperty(FText, FailedLoginNoRealId);
+	DefineStructProperty(FText, FailedLoginLockoutMsg);
+	DefineStructProperty(FText, FailedLoginRequiresMFA);
+	DefineStructProperty(FText, FailedLoginRequiresAuthAppMFA);
+	DefineStructProperty(FText, FailedInvalidMFA);
+	DefineStructProperty(FText, FailedLoginMsg);
+	DefineStructProperty(FText, FailedLoginMsg_InvalidRefreshToken);
+	DefineStructProperty(FText, FailedLoginTencent_UnableToSignIn);
+	DefineStructProperty(FText, FailedLoginTencent_NotSignedInToWeGame);
+	DefineStructProperty(FText, FailedLoginTencent_FailedToInitializeWeGame);
+	DefineStructProperty(FText, FailedLoginTencent_WeGameSystemOffline);
+	DefineStructProperty(FText, FailedStartLogin);
+	DefineStructProperty(FText, FounderChatExitedText);
+	DefineStructProperty(FText, FounderChatJoinedText);
+	DefineStructProperty(FText, GameDisplayName);
+	DefineStructProperty(FText, GeneralLoginFailure);
+	DefineStructProperty(FText, GlobalChatExitedText);
+	DefineStructProperty(FText, GlobalChatJoinedText);
+	DefineStructProperty(FText, HeadlessAccountFailed);
+	DefineStructProperty(FText, InMatchShutdownTimeWarningText);
+	DefineStructProperty(FText, InvalidUser);
+	DefineStructProperty(FText, LoggedOutofMCP);
+	DefineStructProperty(FText, DisconnectedFromMCP);
+	DefineStructProperty(FText, LoggedOutReturnedToTitle);
+	DefineStructProperty(FText, LoggedOutSwitchedProfile);
+	DefineStructProperty(FText, LoggingIn);
+	DefineStructProperty(FText, LoggingInConsoleAuth);
+	DefineStructProperty(FText, LoggingOut);
+	DefineStructProperty(FText, LoginConsole);
+	DefineStructProperty(FText, LoginFailure);
+	DefineStructProperty(FText, Logout_Unlink);
+	DefineStructProperty(FText, LogoutCompleted);
+	DefineStructProperty(FText, LostConnection);
+	DefineStructProperty(FText, MCPTimeout);
+	DefineStructProperty(FText, LightswitchCheckNetworkFailureMsg);
+	DefineStructProperty(FText, NetworkConnectionUnavailable);
+	DefineStructProperty(FText, NoPlayEntitlement);
+	DefineStructProperty(FText, NoServerAccess);
+	DefineStructProperty(FText, PlayAccessRevoked);
+	DefineStructProperty(FText, PremiumAccountName_Default);
+	DefineStructProperty(FText, PremiumAccountName_PS4);
+	DefineStructProperty(FText, PremiumAccountName_Switch);
+	DefineStructProperty(FText, PremiumAccountName_XboxOne);
+	DefineStructProperty(FText, RedeemOfflinePurchases);
+	DefineStructProperty(FText, ServiceDowntime);
+	DefineStructProperty(FText, SignInCompleting);
+	DefineStructProperty(FText, SignIntoConsoleServices);
+	DefineStructProperty(FText, TokenExpired);
+	DefineStructProperty(FText, UnableToConnect);
+	DefineStructProperty(FText, UnableToJoinWaitingRoomLoginQueue);
+	DefineStructProperty(FText, UnexpectedConsoleAuthFailure);
+	DefineStructProperty(FText, UnlinkConsoleFailed);
+	DefineStructProperty(FText, UserLoginFailed);
+	DefineStructProperty(FText, WaitingRoom);
+	DefineStructProperty(FText, WaitingRoomError);
+	DefineStructProperty(FText, WaitingRoomFailure);
+	DefineStructProperty(FText, WaitingRoomWaiting);
+	DefineStructProperty(FText, LoggingInExternalAuth);
+	DefineStructProperty(FText, CreateDeviceAuth);
+	DefineStructProperty(FText, ExtAuthCanceled);
+	DefineStructProperty(FText, ExtAuthFailure);
+	DefineStructProperty(FText, ExtAuthAssociationFailure);
+	DefineStructProperty(FText, ExtAuthTimeout);
+	DefineStructProperty(FText, ExtAuthMissingAuthAssociation);
+	DefineStructProperty(FText, UnableToQueryReceipts);
+public:
+	uint8 Padding[0x990];
+};
+
+struct FPartnerPcbInfo {
+public:
+	DefineUnrealStruct(FPartnerPcbInfo);
+
+	DefineStructProperty(FGameplayTag, PartnerTag);
+	DefineStructProperty(FGameplayTagContainer, ValidPartnerBundles);
+public:
+	uint8 Padding[0x28];
+};
+
+struct FFortQuestPackInfo {
+public:
+	DefineUnrealStruct(FFortQuestPackInfo);
+
+	DefineStructProperty(FString, Name);
+	DefineStructProperty(FString, DefaultQuestPack);
+	DefineStructProperty(int32, MaxActiveDailyQuests);
+	DefineStructProperty(int32, MaxRerollsPerDay);
+	DefineStructProperty(int32, DaysToKeepClaimedQuests);
+	DefineStructProperty(int32, DaysToKeepCompletedQuests);
+	DefineStructProperty(int32, MaxUnclaimedQuests);
+	DefineStructProperty(bool, IsStreamingQuestPack);
+public:
+	uint8 Padding[0x35];
+};
+
+class EStatCategory {
+public:
+	DefineUnrealEnum(EStatCategory);
+
+	DefineEnumProperty(Combat);
+	DefineEnumProperty(Building);
+	DefineEnumProperty(Utility);
+	DefineEnumProperty(Max_None);
+};
+
+struct FFortReplicatedStatMapping {
+public:
+	DefineUnrealStruct(FFortReplicatedStatMapping);
+
+	DefineStructProperty(EStatCategory, StatCategory);
+	DefineStructProperty(FText, DisplayName);
+public:
+	uint8 Padding[0x20];
+};
+
 class UFortGameData : public UPrimaryDataAsset {
 public:
 	DefineUnrealClass(UFortGameData);
@@ -61,6 +262,7 @@ public:
 	DefineUProperty(FLinearColor, BuildingFullHealthFlashColor);
 	DefineUProperty(FLinearColor, InvalidEditPatternColor);
 	DefineUProperty(float, ScoreDisplayFactor);
+	DefineUProperty(TArray<FFortReplicatedStatMapping>, StatMappings);
 	DefineUProperty(int32, ScoreDivisor);
 	DefineUProperty(int32, XPMult);
 	DefineUProperty(float, ScoreToXPLinearRate);
@@ -83,21 +285,27 @@ public:
 	DefineUProperty(FText, NoXpConningMsg);
 	DefineUProperty(int32, MaxCraftQueueSize);
 	DefineUProperty(float, DefaultLootInstancingRange);
+	DefineUProperty(TArray<FFortQuestPackInfo>, QuestPackInfos);
 	DefineUProperty(FDataTableRowHandle, OnboardingCompleteZoneObjective);
 	DefineUProperty(FGameplayTagContainer, DamageDoneTargetQuest_AllowedTags);
 	DefineUProperty(FGameplayTagContainer, DamageDoneQuest_AllowedTags);
 	DefineUProperty(FGameplayTagContainer, DamageDoneTargetQuest_AllowedTags_Old);
 	DefineUProperty(FGameplayTagContainer, DamageDoneQuest_AllowedTags_Old);
+	DefineUProperty(FConditionalFoundationQuota, ConditionalFoundationQuota);
 	DefineUProperty(FCurveTableRowHandle, PowerPointToRatingConversion);
 	DefineUProperty(FDataTableRowHandle, EventMovieQuestObjective);
+	DefineUProperty(TArray<FSettingsHUDVisibilityAndText>, HUDVisibilityGameplayTags);
 	DefineUProperty(FDataTableRowHandle, GameDifficultyRowPIE);
 	DefineUProperty(int32, AIDirectorIndex);
 	DefineUProperty(int32, AlternateBalanceAIDirectorIndex);
+	DefineUProperty(TArray<FItemDefinitionAndCount>, DefaultInventoryList);
+	DefineUProperty(TArray<FItemDefinitionAndCount>, FastLoadDefaultInventoryList);
 	DefineUProperty(float, SquadMemberStatBonusMultiplier);
 	DefineUProperty(TSoftObjectPtr<USoundBase>, PlayerIdleWarningSound);
 	DefineUProperty(FGameplayTag, ExpeditionUnlockedTag);
 	DefineUProperty(FGameplayTagContainer, ExpeditionVehicleTags);
 	DefineUProperty(int32, DailyMissionAlertQuota);
+	DefineUProperty(FOnlineAccountTexts, OnlineAccountTexts);
 	DefineUProperty(TArray<FName>, ServerOnlyAssetTypes);
 	DefineUProperty(TSoftObjectPtr<UFortLoadingConfig>, LoadingConfig);
 	DefineUProperty(TSoftClassPtr<UClass>, TestEncounter);
@@ -132,6 +340,7 @@ public:
 	DefineUProperty(TSoftObjectPtr<UMaterialInterface>, MobileInteractionMaterial);
 	DefineUProperty(TSoftObjectPtr<UStaticMesh>, MobileInteractionMesh);
 	DefineUProperty(FGameplayTagContainer, PlacementActorUsedTags);
+	DefineUProperty(FFortPlayerSpawnPadPlacementData, DefaultPlayerSpawnPadPlacementData);
 	DefineUProperty(TSoftObjectPtr<UCustomCharacterPart>, DefaultBackpackCharacterPart);
 	DefineUProperty(TSoftClassPtr<UClass>, AIGoalManagerClass);
 	DefineUProperty(TSoftClassPtr<UClass>, SharedMissionListsClass);
@@ -190,6 +399,7 @@ public:
 	DefineUProperty(TSoftObjectPtr<UCurveTable>, XPAccountItemLevelsTable);
 	DefineUProperty(TSoftObjectPtr<UCurveTable>, XPAccountItemRewardsTable);
 	DefineUProperty(TSoftObjectPtr<UCurveTable>, XPConningTable);
+	DefineUProperty(TArray<FPartnerPcbInfo>, PartnerCafeBundleMapping);
 	DefineUProperty(TSoftObjectPtr<UDataTable>, QuestAchievementData);
 	DefineUProperty(TSoftObjectPtr<UFortItemDefinition>, SkillPointItemDef);
 	DefineUProperty(TSoftObjectPtr<UFortItemDefinition>, ResearchPointItemDef);
@@ -266,4 +476,5 @@ public:
 	DefineUProperty(TSoftObjectPtr<UDataTable>, BannerColorCategoryData);
 	DefineUProperty(TSoftObjectPtr<UDataTable>, CreativeInventoryTable);
 	DefineUProperty(TSoftClassPtr<UClass>, DefaultRebootVanIndicatorClass);
+	DefineUProperty(TFPrimaryAssetIdToint32Map, CachedCreativeInventory);
 };

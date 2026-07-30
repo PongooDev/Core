@@ -5,6 +5,18 @@
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Info.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Controller.h"
 
+class EFortTeam {
+public:
+	DefineUnrealEnum(EFortTeam);
+
+	DefineEnumProperty(Spectator);
+	DefineEnumProperty(HumanCampaign);
+	DefineEnumProperty(Monster);
+	DefineEnumProperty(HumanPvP_Team1);
+	DefineEnumProperty(HumanPvP_Team2);
+	DefineEnumProperty(MAX);
+};
+
 class AFortTeamInfo : public AInfo {
 public:
 	DefineUnrealClass(AFortTeamInfo);

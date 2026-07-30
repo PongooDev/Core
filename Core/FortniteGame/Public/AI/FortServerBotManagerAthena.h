@@ -11,11 +11,23 @@ class AFortAthenaMutator_Bots;
 class AFortGameModeAthena;
 class AFortPlayerPawnAthena;
 
+class AFortAthenaAIBotController;
+
+struct FFortServerBotInfo {
+public:
+	DefineUnrealStruct(FFortServerBotInfo);
+
+	DefineStructProperty(AFortAthenaAIBotController*, BotController);
+public:
+	uint8 Padding[0x8];
+};
+
 class UFortServerBotManagerAthena : public UObject {
 public:
 	DefineUnrealClass(UFortServerBotManagerAthena);
 
 	DefineUProperty(TSubclassOf<AFortPlayerPawnAthena>, BotPlayerPawnClass);
+	DefineUProperty(TArray<FFortServerBotInfo>, PlayerBots);
 	DefineUProperty(AFortGameModeAthena*, CachedGameMode);
 	DefineUProperty(uint8, LastBotTeam);
 	DefineUProperty(AFortAthenaMutator_Bots*, CachedBotMutator);

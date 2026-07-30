@@ -4,6 +4,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Core/Public/Containers/Map.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
+#include "Engine/Source/Runtime/Core/Public/UObject/NameTypes.h"
 
 class UDataTable : public UObject {
 public:
@@ -104,6 +105,19 @@ public:
 
 		return *RowDataPtr;
 	}
+};
+
+class UDataTable;
+
+struct FDataTableCategoryHandle {
+public:
+	DefineUnrealStruct(FDataTableCategoryHandle);
+
+	DefineStructProperty(UDataTable*, DataTable);
+	DefineStructProperty(FName, ColumnName);
+	DefineStructProperty(FName, RowContents);
+public:
+	uint8 Padding[0x18];
 };
 
 struct FDataTableRowHandle {

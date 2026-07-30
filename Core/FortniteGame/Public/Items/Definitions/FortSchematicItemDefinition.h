@@ -15,6 +15,7 @@ public:
 
 	DefineUProperty(FDataTableRowHandle, CraftingRecipe);
 	DefineUProperty(TSoftObjectPtr<USoundBase>, CraftingSuccessSound);
+	DefineUProperty(FDataTableCategoryHandle, LootLevelData);
 	DefineUProperty(FName, CraftingTimeRowName);
 	DefineUProperty(bool, bUseSchematicDisplayName);
 };

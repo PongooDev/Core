@@ -2,6 +2,7 @@
 #include "pch.h"
 
 #include "Engine/Source/Runtime/Core/Public/Containers/UnrealString.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/ActorComponent.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_DBNOSetting.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_InventoryOverride.h"

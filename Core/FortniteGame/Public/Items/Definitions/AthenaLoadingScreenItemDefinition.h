@@ -3,6 +3,8 @@
 
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector2D.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "FortniteGame/Public/Items/Definitions/AthenaCosmeticItemDefinition.h"
 
 class UObject;

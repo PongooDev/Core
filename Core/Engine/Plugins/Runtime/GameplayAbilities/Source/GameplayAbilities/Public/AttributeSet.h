@@ -3,6 +3,21 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
+#include "Engine/Source/Runtime/Core/Public/Containers/UnrealString.h"
+
+class UProperty;
+class UStruct;
+
+struct FGameplayAttribute {
+public:
+	DefineUnrealStruct(FGameplayAttribute);
+
+	DefineStructProperty(FString, AttributeName);
+	DefineStructProperty(UProperty*, Attribute);
+	DefineStructProperty(UStruct*, AttributeOwner);
+public:
+	uint8 Padding[0x20];
+};
 
 struct FGameplayAttributeData {
 public:

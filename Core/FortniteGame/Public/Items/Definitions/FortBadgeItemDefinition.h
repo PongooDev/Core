@@ -3,7 +3,9 @@
 
 #include "Engine/Source/Runtime/Core/Public/Internationalization/Text.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/DataTable.h"
+#include "FortniteGame/Public/Items/Definitions/FortAlterationItemDefinition.h"
 #include "FortniteGame/Public/Items/Definitions/FortWorldItemDefinition.h"
 
 class UFortBadgeItemDefinition : public UFortWorldItemDefinition {
@@ -14,4 +16,5 @@ public:
 	DefineUProperty(FText, FailedDisplayText);
 	DefineUProperty(FLinearColor, BadgeColor);
 	DefineUProperty(FDataTableRowHandle, BadgeScoringValuesHandle);
+	DefineUProperty(TArray<FFortItemQuantityPair>, ItemRewards);
 };

@@ -2322,6 +2322,9 @@
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortTeamPerkItemDefinition.h">
       <Filter>FortniteGame\Public\Items\Definitions</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\PrimaryAssetId.h">
+      <Filter>Engine\Source\Runtime\CoreUObject\Public\UObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">

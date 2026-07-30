@@ -13,10 +13,32 @@ class AFortMission;
 class UFortAIAssignmentSettings;
 class UFortAIEncounterInfo;
 
+struct FFortEncounterTransitionSettings {
+public:
+	DefineUnrealStruct(FFortEncounterTransitionSettings);
+
+	DefineStructProperty(bool, bShouldMaintainEncounterState);
+public:
+	uint8 Padding[0x1];
+};
+
+struct FFortGeneratedEncounterSequence {
+public:
+	DefineUnrealStruct(FFortGeneratedEncounterSequence);
+
+	DefineStructProperty(FFortEncounterTransitionSettings, TransitionSettings);
+	DefineStructProperty(int32, StartingGeneratedEncounterProfileIndex);
+	DefineStructProperty(int32, NumEncountersInSequence);
+	DefineStructProperty(FGameplayTagContainer, EncounterSequenceTags);
+public:
+	uint8 Padding[0x30];
+};
+
 class UFortAIEncounterSequence : public UObject {
 public:
 	DefineUnrealClass(UFortAIEncounterSequence);
 
+	DefineUProperty(FFortGeneratedEncounterSequence, GeneratedEncounterSequence);
 	DefineUProperty(int32, CurrentEncounterIndexInSequence);
 	DefineUProperty(UFortAIEncounterInfo*, CurrentEncounter);
 	DefineUProperty(AFortAIDirector*, AssociatedAIDirector);

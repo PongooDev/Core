@@ -4,6 +4,9 @@
 #include "Engine/Source/Runtime/Core/Public/Internationalization/Text.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/WeakObjectPtr.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
 #include "FortniteGame/Public/Building/BuildingActor.h"
 
@@ -30,6 +33,31 @@ public:
 	DefineEnumProperty(NoEditPermission);
 	DefineEnumProperty(WrongZone);
 };
+
+class AActor;
+class ABuildingSMActor;
+
+struct FDecoPlacementState {
+public:
+	DefineUnrealStruct(FDecoPlacementState);
+
+	DefineStructProperty(FVector, Start);
+	DefineStructProperty(FVector, End);
+	DefineStructProperty(FVector, RawLocation);
+	DefineStructProperty(FVector, Normal);
+	DefineStructProperty(FQuat, AbsoluteRotation);
+	DefineStructProperty(FVector, GridLocation);
+	DefineStructProperty(FVector, PreviousLocation);
+	DefineStructProperty(FVector, FallbackLocation);
+	DefineStructProperty(TWeakObjectPtr<AActor>, LastHitActor);
+	DefineStructProperty(TWeakObjectPtr<ABuildingSMActor>, CurrentBuildingActorAttachment);
+	DefineStructProperty(FVector, CreateBuildingLocation);
+	DefineStructProperty(FRotator, CreateBuildingRotation);
+	DefineStructProperty(EFortDecoPlacementQueryResults, CanPlaceState);
+public:
+	uint8 Padding[0x8D];
+};
+
 class EPlacementType {
 public:
 	DefineUnrealEnum(EPlacementType);
@@ -50,6 +78,7 @@ public:
 	DefineUProperty(EBuildingAttachmentType, CurrentAttachmentType);
 	DefineUProperty(EPlacementType, CurrentPlacementType);
 	DefineUProperty(UFortDecoItemDefinition*, DecoItemDefinition);
+	DefineUProperty(FDecoPlacementState, PlacementInfo);
 	DefineUProperty(bool, bInFallbackPosition);
 	DefineUProperty(float, FallbackTinyScale);
 	DefineUProperty(EFortDecoPlacementQueryResults, CanPlaceState);

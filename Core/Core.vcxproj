@@ -772,6 +772,7 @@
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortSchematicItemDefinition.h" />
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStampItemDefinition.h" />
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortTeamPerkItemDefinition.h" />
+    <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\PrimaryAssetId.h" />
 </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp" />

@@ -4,6 +4,7 @@
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/ScalableFloat.h"
 #include "Engine/Source/Runtime/Core/Public/Internationalization/Text.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/OnlineReplStructs.h"
 #include "FortniteGame/Public/Building/BuildingGameplayActor.h"
 

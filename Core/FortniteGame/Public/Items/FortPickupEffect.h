@@ -3,6 +3,8 @@
 
 #include "Engine/Source/Runtime/Core/Public/Math/Color.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Actor.h"
 
 class UFortAlterationItemDefinition;
