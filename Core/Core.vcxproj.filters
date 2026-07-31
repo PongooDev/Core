@@ -2325,6 +2325,11 @@
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\PrimaryAssetId.h">
       <Filter>Engine\Source\Runtime\CoreUObject\Public\UObject</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIController.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIPawn.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\GhostModeRepData.h">
+      <Filter>FortniteGame\Public\Athena</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -2725,6 +2730,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\Player\FortPlayerControllerGameplay.cpp">
+      <Filter>FortniteGame\Private\Player</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

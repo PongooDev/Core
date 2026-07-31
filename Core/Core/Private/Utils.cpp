@@ -50,6 +50,7 @@
 #include "FortniteGame/Public/AI/FortAIGoalManager.h"
 #include "FortniteGame/Public/Athena/FortAthenaExitCraftSpawner.h"
 #include "FortniteGame/Public/Building/FortAthenaSupplyDrop.h"
+#include "FortniteGame/Public/Player/FortPlayerControllerGameplay.h"
 
 
 void Utils::InitConsole(FCoreConfig& Config)
@@ -268,6 +269,7 @@ void Utils::Hook() {
 	AFortAthenaMutator_Barrier::Hook();
 	AAthenaBarrierFlag::Hook();
 	ABuildingFoundation::Hook();
+	//AFortPlayerControllerGameplay::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {
