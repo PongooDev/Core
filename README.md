@@ -118,6 +118,7 @@ Current command groups include:
 | QuickBars | `SpawnQuickBars`, `DestroyQuickBars`, `DumpQuickBars` |
 | Testing and fun | `LootRain`, `SetGameSpeed`, `TeleportAllToMe`, `SwapPlaces`, `LaunchPawn`, `SetScale`, `ScalePawn`, `Goto`, `DestroyBuildings`, `EmoteAll`, `EmoteAllSpecific`, `EmotePlayerByName`, `TogglePersonalVehicle` |
 | AFortAthenaMutator_Heist | `SetSpawnExitCraftTime`, `DumpExitCraftTimer`, `HeistPhaseStep`, `DumpGameState`, `UpdateGamePhaseStep`, `SpawnExitCraft` |
+| Quests | `ListQuests`, `ProgressQuest` |
 
 Run `cheat Help` in game for all commands, syntax, and descriptions.
 
