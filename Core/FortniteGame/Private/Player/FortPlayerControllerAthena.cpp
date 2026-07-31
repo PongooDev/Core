@@ -319,6 +319,21 @@ void AFortPlayerControllerAthena::ClientSendMatchStatsForPlayer(const FAthenaMat
 	return Call(Func, Stats);
 }
 
+bool AFortPlayerControllerAthena::Client_DisplayQuestUpdate_Self(FFortUpdatedObjectiveStat& ObjectiveUpdated)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("Client_DisplayQuestUpdate_Self");
+
+	if (!Func) {
+		return false;
+	}
+
+	Call(Func, ObjectiveUpdated);
+	return true;
+}
+
 void AFortPlayerControllerAthena::ClientSendTeamStatsForPlayer(const FAthenaMatchTeamStats& TeamStats)
 {
 	static UFunction* Func = nullptr;

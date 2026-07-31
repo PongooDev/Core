@@ -215,8 +215,10 @@ void UFortQuestManager::ProgressQuest(UFortQuestItem* QuestItem, FName Objective
 
 	Log("UFortQuestManager::ProgressQuest: Quest: " + QuestItem->GetName().ToString() + " Objective: " + ObjectiveInfo->GetName().ToString() + " InCount: " + std::to_string(InCount) + " AchievedCount: " + std::to_string(ObjectiveInfo->AchievedCount));
 
+	DisplayQuestUpdate(PlayerController, QuestDefinition, ObjectiveBackendName, ObjectiveInfo->AchievedCount, InCount);
+
 	FFortQuestObjectiveCompletion NewCompletion{};
-	NewCompletion.StatName = QuestItem->TemplateId; // idk if this is right tbh, i dont think it is
+	NewCompletion.StatName = ObjectiveBackendName.ToString();
 	NewCompletion.Count = InCount;
 
 	PendingChanges.Add(NewCompletion, FFortQuestObjectiveCompletion::GetSize());
@@ -229,6 +231,29 @@ void UFortQuestManager::ProgressQuest(UFortQuestItem* QuestItem, FName Objective
 
 		FDedicatedServerUrlContext Context;
 		PlayerController->AthenaProfile->UpdateQuests(Advanced, &Context);
+	}
+}
+
+void UFortQuestManager::DisplayQuestUpdate(AFortPlayerController* PlayerController, UFortQuestItemDefinition* QuestDefinition, FName ObjectiveBackendName, int32 NewCount, int32 Delta)
+{
+	if (!PlayerController)
+		return;
+
+	FFortUpdatedObjectiveStat Updated{};
+	Updated.Quest = QuestDefinition;
+	Updated.BackendName = ObjectiveBackendName;
+	Updated.StatValue = NewCount;
+	Updated.StatDelta = Delta;
+	Updated.CurrentStage = 0;
+
+	AFortPlayerControllerAthena* AthenaPC = PlayerController->Cast<AFortPlayerControllerAthena>();
+	if (AthenaPC && AthenaPC->Client_DisplayQuestUpdate_Self(Updated))
+		return;
+
+	if (PlayerController->_HasUpdatedObjectiveStats()) {
+		TArray<FFortUpdatedObjectiveStat>& Stats = PlayerController->UpdatedObjectiveStats;
+		Stats.Add(Updated, FFortUpdatedObjectiveStat::GetSize());
+		PlayerController->ForceNetUpdate();
 	}
 }
 

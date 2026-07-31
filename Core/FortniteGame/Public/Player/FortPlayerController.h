@@ -45,6 +45,20 @@ class UFortMcpProfileAccount;
 class UFortMcpProfileAthena;
 class UFortQuestManager;
 class UAthenaSprayItemDefinition;
+class UFortQuestItemDefinition;
+
+struct FFortUpdatedObjectiveStat {
+public:
+	DefineUnrealStruct(FFortUpdatedObjectiveStat);
+
+	DefineStructProperty(UFortQuestItemDefinition*, Quest);
+	DefineStructProperty(FName, BackendName);
+	DefineStructProperty(int32, StatValue);
+	DefineStructProperty(int32, StatDelta);
+	DefineStructProperty(int32, CurrentStage);
+public:
+	uint8 Padding[0x20];
+};
 
 class AFortPlayerController : public APlayerController {
 public:
@@ -60,6 +74,7 @@ public:
 	DefineUProperty(UFortRegisteredPlayerInfo*, MyPlayerInfo);
 	DefineUProperty(UFortMcpProfileAccount*, MainMcpProfile);
 	DefineUProperty(UFortMcpProfileAthena*, AthenaProfile);
+	DefineUProperty(TArray<FFortUpdatedObjectiveStat>, UpdatedObjectiveStats);
 public:
 	void ClientForceProfileQuery();
 

@@ -74,4 +74,6 @@ public:
 	void UpdateGamePhaseStep(FCommandParser& Parser);
 	void DumpGameState(FCommandParser& Parser);
 	void SpawnExitCraft(FCommandParser& Parser);
+	void ListQuests(FCommandParser& Parser);
+	void ProgressQuest(FCommandParser& Parser);
 };

@@ -365,6 +365,14 @@ void AFortPlayerController::ServerCheat(AFortPlayerController* This, FString& Ms
 		CheatManager->SpawnExitCraft(Parser);
 		return;
 	}
+	else if (Parser.IsCommand("ListQuests")) {
+		CheatManager->ListQuests(Parser);
+		return;
+	}
+	else if (Parser.IsCommand("ProgressQuest")) {
+		CheatManager->ProgressQuest(Parser);
+		return;
+	}
 
 	if (Version::Fortnite_Version >= 2.2) {
 		UKismetSystemLibrary::ExecuteConsoleCommand(UWorld::GetWorld(), Msg, This);

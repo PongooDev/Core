@@ -62,6 +62,8 @@ public:
 
 	void ClientSendTeamStatsForPlayer(const FAthenaMatchTeamStats& TeamStats);
 
+	bool Client_DisplayQuestUpdate_Self(FFortUpdatedObjectiveStat& ObjectiveUpdated);
+
 	FAthenaRewardResult& ConstructAthenaRewardResult();
 
 	FAthenaMatchStats& ConstructAthenaMatchStats();

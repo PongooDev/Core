@@ -30,6 +30,8 @@
 #include "FortniteGame/Public/Abilities/FortGameplayAbility.h"
 #include "FortniteGame/Public/Abilities/FortAbilitySystemComponent.h"
 #include "FortniteGame/Public/Quests/FortQuestManager.h"
+#include "FortniteGame/Public/Quests/FortQuestObjectiveInfo.h"
+#include "FortniteGame/Public/Items/FortQuestItem.h"
 #include "FortniteGame/Public/Items/FortPickup.h"
 #include "FortniteGame/Public/FortGameStateAthena.h"
 #include "FortniteGame/Public/Athena/FortAthenaMapInfo.h"
@@ -162,6 +164,9 @@ void UFortCheatManager::Help(FCommandParser& Parser)
 	PC->ClientMessage("DumpGameState - Dumps the gamestate's phase/storm/playlist state.");
 	PC->ClientMessage("UpdateGamePhaseStep - Forces the gamestate to recompute GamePhaseStep and dispatch it to mutators.");
 	PC->ClientMessage("SpawnExitCraft [bUseSpawner] [ZOffset] [State] - Spawns a getaway van in front of you (State default 6 = WaitingForPawns).");
+	PC->ClientMessage("-- Quests --");
+	PC->ClientMessage("ListQuests - Lists your quests and their objective progress.");
+	PC->ClientMessage("ProgressQuest [QuestName] [Count] - Progresses the named quest, or a random incomplete one if no name is given.");
 }
 
 void UFortCheatManager::GiveItem(FCommandParser& Parser)
@@ -2319,4 +2324,105 @@ void UFortCheatManager::StartEncounter(FCommandParser& Parser)
 		PC->ClientMessage("RiftManager: " + std::string(Encounter->RiftManager ? Encounter->RiftManager->GetName().ToString() : "NULL"));
 
 	PC->ClientMessage("Run DumpEncounters to see what it claimed.");
+}
+
+void UFortCheatManager::ListQuests(FCommandParser& Parser)
+{
+	AFortPlayerController* PC = GetPlayerController();
+	if (!PC)
+		return;
+
+	UFortQuestManager* QuestManager = PC->GetQuestManager(ESubGame::GetAthena());
+	if (!QuestManager) {
+		PC->ClientMessage("QuestManager is null!");
+		return;
+	}
+
+	if (QuestManager->CurrentQuests.Num() == 0) {
+		PC->ClientMessage("No quests are currently granted.");
+		return;
+	}
+
+	PC->ClientMessage("=== Quests (" + std::to_string(QuestManager->CurrentQuests.Num()) + ") ===");
+	for (UFortQuestItem* QuestItem : QuestManager->CurrentQuests) {
+		if (!QuestItem)
+			continue;
+
+		UFortItemDefinition* Definition = QuestItem->ItemDefinition;
+		std::string QuestName = Definition ? Definition->GetName().ToString() : QuestItem->GetName().ToString();
+		PC->ClientMessage(QuestName + (QuestItem->HasCompletedQuest() ? " [COMPLETED]" : ""));
+
+		for (UFortQuestObjectiveInfo* Objective : QuestItem->Objectives) {
+			if (!Objective)
+				continue;
+
+			PC->ClientMessage("  " + Objective->BackendName.ToString().ToString() + ": "
+				+ std::to_string(Objective->AchievedCount) + "/" + std::to_string(Objective->RequiredCount));
+		}
+	}
+}
+
+void UFortCheatManager::ProgressQuest(FCommandParser& Parser)
+{
+	AFortPlayerController* PC = GetPlayerController();
+	if (!PC)
+		return;
+
+	UFortQuestManager* QuestManager = PC->GetQuestManager(ESubGame::GetAthena());
+	if (!QuestManager) {
+		PC->ClientMessage("QuestManager is null!");
+		return;
+	}
+
+	std::string QuestName = Parser.GetArg("QuestName", 0);
+	int32 Count = Parser.GetArgInt("Count", 1, 1);
+
+	std::vector<UFortQuestItem*> IncompleteQuests;
+	for (UFortQuestItem* QuestItem : QuestManager->CurrentQuests) {
+		if (QuestItem && !QuestItem->HasCompletedQuest())
+			IncompleteQuests.push_back(QuestItem);
+	}
+
+	if (IncompleteQuests.empty()) {
+		PC->ClientMessage("No incomplete quests to progress!");
+		return;
+	}
+
+	UFortQuestItem* TargetQuest = nullptr;
+	if (!QuestName.empty()) {
+		std::string LowerName = Utils::StringToLower(QuestName);
+		for (UFortQuestItem* QuestItem : IncompleteQuests) {
+			UFortItemDefinition* Definition = QuestItem->ItemDefinition;
+			std::string CandidateName = Utils::StringToLower(Definition ? Definition->GetName().ToString() : QuestItem->GetName().ToString());
+			if (CandidateName.find(LowerName) != std::string::npos) {
+				TargetQuest = QuestItem;
+				break;
+			}
+		}
+
+		if (!TargetQuest)
+			PC->ClientMessage("No incomplete quest matches '" + QuestName + "', progressing a random one instead.");
+	}
+
+	if (!TargetQuest)
+		TargetQuest = IncompleteQuests[UKismetMathLibrary::RandomIntegerInRange(0, (int32)IncompleteQuests.size() - 1)];
+
+	UFortQuestObjectiveInfo* Objective = nullptr;
+	for (UFortQuestObjectiveInfo* Info : TargetQuest->Objectives) {
+		if (Info && Info->AchievedCount < Info->RequiredCount) {
+			Objective = Info;
+			break;
+		}
+	}
+
+	UFortItemDefinition* Definition = TargetQuest->ItemDefinition;
+	std::string TargetName = Definition ? Definition->GetName().ToString() : TargetQuest->GetName().ToString();
+	if (!Objective) {
+		PC->ClientMessage(TargetName + " has no incomplete objectives!");
+		return;
+	}
+
+	QuestManager->ProgressQuest(TargetQuest, Objective->BackendName, Count);
+	PC->ClientMessage(TargetName + " | " + Objective->BackendName.ToString().ToString() + ": "
+		+ std::to_string(Objective->AchievedCount) + "/" + std::to_string(Objective->RequiredCount));
 }

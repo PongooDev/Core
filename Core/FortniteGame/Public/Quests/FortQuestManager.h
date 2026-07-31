@@ -141,6 +141,8 @@ public:
 
 	void ProgressQuest(UFortQuestItem* QuestItem, FName ObjectiveBackendName, int32 InCount = 1);
 
+	void DisplayQuestUpdate(AFortPlayerController* PlayerController, UFortQuestItemDefinition* QuestDefinition, FName ObjectiveBackendName, int32 NewCount, int32 Delta);
+
 	void ForceTriggerQuestsUpdated();
 
 	void GetSourceAndContextTags(FGameplayTagContainer* OutSourceTags, FGameplayTagContainer* OutContextTags) const;
