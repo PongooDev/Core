@@ -80,6 +80,19 @@ public:
 		AFortPlayerController* OptionalOwnerPC,
 		bool bPickupOnlyRelevantToOwner
 	);
+
+	static AFortPickup* K2_SpawnPickupInWorldWithClass(
+		UObject* WorldContextObject,
+		UFortWorldItemDefinition* ItemDefinition,
+		TSubclassOf<class AFortPickup> PickupClass,
+		int NumberToSpawn,
+		const FVector& Position,
+		const FVector& Direction,
+		int32 OverrideMaxStackCount,
+		bool bToss,
+		bool bRandomRotation,
+		bool bBlockedFromAutoPickup
+	);
 	static void execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stack, AFortPickup** Result);
 
 	static UFortWorldItem* GiveItemToInventoryOwner(

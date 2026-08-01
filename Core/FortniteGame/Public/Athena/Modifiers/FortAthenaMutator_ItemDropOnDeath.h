@@ -88,4 +88,8 @@ public:
 	DefineUProperty(FScalableFloat, MaxAmmoTypeDrops);
 	DefineUProperty(FScalableFloat, MaxResourceTypeDrops);
 	DefineUProperty(TArray<FItemsToDropOnDeath>, ItemsToDrop);
+public:
+
+
+	static void Hook();
 };

@@ -190,6 +190,24 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	return Pickup;
 }
 
+AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorldWithClass(
+	UObject* WorldContextObject,
+	UFortWorldItemDefinition* ItemDefinition,
+	TSubclassOf<class AFortPickup> PickupClass,
+	int NumberToSpawn,
+	const FVector& Position,
+	const FVector& Direction,
+	int32 OverrideMaxStackCount,
+	bool bToss,
+	bool bRandomRotation,
+	bool bBlockedFromAutoPickup
+) {
+
+	{
+		return K2_SpawnPickupInWorld(WorldContextObject, ItemDefinition, NumberToSpawn, Position, {}, OverrideMaxStackCount, bToss, bRandomRotation, bBlockedFromAutoPickup, -1, EFortPickupSourceTypeFlag::GetOther(), EFortPickupSpawnSource::GetUnset(), nullptr, false);
+	}
+}
+
 void UFortKismetLibrary::execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stack, AFortPickup** Result)
 {
 	static UFunction* K2_SpawnPickupInWorldFn = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld");

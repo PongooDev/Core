@@ -692,4 +692,10 @@ namespace ServerOffsets {
 	inline uintptr_t AFortSpecialActorReplicationInfo_AddActorToReplicationList = 0;
 
 	inline uintptr_t AFortAIDirector_StartEncounterWithoutObjective = 0;
+
+	inline uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems = 0;
+
+	static uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld = 0;
+
+	static uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier = 0;
 }

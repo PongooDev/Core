@@ -44,6 +44,7 @@
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_Heist.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_Barrier.h"
 #include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_GiveItemsAtPhase.h"
+#include "FortniteGame/Public/Athena/Modifiers/FortAthenaMutator_ItemDropOnDeath.h"
 #include "FortniteGame/Public/Capture/AthenaBarrierFlag.h"
 #include "FortniteGame/Public/Athena/FortAthenaExitCraft.h"
 #include "FortniteGame/Public/Inventory/FortQuickBarsAthena.h"
@@ -269,6 +270,7 @@ void Utils::Hook() {
 	AFortAthenaExitCraftSpawner::Hook();
 	AFortAthenaMutator_Barrier::Hook();
 	AFortAthenaMutator_GiveItemsAtPhase::Hook();
+	AFortAthenaMutator_ItemDropOnDeath::Hook();
 	AAthenaBarrierFlag::Hook();
 	ABuildingFoundation::Hook();
 	AFortPlayerControllerGameplay::Hook();

@@ -1116,6 +1116,13 @@ public:
 	static uintptr_t FindAFortGameModeAthena_SpawnFortSpawnActors();
 
 	static uintptr_t FindAFortPlayerPawn_OnRep_ZiplineState();
+
+	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems();
+
+	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld();
+
+	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier();
+
 public:
 	static void SetupCoreOffsets();
 
