@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Core is acts very different across all versions, so please add the **exact Fortnite version + CL** and
-        **evidence of the bug** (video, screenshots, or clear steps if you cant record it) Include the server log if relevant.
+        Core acts very different across all versions, so please add the **exact Fortnite version + CL** and
+        **evidence of the bug** (video, screenshots, or clear steps if you can't record it) Include the server log if relevant.
   - type: input
     id: version
     attributes:

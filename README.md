@@ -23,7 +23,7 @@ Core runs inside Fortnite to provide server-side systems to load maps, apply pla
 | 8.01+ | Unsupported ⚠️|
 
 - **Full support** means that a version is actively supported. We prioritize fixes and missing functionality for fully supported versions before adding support for other versions.
-- **Unsupported** means the build may start and have some gameplay features, but it may be unfinished, untested, or have gamebreaking bugs.
+- **Unsupported** means the build may start and have some gameplay features, but it may be unfinished, untested, or have game-breaking bugs.
 - **Save the World is experimental and unfinished.** Expect missing or incomplete mission, inventory, quest, AI, and progression behavior.
 
 ### When reporting a problem refer to the [Contributing](#contributing) section.
@@ -118,6 +118,7 @@ Current command groups include:
 | QuickBars | `SpawnQuickBars`, `DestroyQuickBars`, `DumpQuickBars` |
 | Testing and fun | `LootRain`, `SetGameSpeed`, `TeleportAllToMe`, `SwapPlaces`, `LaunchPawn`, `SetScale`, `ScalePawn`, `Goto`, `DestroyBuildings`, `EmoteAll`, `EmoteAllSpecific`, `EmotePlayerByName`, `TogglePersonalVehicle` |
 | AFortAthenaMutator_Heist | `SetSpawnExitCraftTime`, `DumpExitCraftTimer`, `HeistPhaseStep`, `DumpGameState`, `UpdateGamePhaseStep`, `SpawnExitCraft` |
+| Quests | `ListQuests`, `ProgressQuest` |
 
 Run `cheat Help` in game for all commands, syntax, and descriptions.
 
