@@ -149,5 +149,7 @@ public:
 
 	static bool GetSafeZoneLocation(UObject* WorldContextObject, int32 SafeZoneIndex, FVector* OutLocation);
 
+	static TArray<AFortPlayerController*> GetAllFortPlayerControllers(UObject* WorldContextObject, bool bIncludeNonSpectators, bool bIncludeSpectators);
+
 	static void Hook();
 };

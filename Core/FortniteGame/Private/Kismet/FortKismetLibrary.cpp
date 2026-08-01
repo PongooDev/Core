@@ -876,6 +876,21 @@ ABuildingGameplayActor* UFortKismetLibrary::SpawnBuildingGameplayActor(TSubclass
 	return GetDefaultObj()->Call<ABuildingGameplayActor*>(Func, BGAClass, Transform, Instigator);
 }
 
+TArray<AFortPlayerController*> UFortKismetLibrary::GetAllFortPlayerControllers(UObject* WorldContextObject, bool bIncludeNonSpectators, bool bIncludeSpectators)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.GetAllFortPlayerControllers");
+
+	if (!Func) {
+		Log("FortKismetLibrary::GetAllFortPlayerControllers: Failed to find function!");
+		return TArray<AFortPlayerController*> {};
+	}
+
+	return GetDefaultObj()->Call<TArray<AFortPlayerController*>>(Func, WorldContextObject, bIncludeNonSpectators, bIncludeNonSpectators);
+}
+
 void UFortKismetLibrary::Hook() {
 	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld", execK2_SpawnPickupInWorld);
 	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.PickLootDrops", execPickLootDrops);

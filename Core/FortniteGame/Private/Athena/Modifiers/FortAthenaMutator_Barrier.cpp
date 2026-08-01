@@ -186,4 +186,6 @@ void AFortAthenaMutator_Barrier::Hook()
 	}
 
 	ExecHook("Function /Script/FortniteGame.FortAthenaMutator_Barrier.OnGamePhaseStepChanged", execOnGamePhaseStepChanged, execOnGamePhaseStepChangedOG);
+
+	Log("Hooked AFortAthenaMutator_Barrier");
 }

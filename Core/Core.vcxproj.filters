@@ -2331,6 +2331,9 @@
     <ClInclude Include="FortniteGame\Public\Items\ItemVariantHandle.h">
       <Filter>FortniteGame\Public\Items</Filter>
     </ClInclude>
+    <ClInclude Include="FortniteGame\Public\AI\FortAIController.h" />
+    <ClInclude Include="FortniteGame\Public\AI\FortAIPawn.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_GiveItemsAtPhase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp">
@@ -2735,5 +2738,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FortniteGame\Private\Player\FortPlayerControllerGameplay.cpp">
+      <Filter>FortniteGame\Private\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="FortniteGame\Private\Athena\Modifiers\FortAthenaMutator_GiveItemsAtPhase.cpp" />
   </ItemGroup>
 </Project>

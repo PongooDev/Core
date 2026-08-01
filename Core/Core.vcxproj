@@ -342,6 +342,7 @@
     <ClInclude Include="FortniteGame\Public\Athena\FortAthenaAircraft.h" />
     <ClInclude Include="FortniteGame\Public\Athena\FortSpawnActorData.h" />
     <ClInclude Include="FortniteGame\Public\Athena\FortSpawnActorInfo.h" />
+    <ClInclude Include="FortniteGame\Public\Athena\Modifiers\FortAthenaMutator_GiveItemsAtPhase.h" />
     <ClInclude Include="FortniteGame\Public\Building\BGAConsumableSpawner.h" />
     <ClInclude Include="FortniteGame\Public\Building\BuildingTimeOfDayLights.h" />
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortGadgetItemDefinition.h" />
@@ -837,6 +838,7 @@
     <ClCompile Include="FortniteGame\Private\AI\FortAIDirector.cpp" />
     <ClCompile Include="FortniteGame\Private\AI\FortAIEncounterInfo.cpp" />
     <ClCompile Include="FortniteGame\Private\Athena\AircraftFlightInfo.cpp" />
+    <ClCompile Include="FortniteGame\Private\Athena\Modifiers\FortAthenaMutator_GiveItemsAtPhase.cpp" />
     <ClCompile Include="FortniteGame\Private\Missions\FortMission_RiftSpawners.cpp" />
     <ClCompile Include="FortniteGame\Private\Missions\FortMissionManager.cpp" />
     <ClCompile Include="FortniteGame\Private\AI\FortAIGoalManager.cpp" />
