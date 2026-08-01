@@ -71,7 +71,6 @@ bool ABuildingContainer::SpawnLoot(ABuildingContainer* This, AFortPlayerPawn* Pl
 				int32 Level = Pickup->PrimaryPickupItemEntry.Level;
 				Pickup->PrimaryPickupItemEntry.LoadedAmmo = WeaponDef->GetClipSize(Level);
 				Pickup->PrimaryPickupItemEntry.Durability = WeaponDef->GetDurability(Level);
-				Pickup->PrimaryPickupItemEntry.bIsDirty = true;
 				Pickup->PrimaryPickupItemEntry.ReplicationKey++;
 				Pickup->OnRep_PrimaryPickupItemEntry();
 			}

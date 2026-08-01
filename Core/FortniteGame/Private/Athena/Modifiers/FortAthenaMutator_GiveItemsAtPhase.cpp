@@ -7,23 +7,20 @@
 
 void AFortAthenaMutator_GiveItemsAtPhase::OnGamePhaseStepChanged(EAthenaGamePhaseStep GamePhaseStep)
 {
-	
 	if (PhaseToGiveItems == GamePhaseStep)
 	{
 		TArray<AFortPlayerController*> PlayerControllers = UFortKismetLibrary::GetAllFortPlayerControllers(this, true, false);
 
 		for (AFortPlayerController* PlayerController : PlayerControllers) 
 		{
-			for (FItemsToGive ItemToGive : ItemsToGive)
-				PlayerController->WorldInventory->AddItem(ItemToGive.ItemToDrop, ItemToGive.NumberToGive.Evaluate());
-			
+			for (FItemsToGive& ItemToGive : ItemsToGive)
+				PlayerController->WorldInventory->AddItem(ItemToGive.ItemToDrop, (int32)ItemToGive.NumberToGive.Evaluate());
 		}
 	}
 }
 
 void AFortAthenaMutator_GiveItemsAtPhase::execOnGamePhaseStepChanged(AFortAthenaMutator_GiveItemsAtPhase* Context, FFrame& Stack)
 {
-	
 	struct FortAthenaMutator_GiveItemsAtPhase_OnGamePhaseStepChanged
 	{
 	public:
@@ -32,7 +29,6 @@ void AFortAthenaMutator_GiveItemsAtPhase::execOnGamePhaseStepChanged(AFortAthena
 	FortAthenaMutator_GiveItemsAtPhase_OnGamePhaseStepChanged* Parms = (FortAthenaMutator_GiveItemsAtPhase_OnGamePhaseStepChanged*)Stack.Locals;
 
 	Context->OnGamePhaseStepChanged(Parms->GamePhaseStep);
-	
 }
 
 void AFortAthenaMutator_GiveItemsAtPhase::Hook() {
