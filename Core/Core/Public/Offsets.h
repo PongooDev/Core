@@ -698,4 +698,6 @@ namespace ServerOffsets {
 	static uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld = 0;
 
 	static uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier = 0;
+
+	static uintptr_t ABuildingItemCollectorActor_GrantOutputVFT = 0;
 }

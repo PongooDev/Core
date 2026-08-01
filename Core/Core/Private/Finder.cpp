@@ -11371,6 +11371,38 @@ uintptr_t Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPick
 	return ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier;
 }
 
+uintptr_t Finder::FindABuildingItemCollectorActor_GrantOutputVFT() {
+	if (ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT)
+		return ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT;
+	uintptr_t Addr = 0;
+	static bool bInitialized = false;
+	if (bInitialized)
+		return ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT;
+
+	auto FireEvent_ItemCollector_TeamReachedDepositGoal = Memcury::Scanner::FindStringRef(L"ItemCollector.TeamReachedDepositGoal"); // please dont die
+	if (FireEvent_ItemCollector_TeamReachedDepositGoal.IsValid()) {
+		auto ABuildingItemCollectorActor_ConsumeItems = Memcury::Scanner::FindPointerRef((LPVOID)FireEvent_ItemCollector_TeamReachedDepositGoal.FindFunctionStart().Get(), 0).FindFunctionEnd().Get() - 1;
+
+		if (ABuildingItemCollectorActor_ConsumeItems) {
+			auto GrantOutputCall = Memcury::Scanner(ABuildingItemCollectorActor_ConsumeItems).ScanFor("48 8B 01 FF 90 ? ? ? ?", false);
+
+			if (GrantOutputCall.IsValid()) {
+				uintptr_t callInstrAddr = GrantOutputCall.Get() + 3;
+				int32_t vtableOffset = *reinterpret_cast<int32_t*>(callInstrAddr + 2);
+
+				Addr = vtableOffset / sizeof(void*);
+			}
+		}
+	}
+	if (Addr) {
+		ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT = Addr;
+	}
+
+	bInitialized = true;
+	Log("ABuildingItemCollectorActor_GrantOutputVFT found at: 0x" + std::format("{:X}", ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT));
+	return ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT;
+}
+
 void Finder::SetupCoreOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -11810,6 +11842,8 @@ void Finder::SetupOffsets() {
 	FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier();
 
 	FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld();
+
+	FindABuildingItemCollectorActor_GrantOutputVFT();
 
 	return;
 }

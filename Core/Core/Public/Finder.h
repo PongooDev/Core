@@ -1123,6 +1123,8 @@ public:
 
 	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier();
 
+	static uintptr_t FindABuildingItemCollectorActor_GrantOutputVFT();
+
 public:
 	static void SetupCoreOffsets();
 
