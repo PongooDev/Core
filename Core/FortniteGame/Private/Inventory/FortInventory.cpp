@@ -344,6 +344,27 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 		RepEntry->Durability = WeaponItemDefinition->GetDurability(Item->GetLevel());
 	}
 
+	if (GadgetItemDefinition) {
+		AFortPlayerState* PlayerState = PC->PlayerState->Cast<AFortPlayerState>();
+		AFortPlayerPawn* Pawn = PC->MyFortPawn;
+
+		UFortAbilitySet* GadgetAbilitySet = GadgetItemDefinition->AbilitySet.Get();
+		if (PlayerState && PlayerState->AbilitySystemComponent && GadgetAbilitySet) {
+			PlayerState->AbilitySystemComponent->GiveAbilitySet(GadgetAbilitySet);
+		}
+
+		if (PlayerState && Pawn && GadgetItemDefinition->CharacterParts.Num() > 0) {
+			for (UCustomCharacterPart* GadgetPart : GadgetItemDefinition->CharacterParts) {
+				if (!GadgetPart)
+					continue;
+
+				Pawn->ServerChoosePart(GadgetPart, GadgetPart->CharacterPartType);
+			}
+
+			PlayerState->OnRep_CharacterParts();
+		}
+	}
+
 	SetStateValues(RepEntry);
 	if (bDeferUpdate ? true : Update(RepEntry))
 	{

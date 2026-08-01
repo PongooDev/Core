@@ -501,11 +501,22 @@ void AFortPlayerController::ServerAttemptInventoryDrop(FGuid& ItemGuid, int Coun
 			false
 		);
 		if (Pickup) {
-			Pickup->PrimaryPickupItemEntry.LoadedAmmo = ItemEntry->LoadedAmmo;
-			Pickup->PrimaryPickupItemEntry.Durability = ItemEntry->Durability;
-			Pickup->PrimaryPickupItemEntry.bIsDirty = true;
+			FFortItemEntry& PickupEntry = Pickup->PrimaryPickupItemEntry;
 
-			Pickup->PrimaryPickupItemEntry.ReplicationKey++;
+			PickupEntry.LoadedAmmo = ItemEntry->LoadedAmmo;
+			PickupEntry.Durability = ItemEntry->Durability;
+			PickupEntry.GenericAttributeValues = ItemEntry->GenericAttributeValues;
+			PickupEntry.Level = ItemEntry->Level;
+			PickupEntry.PhantomReserveAmmo = ItemEntry->PhantomReserveAmmo;
+			PickupEntry.ControlOverride = ItemEntry->ControlOverride;
+			PickupEntry.StateValues = ItemEntry->StateValues;
+			PickupEntry.AlterationInstances = ItemEntry->AlterationInstances;
+			PickupEntry.AlterationDefinitions = ItemEntry->AlterationDefinitions;
+			PickupEntry.GameplayAbilitySpecHandle = ItemEntry->GameplayAbilitySpecHandle;
+
+			PickupEntry.bIsDirty = true;
+
+			PickupEntry.ReplicationKey++;
 			Pickup->OnRep_PrimaryPickupItemEntry();
 		}
 	}

@@ -36,10 +36,6 @@ public:
 	DefineUProperty(bool, bRequiresLocalUpdate);
 	DefineUProperty(bool, bRequiresSaving);
 	DefineUProperty(uint8, InventoryType);
-
-	// The native HandleInventoryLocalUpdate only tells the inventory's owner anything when one of
-	// these is non-empty, and that notification is what applies a gadget's character parts,
-	// ability set and attributes. Nothing else reads them, so they are purely the signal.
 	DefineUProperty(TArray<UFortItem*>, RecentlyAdded);
 	DefineUProperty(TArray<UFortItem*>, RecentlyRemoved);
 	DefineUProperty(TArray<UFortItem*>, RecentlyChanged);
