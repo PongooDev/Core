@@ -51,12 +51,26 @@ bool AFortInventory::Update(FFortItemEntry* ItemEntry)
 	else {
 		ItemEntry->bIsDirty = true;
 		Inventory.MarkItemDirty(*ItemEntry);
+
+		if (_HasRecentlyChanged()) {
+			UFortWorldItem* ChangedItem = FindItemInstance(ItemEntry->ItemGuid);
+			if (ChangedItem && !RecentlyChanged.Contains(ChangedItem)
+				&& !(_HasRecentlyAdded() && RecentlyAdded.Contains(ChangedItem)))
+				RecentlyChanged.Add(ChangedItem);
+		}
 	}
 
 	bRequiresLocalUpdate = true;
 	bRequiresSaving = true;
 
 	HandleInventoryLocalUpdate();
+
+	if (_HasRecentlyAdded())
+		RecentlyAdded.Reset();
+	if (_HasRecentlyRemoved())
+		RecentlyRemoved.Reset();
+	if (_HasRecentlyChanged())
+		RecentlyChanged.Reset();
 
 	ForceNetUpdate();
 
@@ -296,6 +310,7 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 	UFortItemDefinition* ItemDefinition = Item->ItemEntry.ItemDefinition;
 
 	UFortWorldItemDefinition* WorldItemDefinition = ItemDefinition->Cast<UFortWorldItemDefinition>();
+	UFortWeaponItemDefinition* WeaponItemDefinition = ItemDefinition->Cast< UFortWeaponItemDefinition>();
 
 	UFortGadgetItemDefinition* GadgetItemDefinition = ItemDefinition->Cast<UFortGadgetItemDefinition>();
 	if (GadgetItemDefinition) {
@@ -308,6 +323,9 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 
 	InitializeExistingItem(Item);
 
+	if (_HasRecentlyAdded())
+		RecentlyAdded.Add(Item);
+
 	FGuid ItemGuid = Item->ItemEntry.ItemGuid;
 
 	if (PC->IsUsingOldQuickBars())
@@ -319,6 +337,11 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 	if (!RepEntry)
 	{
 		return nullptr;
+	}
+
+	if (WeaponItemDefinition) {
+		RepEntry->LoadedAmmo = WeaponItemDefinition->GetClipSize(Item->GetLevel());
+		RepEntry->Durability = WeaponItemDefinition->GetDurability(Item->GetLevel());
 	}
 
 	SetStateValues(RepEntry);
@@ -581,7 +604,12 @@ bool AFortInventory::RemoveItem(FGuid Guid, int32 Count, bool bDeferUpdate)
 		PC->QuickBars->EmptyQuickbarSlot(Guid);
 	}
 
+	UFortWorldItem* RemovedItem = FindItemInstance(Guid);
+
 	RemoveEntryAndInstance(Guid);
+
+	if (RemovedItem && _HasRecentlyRemoved())
+		RecentlyRemoved.Add(RemovedItem);
 
 	UFortGadgetItemDefinition* GadgetItemDefinition = ItemDefinition->Cast<UFortGadgetItemDefinition>();
 	if (GadgetItemDefinition) {

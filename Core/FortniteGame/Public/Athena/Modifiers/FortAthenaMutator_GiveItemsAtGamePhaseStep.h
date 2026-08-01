@@ -58,7 +58,7 @@ class UTexture2D;
 
 struct FItemsToGive {
 public:
-	DefineUnrealStruct(FItemsToGive);
+	DefineUnrealStructPath("ScriptStruct /Script/FortniteGame.ItemsToGive");
 
 	DefineStructProperty(UFortWorldItemDefinition*, ItemToDrop);
 	DefineStructProperty(FScalableFloat, NumberToGive);

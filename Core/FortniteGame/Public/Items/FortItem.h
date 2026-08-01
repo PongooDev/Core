@@ -20,4 +20,6 @@ public:
 	FGuid GetItemGuid() const;
 
 	AFortPlayerController* GetOwningController() const;
+
+	int32 GetLevel();
 };

@@ -11308,69 +11308,6 @@ uintptr_t Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems() {
 	return ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems;
 }
 
-uintptr_t Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld()
-{
-	if (ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld)
-		return ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld;
-
-	uintptr_t Addr = 0;
-	uintptr_t FuncStart = ImageBase + Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems();
-
-	if (FuncStart)
-	{
-		auto EndScanner = Memcury::Scanner(FuncStart).FindFunctionEnd();
-		uintptr_t FuncEnd = EndScanner.IsValid() ? EndScanner.Get() : FuncStart + 0x1000;
-
-		for (uintptr_t i = FuncStart; i + 8 < FuncEnd; i++)
-		{
-			if (*(uint8_t*)i == 0xE8 && *(uint16_t*)(i + 5) == 0x8548 && *(uint16_t*)(i + 7) == 0x74C0)
-			{
-				Addr = i;
-				break;
-			}
-		}
-	}
-
-	if (Addr) {
-		ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld = Addr - ImageBase;
-	}
-
-	Log("AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld found at: 0x" + std::format("{:X}", ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld));
-	return ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld;
-}
-
-uintptr_t Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier()
-{
-	if (ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier)
-		return ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier;
-
-	uintptr_t Addr = 0;
-	uintptr_t First = ImageBase + FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld();
-
-	if (First)
-	{
-		uintptr_t FuncStart = Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems() + ImageBase;
-		auto EndScanner = Memcury::Scanner(FuncStart).FindFunctionEnd();
-		uintptr_t FuncEnd = EndScanner.IsValid() ? EndScanner.Get() : FuncStart + 0x1000;
-
-		for (uintptr_t i = First + 1; i + 8 < FuncEnd; i++)
-		{
-			if (*(uint8_t*)i == 0xE8 && *(uint16_t*)(i + 5) == 0x8548 && *(uint16_t*)(i + 7) == 0x74C0)
-			{
-				Addr = i;
-				break;
-			}
-		}
-	}
-
-	if (Addr) {
-		ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier = Addr - ImageBase;
-	}
-
-	Log("AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier found at: 0x" + std::format("{:X}", ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier));
-	return ServerOffsets::AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier;
-}
-
 void Finder::SetupCoreOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -11806,10 +11743,6 @@ void Finder::SetupOffsets() {
 	FindAFortPlayerPawn_OnRep_ZiplineState();
 
 	FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems();
-
-	FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier();
-
-	FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld();
 
 	return;
 }

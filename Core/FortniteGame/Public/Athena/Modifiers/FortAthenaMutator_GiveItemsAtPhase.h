@@ -10,7 +10,6 @@ public:
 	DefineUnrealClass(AFortAthenaMutator_GiveItemsAtPhase);
 
 	DefineUProperty(EAthenaGamePhaseStep, PhaseToGiveItems);
-	uint8 Pad_379[0x7];
 	DefineUProperty(TArray<FItemsToGive>, ItemsToGive);
 public:
 

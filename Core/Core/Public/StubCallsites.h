@@ -220,6 +220,10 @@ namespace StubCallsites {
 	struct FSite {
 		const char* Name;
 		std::vector<FLocator> Locators;
+
+		// PatchStub only: which stripped branch inside the located function to take, in address
+		// order. Leave at 0 unless the function calls more than one stripped helper.
+		int Skip = 0;
 	};
 
 	inline void Patch(const char* Label, uintptr_t Stub, void* Detour, std::initializer_list<FSite> Sites, bool bWarnIfNotFound = true)
@@ -392,7 +396,10 @@ namespace StubCallsites {
 		return 0;
 	}
 
-	inline uintptr_t FindStubBranchInternal(uintptr_t Function, int Depth, std::vector<uintptr_t>& Visited)
+	// Skip counts matches before returning one, so a function that calls two different stripped
+	// helpers can be patched twice - they share a single stub body, so the ordinal is the only
+	// thing telling them apart.
+	inline uintptr_t FindStubBranchInternal(uintptr_t Function, int Depth, int& Skip, std::vector<uintptr_t>& Visited)
 	{
 		if (!Function || Depth < 0 || !IsInImage(Function))
 			return 0;
@@ -411,7 +418,7 @@ namespace StubCallsites {
 		for (uintptr_t Cursor = Function; Cursor + 6 <= End; Cursor++)
 		{
 			uintptr_t Target = 0;
-			if (BranchAt(Cursor, Target) && Target != Function && IsStrippedStub(Target))
+			if (BranchAt(Cursor, Target) && Target != Function && IsStrippedStub(Target) && Skip-- == 0)
 				return Cursor;
 		}
 
@@ -424,17 +431,17 @@ namespace StubCallsites {
 			if (!BranchAt(Cursor, Callee) || Callee == Function)
 				continue;
 
-			if (uintptr_t Addr = FindStubBranchInternal(Callee, Depth - 1, Visited))
+			if (uintptr_t Addr = FindStubBranchInternal(Callee, Depth - 1, Skip, Visited))
 				return Addr;
 		}
 
 		return 0;
 	}
 
-	inline uintptr_t FindStubBranch(uintptr_t Function, int Depth = 3)
+	inline uintptr_t FindStubBranch(uintptr_t Function, int Skip = 0, int Depth = 3)
 	{
 		std::vector<uintptr_t> Visited;
-		return FindStubBranchInternal(Function, Depth, Visited);
+		return FindStubBranchInternal(Function, Depth, Skip, Visited);
 	}
 
 	// rewrites the branch's rel32 to reach Detour, keeping the opcode so a tail jump stays a
@@ -497,8 +504,7 @@ namespace StubCallsites {
 			uintptr_t Stub = 0;
 			BranchAt(Addr, Stub);
 
-			Log(std::string(Label) + " Stub Patch: " + Site.Name + " @ 0x" + std::format("{:X}", Addr - ImageBase)
-				+ " -> stub 0x" + std::format("{:X}", Stub ? Stub - ImageBase : 0));
+			Log(std::string(Label) + " Stub Patch: " + Site.Name + " @ 0x" + std::format("{:X}", Addr - ImageBase));
 
 			PatchBranchFar(Addr, Detour);
 		}

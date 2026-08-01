@@ -1119,10 +1119,6 @@ public:
 
 	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems();
 
-	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld();
-
-	static uintptr_t FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier();
-
 public:
 	static void SetupCoreOffsets();
 

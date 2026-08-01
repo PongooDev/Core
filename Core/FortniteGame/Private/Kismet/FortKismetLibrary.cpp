@@ -105,8 +105,9 @@ FFortAbilitySetHandle UFortKismetLibrary::EquipFortAbilitySet(TScriptInterface<I
 	return GetDefaultObj()->Call<FFortAbilitySetHandle>(Func, AbilitySystemInterfaceActor, AbilitySet, OverrideSourceObject);
 }
 
-AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
+static AFortPickup* SpawnPickupOfClass(
 	UObject* WorldContextObject,
+	UClass* PickupClass,
 	UFortItemDefinition* ItemDefinition,
 	int NumberToSpawn,
 	FVector Position,
@@ -129,6 +130,14 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	if (!ItemDefinition || NumberToSpawn <= 0)
 		return nullptr;
 
+	if (PickupClass && !PickupClass->IsChildOf(AFortPickup::StaticClass())) {
+		Log("UFortKismetLibrary::K2_SpawnPickupInWorld: " + PickupClass->GetName().ToString() + " is not a pickup class!");
+		PickupClass = nullptr;
+	}
+
+	if (!PickupClass)
+		PickupClass = AFortPickup::GetDefaultPickupClass(ItemDefinition);
+
 	/*Log(
 		"UFortKismetLibrary::K2_SpawnPickupInWorld: Spawning Pickup for Item: "
 		+ ItemDefinition->GetName().ToString() +
@@ -136,7 +145,7 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 		" In World: " + World->GetName().ToString()
 	);*/
 
-	AFortPickup* Pickup = World->SpawnActor(AFortPickup::GetDefaultPickupClass(ItemDefinition), Position)->Cast<AFortPickup>();
+	AFortPickup* Pickup = World->SpawnActor(PickupClass, Position)->Cast<AFortPickup>();
 	if (!Pickup) {
 		Log("UFortKismetLibrary::K2_SpawnPickupInWorld: Failed to spawn pickup!");
 		return nullptr;
@@ -190,6 +199,24 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
 	return Pickup;
 }
 
+AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorld(
+	UObject* WorldContextObject,
+	UFortItemDefinition* ItemDefinition,
+	int NumberToSpawn,
+	FVector Position,
+	FVector Direction,
+	int32 OverrideMaxStackCount,
+	bool bToss,
+	bool bRandomRotation,
+	bool bBlockedFromAutoPickup,
+	int32 PickupInstigatorHandle,
+	EFortPickupSourceTypeFlag SourceType,
+	EFortPickupSpawnSource Source,
+	AFortPlayerController* OptionalOwnerPC,
+	bool bPickupOnlyRelevantToOwner) {
+	return SpawnPickupOfClass(WorldContextObject, nullptr, ItemDefinition, NumberToSpawn, Position, Direction, OverrideMaxStackCount, bToss, bRandomRotation, bBlockedFromAutoPickup, PickupInstigatorHandle, SourceType, Source, OptionalOwnerPC, bPickupOnlyRelevantToOwner);
+}
+
 AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorldWithClass(
 	UObject* WorldContextObject,
 	UFortWorldItemDefinition* ItemDefinition,
@@ -202,10 +229,59 @@ AFortPickup* UFortKismetLibrary::K2_SpawnPickupInWorldWithClass(
 	bool bRandomRotation,
 	bool bBlockedFromAutoPickup
 ) {
+	return SpawnPickupOfClass(WorldContextObject, PickupClass.Get(), ItemDefinition, NumberToSpawn, Position, Direction, OverrideMaxStackCount, bToss, bRandomRotation, bBlockedFromAutoPickup, -1, EFortPickupSourceTypeFlag::GetOther(), EFortPickupSpawnSource::GetUnset(), nullptr, false);
+}
 
-	{
-		return K2_SpawnPickupInWorld(WorldContextObject, ItemDefinition, NumberToSpawn, Position, {}, OverrideMaxStackCount, bToss, bRandomRotation, bBlockedFromAutoPickup, -1, EFortPickupSourceTypeFlag::GetOther(), EFortPickupSpawnSource::GetUnset(), nullptr, false);
+TArray<AFortPickup*> UFortKismetLibrary::K2_SpawnPickupInWorldWithLootTier(
+	UObject* WorldContextObject,
+	FName LootTierName,
+	const FVector3d* Position
+) {
+	TArray<AFortPickup*> Pickups;
+
+	UWorld* World = WorldContextObject ? WorldContextObject->GetWorld() : nullptr;
+	if (!World || !Position) {
+		Log("UFortKismetLibrary::K2_SpawnPickupInWorldWithLootTier: Failed to get world!");
+		return Pickups;
 	}
+
+	const FVector SpawnLocation = *(const FVector*)Position;
+
+	AFortGameState* FortGameState = World->GameState->Cast<AFortGameState>();
+
+	TArray<FFortItemEntry> LootDrops;
+	if (!PickLootDrops(WorldContextObject, &LootDrops, LootTierName, FortGameState ? FortGameState->WorldLevel : 0, -1))
+		return Pickups;
+
+	for (int i = 0; i < LootDrops.Num(); i++) {
+		FFortItemEntry& ItemEntry = LootDrops.GetWithSize(i, FFortItemEntry::GetSize());
+		if (!ItemEntry.ItemDefinition)
+			continue;
+
+		AFortPickup* Pickup = K2_SpawnPickupInWorld(
+			World,
+			ItemEntry.ItemDefinition,
+			ItemEntry.Count,
+			SpawnLocation,
+			*FVector::Allocate(),
+			-1,
+			true,
+			true,
+			false,
+			-1,
+			EFortPickupSourceTypeFlag::GetOther(),
+			EFortPickupSpawnSource::GetUnset(),
+			nullptr,
+			false
+		);
+
+		if (Pickup)
+			Pickups.Add(Pickup);
+	}
+
+	LootDrops.Free();
+
+	return Pickups;
 }
 
 void UFortKismetLibrary::execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stack, AFortPickup** Result)
@@ -910,7 +986,6 @@ TArray<AFortPlayerController*> UFortKismetLibrary::GetAllFortPlayerControllers(U
 }
 
 void UFortKismetLibrary::Hook() {
-	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld", execK2_SpawnPickupInWorld);
 	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.PickLootDrops", execPickLootDrops);
 	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GetAIGoalManager", execGetAIGoalManager);
 	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_GiveItemToAllPlayers", execK2_GiveItemToAllPlayers);
@@ -926,6 +1001,39 @@ void UFortKismetLibrary::Hook() {
 		{ "UFortKismetLibrary::execGiveItemToInventoryOwner", {
 			StubCallsites::ByReflection("Function /Script/FortniteGame.FortKismetLibrary.GiveItemToInventoryOwner") } },
 		}, false);
+
+	StubCallsites::PatchStub("UFortKismetLibrary::K2_SpawnPickupInWorldWithClass", K2_SpawnPickupInWorldWithClass, {
+		{ "UFortKismetLibrary::execK2_SpawnPickupInWorldWithClass", {
+			StubCallsites::ByReflection("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorldWithClass") } },
+		}, false);
+
+	{
+		StubCallsites::PatchStub("UFortKismetLibrary::K2_SpawnPickupInWorld", K2_SpawnPickupInWorld, {
+		{ "AFortAthenaMutator_ItemDropOnDeath::SpawnItems", {
+			StubCallsites::ByOffset(Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems()) } },
+
+		{ "UFortKismetLibrary::execK2_SpawnPickupInWorld", {
+			StubCallsites::ByReflection("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld") } },
+			}, false);
+
+		const bool bHasLootTierVariant = FUObjectArray::FindObject("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorldWithLootTier") != nullptr;
+
+		if (bHasLootTierVariant) {
+			StubCallsites::PatchStub("UFortKismetLibrary::K2_SpawnPickupInWorldWithLootTier", K2_SpawnPickupInWorldWithLootTier, {
+				{ "AFortAthenaMutator_ItemDropOnDeath::SpawnItems", {
+					StubCallsites::ByOffset(Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems()) }, 1 },
+
+				{ "UFortKismetLibrary::execK2_SpawnPickupInWorldWithLootTier", {
+					StubCallsites::ByReflection("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorldWithLootTier") } },
+				}, false);
+		}
+		else {
+			StubCallsites::PatchStub("UFortKismetLibrary::K2_SpawnPickupInWorld", K2_SpawnPickupInWorld, {
+				{ "AFortAthenaMutator_ItemDropOnDeath::SpawnItems", {
+					StubCallsites::ByOffset(Finder::FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems()) }, 1 },
+				}, false);
+		}
+	}
 
 	Log("Hooked UFortKismetLibrary");
 }

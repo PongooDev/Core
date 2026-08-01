@@ -93,6 +93,13 @@ public:
 		bool bRandomRotation,
 		bool bBlockedFromAutoPickup
 	);
+
+	static TArray<AFortPickup*> K2_SpawnPickupInWorldWithLootTier(
+		UObject* WorldContextObject,
+		FName LootTierName,
+		const FVector3d* Position
+	);
+
 	static void execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stack, AFortPickup** Result);
 
 	static UFortWorldItem* GiveItemToInventoryOwner(

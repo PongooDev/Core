@@ -30,3 +30,12 @@ AFortPlayerController* UFortItem::GetOwningController() const
 
 	return const_cast<UFortItem*>(this)->Call<AFortPlayerController*>(Func);
 }
+
+int32 UFortItem::GetLevel() {
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("GetLevel");
+
+	return Call<int32>(Func);
+}
