@@ -6900,9 +6900,11 @@ uintptr_t Finder::FindUNetDriver__DestroyedStartupOrDormantActors() {
 	uintptr_t Addr = 0;
 
 	// AddClientConnection grows ClientConnections before it walks the destroy list, and on some
-	// builds (1.11) that Add compiles to the same lea shape we scan for - so a match below the
-	// map's possible range is the ClientConnections array (0x80), not the TMap, and we keep going.
+	// builds (1.11, 7.x) that Add compiles to the same lea shape we scan for - so a match below
+	// the map's possible range is the ClientConnections array, not the TMap, and we keep going.
+	// The map also can't sit past the end of UNetDriver, which caps how big a displacement can be.
 	constexpr uintptr_t MinTMapOffset = 0x100;
+	constexpr uintptr_t MaxTMapOffset = 0x1000;
 
 	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"AddClientConnection: Added client connection: %s").Get();
 	if (StringAddr) {
@@ -6923,11 +6925,14 @@ uintptr_t Finder::FindUNetDriver__DestroyedStartupOrDormantActors() {
 			else if (*Ptr == 0x48 && *(Ptr + 1) == 0x81 && *(Ptr + 2) == 0xC6) {
 				Offset = static_cast<uintptr_t>(*reinterpret_cast<uint32_t*>(Ptr + 3));
 			}
-			else if (*Ptr == 0x4D && *(Ptr + 1) == 0x8D) {
+			// lea r8-15, [r8-15+disp32] only - mod must be 10 and rm must not be a SIB byte,
+			// otherwise this matches displacement-less leas (lea r14, [r15+rcx*8] on 7.x) and
+			// reads whatever bytes follow them as the offset
+			else if (*Ptr == 0x4D && *(Ptr + 1) == 0x8D && (*(Ptr + 2) & 0xC0) == 0x80 && (*(Ptr + 2) & 0x07) != 0x04) {
 				Offset = static_cast<uintptr_t>(*reinterpret_cast<uint32_t*>(Ptr + 3));
 			}
 
-			if (Offset >= MinTMapOffset) {
+			if (Offset >= MinTMapOffset && Offset < MaxTMapOffset) {
 				Addr = Offset;
 			}
 		}
