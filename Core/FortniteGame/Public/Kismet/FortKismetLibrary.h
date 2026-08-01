@@ -83,12 +83,11 @@ public:
 	static void execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stack, AFortPickup** Result);
 
 	static UFortWorldItem* GiveItemToInventoryOwner(
-		TScriptInterface<IFortInventoryOwnerInterface> InventoryOwner,
+		TScriptInterface<IFortInventoryOwnerInterface>* InventoryOwner,
 		UFortWorldItemDefinition* ItemDefinition,
-		FGuid& ItemVariantGuid,
-		int NumberToGive
+		uintptr_t NumberToGiveOrVariantGuid,
+		int32 NumberToGiveIfVariant
 	);
-	static void execGiveItemToInventoryOwner(UObject* Object, FFrame& Stack, UFortWorldItem** Result);
 
 	static bool PickLootDrops(
 		UObject* WorldContextObject,
@@ -133,7 +132,6 @@ public:
 		int32 AmountToRemove,
 		bool bForceRemoval
 	);
-	static void execK2_RemoveItemFromPlayer(UObject* Object, FFrame& Stack, int32* Result);
 
 	static int32 K2_RemoveItemFromPlayerByGuid(
 		AFortPlayerController* PlayerController,
@@ -151,18 +149,5 @@ public:
 
 	static bool GetSafeZoneLocation(UObject* WorldContextObject, int32 SafeZoneIndex, FVector* OutLocation);
 
-	static void Hook() {
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld", execK2_SpawnPickupInWorld);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GiveItemToInventoryOwner", execGiveItemToInventoryOwner);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.PickLootDrops", execPickLootDrops);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GetAIGoalManager", execGetAIGoalManager);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_GiveItemToAllPlayers", execK2_GiveItemToAllPlayers);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GetAIDirector", execGetAIDirector);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromAllPlayers", execK2_RemoveItemFromAllPlayers);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_GetItemQuantityOnPlayer", execK2_GetItemQuantityOnPlayer);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromPlayer", execK2_RemoveItemFromPlayer);
-		ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromPlayerByGuid", execK2_RemoveItemFromPlayerByGuid);
-
-		Log("Hooked UFortKismetLibrary");
-	}
+	static void Hook();
 };

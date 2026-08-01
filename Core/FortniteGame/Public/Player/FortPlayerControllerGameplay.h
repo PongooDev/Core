@@ -15,18 +15,8 @@ public:
 
 	DefineUProperty(FMulticastScriptDelegate, OnGhostModeChanged);
 public:
-
-	static inline void (*execStartGhostModeOG)(AFortPlayerControllerGameplay* Context, FFrame& Stack);
-	static void execStartGhostMode(AFortPlayerControllerGameplay* Context, FFrame& Stack);
-
-	static inline void (*execEndGhostModeOG)(AFortPlayerControllerGameplay* Context, FFrame& Stack);
-	static void execEndGhostMode(AFortPlayerControllerGameplay* Context, FFrame& Stack);
-
-	static void CheckGhostModeItemReplicated();
-	static void CheckGhostModeItemRemoved(UFortWorldItemDefinition* GhostModeItemDef);
-
-	void StartGhostMode(UFortWorldItemDefinition* ItemProvidingGhostMode);
-	void EndGhostMode();
+	void CheckGhostModeItemReplicated();
+	void CheckGhostModeItemRemoved(UFortWorldItemDefinition* GhostModeItemDef);
 
 	static void Hook();
 };

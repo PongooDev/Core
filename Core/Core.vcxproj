@@ -774,7 +774,8 @@
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortStampItemDefinition.h" />
     <ClInclude Include="FortniteGame\Public\Items\Definitions\FortTeamPerkItemDefinition.h" />
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\Public\UObject\PrimaryAssetId.h" />
-  </ItemGroup>
+      <ClInclude Include="FortniteGame\Public\Items\ItemVariantHandle.h" />
+</ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\dllmain.cpp" />
     <ClCompile Include="Core\Private\Client.cpp" />
@@ -880,6 +881,7 @@
     <ClCompile Include="FortniteGame\Private\Inventory\FortInventory.cpp" />
     <ClCompile Include="FortniteGame\Private\Inventory\FortQuickBars.cpp" />
     <ClCompile Include="FortniteGame\Private\Items\Definitions\FortItemDefinition.cpp" />
+    <ClCompile Include="FortniteGame\Private\Items\Definitions\FortGadgetItemDefinition.cpp" />
     <ClCompile Include="FortniteGame\Private\Weapons\FortWeaponItemDefinition.cpp" />
     <ClCompile Include="FortniteGame\Private\Items\Definitions\FortWorldItemDefinition.cpp" />
     <ClCompile Include="FortniteGame\Private\Items\FortItem.cpp" />
@@ -915,7 +917,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-  </ItemGroup>
+</ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

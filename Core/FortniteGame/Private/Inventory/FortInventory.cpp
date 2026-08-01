@@ -295,6 +295,8 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 
 	UFortItemDefinition* ItemDefinition = Item->ItemEntry.ItemDefinition;
 
+	UFortWorldItemDefinition* WorldItemDefinition = ItemDefinition->Cast<UFortWorldItemDefinition>();
+
 	UFortGadgetItemDefinition* GadgetItemDefinition = ItemDefinition->Cast<UFortGadgetItemDefinition>();
 	if (GadgetItemDefinition) {
 		if (GadgetItemDefinition->bDropAllOnEquip) {
@@ -322,6 +324,14 @@ FFortItemEntry* AFortInventory::AddItem(UFortWorldItem* Item, bool bDeferUpdate)
 	SetStateValues(RepEntry);
 	if (bDeferUpdate ? true : Update(RepEntry))
 	{
+		if (WorldItemDefinition) {
+			// i dont think this is proper but whatever, if somebody knows the best way to do this then pls give, originally fixed cube ghost mode thing
+			if (WorldItemDefinition->bForceFocusWhenAdded || WorldItemDefinition->bForceStayInOverflow) {
+				PC->ClientEquipItem(RepEntry->ItemGuid);
+				PC->ServerExecuteInventoryItem(PC, RepEntry->ItemGuid);
+			}
+		}
+
 		return RepEntry;
 	}
 
@@ -423,6 +433,14 @@ int32 AFortInventory::GetOverflowFromAddingItem(const FFortItemEntry& ItemEntry)
 
 	if (!Def || Remaining <= 0)
 		return 0;
+
+	UFortWorldItemDefinition* WorldItemDefinition = Def->Cast<UFortWorldItemDefinition>();
+	if (WorldItemDefinition) {
+		if (WorldItemDefinition->bForceStayInOverflow) {
+			AddItem(ItemEntry);
+			return 0;
+		}
+	}
 
 	const int32 MaxStackSize = Def->GetMaxStackSize();
 	if (MaxStackSize <= 0)
@@ -556,12 +574,14 @@ bool AFortInventory::RemoveItem(FGuid Guid, int32 Count, bool bDeferUpdate)
 		return bDeferUpdate ? true : Update(Entry);
 	}
 
+	UFortItemDefinition* ItemDefinition = Entry->ItemDefinition;
+
 	if (PC->IsUsingOldQuickBars())
 	{
 		PC->QuickBars->EmptyQuickbarSlot(Guid);
 	}
 
-	UFortItemDefinition* ItemDefinition = Entry->ItemDefinition;
+	RemoveEntryAndInstance(Guid);
 
 	UFortGadgetItemDefinition* GadgetItemDefinition = ItemDefinition->Cast<UFortGadgetItemDefinition>();
 	if (GadgetItemDefinition) {
@@ -590,8 +610,6 @@ bool AFortInventory::RemoveItem(FGuid Guid, int32 Count, bool bDeferUpdate)
 			PlayerState->OnRep_CharacterParts();
 		}
 	}
-
-	RemoveEntryAndInstance(Guid);
 
 	return bDeferUpdate ? true : Update();
 }
@@ -809,10 +827,8 @@ FFortItemEntry* AFortInventory::SwapCurrentItem(const FFortItemEntry& NewItemEnt
 
 	if (bExecuteItem)
 	{
-		if (AFortPlayerControllerAthena* AthenaPC = PC->Cast<AFortPlayerControllerAthena>())
-			AthenaPC->ClientEquipItem(AddedEntry->ItemGuid);
-		else
-			PC->ClientExecuteInventoryItem(AddedEntry->ItemGuid, 0.f, true, true);
+		PC->ClientEquipItem(AddedEntry->ItemGuid);
+		PC->ServerExecuteInventoryItem(PC, AddedEntry->ItemGuid);
 	}
 
 	if (bSpawnPickup && PC->Pawn)

@@ -11,9 +11,10 @@ public:
 	DefineUnrealStruct(FGhostModeRepData);
 
 	DefineStructProperty(bool, bInGhostMode);
-	uint8 Pad_1[0x7];
 	DefineStructProperty(UFortWorldItemDefinition*, GhostModeItemDef);
 	DefineStructProperty(int32, PreviousFocusedSlot);
 	DefineStructProperty(float, TimeExitedGhostMode);
+public:
+	uint8 Padding[0x20];
 };
 

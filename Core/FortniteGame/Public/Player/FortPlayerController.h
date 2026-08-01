@@ -46,6 +46,7 @@ class UFortMcpProfileAthena;
 class UFortQuestManager;
 class UAthenaSprayItemDefinition;
 class UFortQuestItemDefinition;
+struct FItemVariantHandle;
 
 struct FFortUpdatedObjectiveStat {
 public:
@@ -168,6 +169,8 @@ public:
 
 	void ClientExecuteInventoryItem(FGuid& ItemGuid, float Delay, bool bForceExecute, bool bActivateSlotAfterSettingFocused);
 
+	void ClientEquipItem(FGuid ItemGuid, bool bForceExecution = true);
+
 	void TogglePersonalVehicle(bool bOn);
 	static void TogglePersonalVehicleHook(AFortPlayerController* This, bool bOn);
 	static void execTogglePersonalVehicle(AFortPlayerController* Context, FFrame& Stack);
@@ -182,135 +185,7 @@ public:
 
 	void OnReadyToStartMatchVFT();
 
-	static void Hook() {
-		/*HookVTableIdx(
-			AFortPlayerController::GetDefaultObj(),
-			Finder::FindAFortPlayerController_OnReadyToStartMatchVFT(),
-			OnReadyToStartMatch,
-			(LPVOID*)&OnReadyToStartMatchOG
-		);*/
-		MH_CreateHook(
-			(LPVOID)(GetOffsetFromVTable(
-				AFortPlayerController::GetDefaultObj(),
-				Finder::FindAFortPlayerController_OnReadyToStartMatchVFT()
-			)),
-			OnReadyToStartMatch,
-			(LPVOID*)&OnReadyToStartMatchOG
-		);
+	static int32 RemoveItemFromPlayer(AFortPlayerController* This, FItemVariantHandle* ItemHandle, int32 AmountToRemove, bool bForceRemoval);
 
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerCheat"),
-			ServerCheat,
-			(LPVOID*)&ServerCheatOG
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerExecuteInventoryItem"),
-			ServerExecuteInventoryItem,
-			(LPVOID*)&ServerExecuteInventoryItemOG
-		);
-
-		ExecHook("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInventoryDrop", execServerAttemptInventoryDrop);
-		ExecHook("Function /Script/FortniteGame.FortPlayerController.ServerSpawnInventoryDrop", execServerSpawnInventoryDrop);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerClientPawnLoaded"),
-			ServerClientPawnLoaded,
-			(LPVOID*)&ServerClientPawnLoadedOG
-		);
-
-		/*HookEveryVTableIdx(
-			AFortPlayerController::StaticClass(),
-			Finder::FindAFortPlayerController_RemoveInventoryItemVFT(),
-			RemoveInventoryItem,
-			(LPVOID*)&RemoveInventoryItemOG
-		);*/
-		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_RemoveInventoryItem()), RemoveInventoryItem, (LPVOID*)&RemoveInventoryItemOG);
-
-		if (Version::Fortnite_Version <= 8.00 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
-			HookEveryVTable(
-				AFortPlayerController::StaticClass(),
-				AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerCreateBuildingActor"),
-				ServerCreateBuildingActorOld,
-				(LPVOID*)&ServerCreateBuildingActorOldOG
-			);
-		}
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerBeginEditingBuildingActor"),
-			ServerBeginEditingBuildingActor,
-			(LPVOID*)&ServerBeginEditingBuildingActorOG
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerEditBuildingActor"),
-			ServerEditBuildingActor,
-			(LPVOID*)&ServerEditBuildingActorOG
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerEndEditingBuildingActor"),
-			ServerEndEditingBuildingActor,
-			(LPVOID*)&ServerEndEditingBuildingActorOG
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRemoveInventoryStateValue"),
-			ServerRemoveInventoryStateValue
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerSetInventoryStateValue"),
-			ServerSetInventoryStateValue
-		);
-
-		/*HookEveryVTableIdx(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRepairBuildingActor")->GetVTableIndex(),
-			ServerRepairBuildingActor,
-			(LPVOID*)&ServerRepairBuildingActorOG
-		);*/
-		ExecHook(AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRepairBuildingActor"), execServerRepairBuildingActor, execServerRepairBuildingActorOG);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerPlayEmoteItem"),
-			ServerPlayEmoteItem,
-			(LPVOID*)&ServerPlayEmoteItemOG
-		);
-
-		HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerPlaySprayItem"),
-			ServerPlaySprayItem
-		);
-
-		// Toys (issue #86): spawn the toy actor when the toy ability calls SpawnToyInstance.
-		// No-ops safely on builds that do not have this function.
-		ExecHook("Function /Script/FortniteGame.FortPlayerController.SpawnToyInstance", execSpawnToyInstance);
-
-		MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_GetPlayerViewPoint()), GetPlayerViewPoint, (LPVOID*)&GetPlayerViewPointOG);
-
-		UFunction* ServerAttemptInteractFunc = AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInteract");
-		if (ServerAttemptInteractFunc) {
-			ExecHook(ServerAttemptInteractFunc, execServerAttemptInteract, execServerAttemptInteractOG);
-		}
-
-		/*HookEveryVTable(
-			AFortPlayerController::StaticClass(),
-			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.TogglePersonalVehicle"),
-			TogglePersonalVehicleHook
-		);*/
-		ExecHook(AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.TogglePersonalVehicle"), execTogglePersonalVehicle);
-
-		Log("Hooked AFortPlayerController");
-	}
+	static void Hook();
 };

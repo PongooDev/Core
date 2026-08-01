@@ -85,7 +85,9 @@ public:
 			ExecHook("Function /Script/FortniteGame.FortPlayerPawn.OnCapsuleBeginOverlap", execOnCapsuleBeginOverlap, execOnCapsuleBeginOverlapOG);
 		}
 
-		ExecHook("Function /Script/FortniteGame.FortPlayerPawn.ServerSendZiplineState", execServerSendZiplineState, execServerSendZiplineStateOG);
+		if (Version::Fortnite_Version >= 7.20) {
+			ExecHook("Function /Script/FortniteGame.FortPlayerPawn.ServerSendZiplineState", execServerSendZiplineState, execServerSendZiplineStateOG);
+		}
 
 		Log("AFortPlayerPawn Hooked!");
 	}

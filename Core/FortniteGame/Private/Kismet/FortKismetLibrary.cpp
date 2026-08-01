@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "FortniteGame/Public/Kismet/FortKismetLibrary.h"
+#include "Core/Public/StubCallsites.h"
+#include "FortniteGame/Public/Items/ItemVariantHandle.h"
+#include "FortniteGame/Public/Items/FortWorldItem.h"
+#include "FortniteGame/Public/Player/FortPlayerController.h"
 
 #include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
 #include "FortniteGame/Public/Pawns/FortPlayerPawnAthena.h"
@@ -263,17 +267,30 @@ void UFortKismetLibrary::execK2_SpawnPickupInWorld(UObject* Object, FFrame& Stac
 }
 
 UFortWorldItem* UFortKismetLibrary::GiveItemToInventoryOwner(
-	TScriptInterface<IFortInventoryOwnerInterface> InventoryOwner,
+	TScriptInterface<IFortInventoryOwnerInterface>* InventoryOwner,
 	UFortWorldItemDefinition* ItemDefinition,
-	FGuid& ItemVariantGuid,
-	int NumberToGive)
+	uintptr_t NumberToGiveOrVariantGuid,
+	int32 NumberToGiveIfVariant)
 {
+	// i mean this fix is decent
+	int32 NumberToGive = NumberToGiveOrVariantGuid > 0x10000
+		? NumberToGiveIfVariant
+		: (int32)NumberToGiveOrVariantGuid;
+
+	if (NumberToGive <= 0)
+		NumberToGive = 1;
+
+	if (!InventoryOwner) {
+		Log("UFortKismetLibrary::GiveItemToInventoryOwner: InventoryOwner is null!");
+		return nullptr;
+	}
+
 	if (!ItemDefinition) {
 		Log("UFortKismetLibrary::GiveItemToInventoryOwner: Failed to get item definition from stack!");
 		return nullptr;
 	}
 
-	AFortPlayerController* FortPlayerController = (AFortPlayerController*)InventoryOwner.ObjectPointer;
+	AFortPlayerController* FortPlayerController = (AFortPlayerController*)InventoryOwner->ObjectPointer;
 	if (!FortPlayerController) {
 		Log("UFortKismetLibrary::GiveItemToInventoryOwner: Failed to get player controller from inventory owner!");
 		return nullptr;
@@ -288,55 +305,9 @@ UFortWorldItem* UFortKismetLibrary::GiveItemToInventoryOwner(
 
 	FortPlayerController->WorldInventory->AddItemAndHandleOverflow(ItemDefinition, NumberToGive);
 
-	return FortPlayerController->WorldInventory->FindItemInstance(ItemDefinition);
-}
+	UFortWorldItem* Item = FortPlayerController->WorldInventory->FindItemInstance(ItemDefinition);
 
-void UFortKismetLibrary::execGiveItemToInventoryOwner(UObject* Object, FFrame& Stack, UFortWorldItem** Result)
-{
-	static UFunction* GiveItemToInventoryOwnerFn = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.GiveItemToInventoryOwner");
-	if (!GiveItemToInventoryOwnerFn) {
-		Log("UFortKismetLibrary::execGiveItemToInventoryOwner: Failed to find function!");
-		return;
-	}
-
-	TScriptInterface<IFortInventoryOwnerInterface> InventoryOwner;
-	UFortWorldItemDefinition* ItemDefinition = nullptr;
-	FGuid ItemVariantGuid = FGuid();
-	int32 NumberToGive = 0;
-	bool bNotifyPlayer = false;
-	int32 ItemLevel = 0;
-	int32 PickupInstigatorHandle = 0;
-	for (auto& Param : GiveItemToInventoryOwnerFn->GetParams().NameOffsetMap)
-	{
-		std::string Name = Param.Name.ToString();
-		if (Name == "InventoryOwner") {
-			Stack.StepCompiledIn(&InventoryOwner);
-		}
-		else if (Name == "ItemDefinition") {
-			Stack.StepCompiledIn(&ItemDefinition);
-		}
-		else if (Name == "ItemVariantGuid") {
-			Stack.StepCompiledIn(&ItemVariantGuid);
-		}
-		else if (Name == "NumberToGive") {
-			Stack.StepCompiledIn(&NumberToGive);
-		}
-		else if (Name == "bNotifyPlayer") {
-			Stack.StepCompiledIn(&bNotifyPlayer);
-		}
-		else if (Name == "ItemLevel") {
-			Stack.StepCompiledIn(&ItemLevel);
-		}
-		else if (Name == "PickupInstigatorHandle") {
-			Stack.StepCompiledIn(&PickupInstigatorHandle);
-		}
-		else {
-			Log("UFortKismetLibrary::execGiveItemToInventoryOwner: Unhandled parameter: " + Name);
-		}
-	}
-	Stack.IncrementCode();
-
-	*Result = GiveItemToInventoryOwner(InventoryOwner, ItemDefinition, ItemVariantGuid, NumberToGive);
+	return Item;
 }
 
 bool UFortKismetLibrary::PickLootDrops(
@@ -781,75 +752,17 @@ void UFortKismetLibrary::execK2_GetItemQuantityOnPlayer(UObject* Object, FFrame&
 
 int32 UFortKismetLibrary::K2_RemoveItemFromPlayer(AFortPlayerController* PlayerController, UFortItemDefinition* ItemDefinition, int32 AmountToRemove, bool bForceRemoval)
 {
-	if (!PlayerController || !ItemDefinition || !PlayerController->WorldInventory) {
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromPlayer");
+
+	if (!Func) {
+		Log("UFortKismetLibrary::K2_RemoveItemFromPlayer: Failed to find function!");
 		return 0;
 	}
 
-	AFortInventory* WorldInventory = PlayerController->WorldInventory;
-
-	bool bRemoveAll = AmountToRemove < 0;
-
-	std::vector<std::pair<FGuid, int32>> Stacks;
-	for (FFortItemEntry* ItemEntry : WorldInventory->FindItemEntries(ItemDefinition)) {
-		if (ItemEntry) {
-			Stacks.push_back({ ItemEntry->ItemGuid, ItemEntry->Count });
-		}
-	}
-
-	int32 AmountRemoved = 0;
-
-	for (auto& [ItemGuid, Count] : Stacks) {
-		if (!bRemoveAll && AmountToRemove <= 0) {
-			break;
-		}
-
-		int32 ToRemove = bRemoveAll ? Count : UKismetMathLibrary::Min(Count, AmountToRemove);
-
-		if (WorldInventory->RemoveItem(ItemGuid, bRemoveAll ? INT_MAX : ToRemove)) {
-			AmountRemoved += ToRemove;
-			if (!bRemoveAll) {
-				AmountToRemove -= ToRemove;
-			}
-		}
-	}
-
-	return AmountRemoved;
-}
-
-void UFortKismetLibrary::execK2_RemoveItemFromPlayer(UObject* Object, FFrame& Stack, int32* Result)
-{
-	static UFunction* K2_RemoveItemFromPlayerFn = StaticClass()->GetFunction("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromPlayer");
-	if (!K2_RemoveItemFromPlayerFn) {
-		Log("UFortKismetLibrary::execK2_RemoveItemFromPlayer: Failed to find function!");
-		return;
-	}
-
-	AFortPlayerController* PlayerController = nullptr;
-	UFortItemDefinition* ItemDefinition = nullptr;
-	int32 AmountToRemove = 0;
-	bool bForceRemoval = false;
-	for (auto& Param : K2_RemoveItemFromPlayerFn->GetParams().NameOffsetMap)
-	{
-		std::string Name = Param.Name.ToString();
-		if (Name == "PlayerController") {
-			Stack.StepCompiledIn(&PlayerController);
-		}
-		else if (Name == "ItemDefinition") {
-			Stack.StepCompiledIn(&ItemDefinition);
-		}
-		else if (Name == "AmountToRemove") {
-			Stack.StepCompiledIn(&AmountToRemove);
-		}
-		else if (Name == "bForceRemoval") {
-			Stack.StepCompiledIn(&bForceRemoval);
-		}
-		else if (Name != "ReturnValue") {
-			Log("UFortKismetLibrary::execK2_RemoveItemFromPlayer: Unhandled parameter: " + Name);
-		}
-	}
-	Stack.IncrementCode();
-
-	*Result = K2_RemoveItemFromPlayer(PlayerController, ItemDefinition, AmountToRemove, bForceRemoval);
+	return GetDefaultObj()->Call<int32>(Func, PlayerController, ItemDefinition, AmountToRemove, bForceRemoval);
 }
 
 int32 UFortKismetLibrary::K2_RemoveItemFromPlayerByGuid(AFortPlayerController* PlayerController, FGuid ItemGuid, int32 AmountToRemove, bool bForceRemoval)
@@ -961,4 +874,25 @@ ABuildingGameplayActor* UFortKismetLibrary::SpawnBuildingGameplayActor(TSubclass
 	}
 
 	return GetDefaultObj()->Call<ABuildingGameplayActor*>(Func, BGAClass, Transform, Instigator);
+}
+
+void UFortKismetLibrary::Hook() {
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_SpawnPickupInWorld", execK2_SpawnPickupInWorld);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.PickLootDrops", execPickLootDrops);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GetAIGoalManager", execGetAIGoalManager);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_GiveItemToAllPlayers", execK2_GiveItemToAllPlayers);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.GetAIDirector", execGetAIDirector);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromAllPlayers", execK2_RemoveItemFromAllPlayers);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_GetItemQuantityOnPlayer", execK2_GetItemQuantityOnPlayer);
+	ExecHook("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromPlayerByGuid", execK2_RemoveItemFromPlayerByGuid);
+
+	StubCallsites::PatchStub("UFortKismetLibrary::GiveItemToInventoryOwner", GiveItemToInventoryOwner, {
+		{ "AFortPlayerControllerGameplay::StartGhostMode", {
+			StubCallsites::ByReflectionImpl("Function /Script/FortniteGame.FortPlayerControllerGameplay.StartGhostMode") } },
+
+		{ "UFortKismetLibrary::execGiveItemToInventoryOwner", {
+			StubCallsites::ByReflection("Function /Script/FortniteGame.FortKismetLibrary.GiveItemToInventoryOwner") } },
+		}, false);
+
+	Log("Hooked UFortKismetLibrary");
 }

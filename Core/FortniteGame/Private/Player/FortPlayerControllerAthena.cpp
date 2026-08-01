@@ -281,16 +281,6 @@ void AFortPlayerControllerAthena::ClientNotifyWon(APawn* FinisherPawn, const UFo
 	return Call(Func, FinisherPawn, FinishingWeapon, DeathCause);
 }
 
-void AFortPlayerControllerAthena::ClientEquipItem(FGuid ItemGuid)
-{
-	static UFunction* Func = nullptr;
-
-	if (Func == nullptr)
-		Func = FindFunction("ClientEquipItem");
-
-	return Call(Func, ItemGuid);
-}
-
 void AFortPlayerControllerAthena::ClientSendEndBattleRoyaleMatchForPlayer(bool bSuccess, const FAthenaRewardResult& Result)
 {
 	static UFunction* Func = nullptr;

@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "FortniteGame/Public/Player/FortPlayerController.h"
+#include "FortniteGame/Public/Items/ItemVariantHandle.h"
+#include "Core/Public/StubCallsites.h"
 
 #include "FortniteGame/Public/Player/FortPlayerControllerAthena.h"
 #include "FortniteGame/Public/Inventory/FortQuickBarsAthena.h"
@@ -1139,6 +1141,22 @@ void AFortPlayerController::GetPlayerViewPoint(AFortPlayerController* This, FVec
 	}
 }
 
+void AFortPlayerController::ClientEquipItem(FGuid ItemGuid, bool bForceExecution)
+{
+	static UFunction* Func = nullptr;
+
+	if (Func == nullptr)
+		Func = FindFunction("ClientEquipItem");
+
+	if (!Func) {
+		// on older builds ClientEquipItem only exiss on the athena playercontroller so we can revert to this for those builds
+		ClientExecuteInventoryItem(ItemGuid, 0.f, bForceExecution, true);
+		return;
+	}
+
+	return Call(Func, ItemGuid, bForceExecution);
+}
+
 FUniqueNetIdRepl AFortPlayerController::GetGameAccountId() const
 {
 	static UFunction* Func = nullptr;
@@ -1322,4 +1340,194 @@ void AFortPlayerController::ServerModifyStat(FName StatName, int32 Amount, uint8
 void AFortPlayerController::OnReadyToStartMatchVFT() {
 	void (*&OnReadyToStartMatchInternal)(AFortPlayerController*) = decltype(OnReadyToStartMatchInternal)(VTable[Finder::FindAFortPlayerController_OnReadyToStartMatchVFT()]);
 	return OnReadyToStartMatchInternal(this);
+}
+
+int32 AFortPlayerController::RemoveItemFromPlayer(AFortPlayerController* This, FItemVariantHandle* ItemHandle, int32 AmountToRemove, bool bForceRemoval)
+{
+	if (!This || !ItemHandle || !This->WorldInventory)
+		return 0;
+
+	// if there is a better way to know if its the struct or the uobject lmk
+	const bool bIsDefinition = ((UObject*)ItemHandle)->IsValidLowLevelFast();
+
+	UFortItemDefinition* ItemDefinition = bIsDefinition ? (UFortItemDefinition*)ItemHandle : ItemHandle->Item;
+	FGuid ItemVariantGuid = bIsDefinition ? FGuid{} : ItemHandle->ItemVariantGuid;
+
+	if (!ItemDefinition)
+		return 0;
+
+	AFortInventory* WorldInventory = This->WorldInventory;
+	const bool bRemoveAll = AmountToRemove < 0;
+
+	std::vector<std::pair<FGuid, int32>> Stacks;
+
+	if (ItemVariantGuid.IsValid()) {
+		if (FFortItemEntry* ItemEntry = WorldInventory->FindItemEntry(ItemVariantGuid)) {
+			Stacks.push_back({ ItemEntry->ItemGuid, ItemEntry->Count });
+		}
+	}
+	else {
+		for (FFortItemEntry* ItemEntry : WorldInventory->FindItemEntries(ItemDefinition)) {
+			if (ItemEntry) {
+				Stacks.push_back({ ItemEntry->ItemGuid, ItemEntry->Count });
+			}
+		}
+	}
+
+	int32 AmountRemoved = 0;
+
+	for (auto& [ItemGuid, Count] : Stacks) {
+		if (!bRemoveAll && AmountToRemove <= 0)
+			break;
+
+		const int32 ToRemove = bRemoveAll ? Count : UKismetMathLibrary::Min(Count, AmountToRemove);
+
+		if (WorldInventory->RemoveItem(ItemGuid, bRemoveAll ? INT_MAX : ToRemove)) {
+			AmountRemoved += ToRemove;
+			if (!bRemoveAll)
+				AmountToRemove -= ToRemove;
+		}
+	}
+
+	return AmountRemoved;
+}
+
+void AFortPlayerController::Hook() {
+	/*HookVTableIdx(
+		AFortPlayerController::GetDefaultObj(),
+		Finder::FindAFortPlayerController_OnReadyToStartMatchVFT(),
+		OnReadyToStartMatch,
+		(LPVOID*)&OnReadyToStartMatchOG
+	);*/
+	MH_CreateHook(
+		(LPVOID)(GetOffsetFromVTable(
+			AFortPlayerController::GetDefaultObj(),
+			Finder::FindAFortPlayerController_OnReadyToStartMatchVFT()
+		)),
+		OnReadyToStartMatch,
+		(LPVOID*)&OnReadyToStartMatchOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerCheat"),
+		ServerCheat,
+		(LPVOID*)&ServerCheatOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerExecuteInventoryItem"),
+		ServerExecuteInventoryItem,
+		(LPVOID*)&ServerExecuteInventoryItemOG
+	);
+
+	ExecHook("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInventoryDrop", execServerAttemptInventoryDrop);
+	ExecHook("Function /Script/FortniteGame.FortPlayerController.ServerSpawnInventoryDrop", execServerSpawnInventoryDrop);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerClientPawnLoaded"),
+		ServerClientPawnLoaded,
+		(LPVOID*)&ServerClientPawnLoadedOG
+	);
+
+	/*HookEveryVTableIdx(
+		AFortPlayerController::StaticClass(),
+		Finder::FindAFortPlayerController_RemoveInventoryItemVFT(),
+		RemoveInventoryItem,
+		(LPVOID*)&RemoveInventoryItemOG
+	);*/
+	MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_RemoveInventoryItem()), RemoveInventoryItem, (LPVOID*)&RemoveInventoryItemOG);
+
+	if (Version::Fortnite_Version <= 8.00 || Version::Fortnite_Version == 1.10 || Version::Fortnite_Version == 1.11) {
+		HookEveryVTable(
+			AFortPlayerController::StaticClass(),
+			AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerCreateBuildingActor"),
+			ServerCreateBuildingActorOld,
+			(LPVOID*)&ServerCreateBuildingActorOldOG
+		);
+	}
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerBeginEditingBuildingActor"),
+		ServerBeginEditingBuildingActor,
+		(LPVOID*)&ServerBeginEditingBuildingActorOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerEditBuildingActor"),
+		ServerEditBuildingActor,
+		(LPVOID*)&ServerEditBuildingActorOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerEndEditingBuildingActor"),
+		ServerEndEditingBuildingActor,
+		(LPVOID*)&ServerEndEditingBuildingActorOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRemoveInventoryStateValue"),
+		ServerRemoveInventoryStateValue
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerSetInventoryStateValue"),
+		ServerSetInventoryStateValue
+	);
+
+	/*HookEveryVTableIdx(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRepairBuildingActor")->GetVTableIndex(),
+		ServerRepairBuildingActor,
+		(LPVOID*)&ServerRepairBuildingActorOG
+	);*/
+	ExecHook(AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerRepairBuildingActor"), execServerRepairBuildingActor, execServerRepairBuildingActorOG);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerPlayEmoteItem"),
+		ServerPlayEmoteItem,
+		(LPVOID*)&ServerPlayEmoteItemOG
+	);
+
+	HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerPlaySprayItem"),
+		ServerPlaySprayItem
+	);
+
+	// Toys (issue #86): spawn the toy actor when the toy ability calls SpawnToyInstance.
+	// No-ops safely on builds that do not have this function.
+	ExecHook("Function /Script/FortniteGame.FortPlayerController.SpawnToyInstance", execSpawnToyInstance);
+
+	MH_CreateHook((LPVOID)(ImageBase + Finder::FindAFortPlayerController_GetPlayerViewPoint()), GetPlayerViewPoint, (LPVOID*)&GetPlayerViewPointOG);
+
+	UFunction* ServerAttemptInteractFunc = AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.ServerAttemptInteract");
+	if (ServerAttemptInteractFunc) {
+		ExecHook(ServerAttemptInteractFunc, execServerAttemptInteract, execServerAttemptInteractOG);
+	}
+
+	/*HookEveryVTable(
+		AFortPlayerController::StaticClass(),
+		AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.TogglePersonalVehicle"),
+		TogglePersonalVehicleHook
+	);*/
+	ExecHook(AFortPlayerController::StaticClass()->GetFunction("Function /Script/FortniteGame.FortPlayerController.TogglePersonalVehicle"), execTogglePersonalVehicle);
+
+	StubCallsites::PatchStub("AFortPlayerController::RemoveItemFromPlayer", RemoveItemFromPlayer, {
+		{ "UFortKismetLibrary::RemoveItemFromPlayer", {
+			StubCallsites::ByReflectionImpl("Function /Script/FortniteGame.FortKismetLibrary.RemoveItemFromPlayer") } },
+
+		{ "UFortKismetLibrary::K2_RemoveItemFromPlayer", {
+			StubCallsites::ByReflectionImpl("Function /Script/FortniteGame.FortKismetLibrary.K2_RemoveItemFromPlayer") } },
+		}, false);
+
+	Log("Hooked AFortPlayerController");
 }

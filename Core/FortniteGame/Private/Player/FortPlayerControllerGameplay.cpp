@@ -20,7 +20,7 @@ void AFortPlayerControllerGameplay::CheckGhostModeItemReplicated()
         return;
     }
 
-    return GetDefaultObj()->Call<void>(Func);
+    return Call<void>(Func);
 }
 
 void AFortPlayerControllerGameplay::CheckGhostModeItemRemoved(UFortWorldItemDefinition* GhostModeItemDef)
@@ -35,85 +35,9 @@ void AFortPlayerControllerGameplay::CheckGhostModeItemRemoved(UFortWorldItemDefi
         return;
     }
 
-    return GetDefaultObj()->Call<void>(Func, GhostModeItemDef);
-}
-
-void AFortPlayerControllerGameplay::execStartGhostMode(AFortPlayerControllerGameplay* Context, FFrame& Stack) {
-    UFortWorldItemDefinition* ItemProvidingGhostMode = nullptr;
-    Stack.StepCompiledIn(&ItemProvidingGhostMode);
-    Stack.IncrementCode();
-
-    Context->StartGhostMode(ItemProvidingGhostMode);
-}
-
-void AFortPlayerControllerGameplay::execEndGhostMode(AFortPlayerControllerGameplay* Context, FFrame& Stack)
-{
-    Stack.IncrementCode();
-
-    Context->EndGhostMode();
-}
-
-void AFortPlayerControllerGameplay::StartGhostMode(UFortWorldItemDefinition* ItemProvidingGhostMode)
-{
-    if (GhostModeRepData.bInGhostMode || !ItemProvidingGhostMode)
-        return;
-
-    AFortPlayerPawnAthena* AthenaPawn = (AFortPlayerPawnAthena*)this->Pawn;
-
-    UFortKismetLibrary::K2_RemoveItemFromPlayer(this, ItemProvidingGhostMode, -1, true);
-
-    this->WorldInventory->AddItem(ItemProvidingGhostMode, 1, 0, true);
-
-    GhostModeRepData.bInGhostMode = true;
-    GhostModeRepData.GhostModeItemDef = ItemProvidingGhostMode;
-
-    AFortQuickBars* FortQuickBars = QuickBars;
-    if (!FortQuickBars) {
-        FortQuickBars = ClientQuickBars;
-    }
-    if (QuickBars)
-    {
-        if (GhostModeRepData.bInGhostMode)
-        {
-            GhostModeRepData.PreviousFocusedSlot = QuickBars->PrimaryQuickBar.CurrentFocusedSlot;
-            CheckGhostModeItemReplicated();
-        }
-        else
-        {
-            CheckGhostModeItemRemoved(GhostModeRepData.GhostModeItemDef);
-        }
-    }
-
-    OnGhostModeChanged.ProcessMulticastDelegate(&GhostModeRepData.bInGhostMode);
-
-    ForceNetUpdate();
-}
-
-void AFortPlayerControllerGameplay::EndGhostMode()
-{
-    if (UFortWorldItemDefinition* GhostModeItemDef = GhostModeRepData.GhostModeItemDef)
-        UFortKismetLibrary::K2_RemoveItemFromPlayer(this, GhostModeItemDef, -1, true);
-
-    GhostModeRepData.bInGhostMode = false;
-
-    AFortQuickBars* FortQuickBars = QuickBars;
-    if (!FortQuickBars) {
-        FortQuickBars = ClientQuickBars;
-    }
-
-    if (QuickBars) {
-        CheckGhostModeItemRemoved(GhostModeRepData.GhostModeItemDef);
-    }
-
-    OnGhostModeChanged.ProcessMulticastDelegate(&GhostModeRepData.bInGhostMode);
-
-    ForceNetUpdate();
+    return Call<void>(Func, GhostModeItemDef);
 }
 
 void AFortPlayerControllerGameplay::Hook() {
-    ExecHook("Function /Script/FortniteGame.FortPlayerControllerGameplay.StartGhostMode", execStartGhostMode, execStartGhostModeOG);
-
-    ExecHook("Function /Script/FortniteGame.FortPlayerControllerGameplay.EndGhostMode", execEndGhostMode, execEndGhostModeOG);
-
     Log("AFortPlayerControllerGameplay Hooked");
 }

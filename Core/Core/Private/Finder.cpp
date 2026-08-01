@@ -6899,35 +6899,36 @@ uintptr_t Finder::FindUNetDriver__DestroyedStartupOrDormantActors() {
 		return ServerOffsets::UNetDriver__DestroyedStartupOrDormantActors;
 	uintptr_t Addr = 0;
 
+	// AddClientConnection grows ClientConnections before it walks the destroy list, and on some
+	// builds (1.11) that Add compiles to the same lea shape we scan for - so a match below the
+	// map's possible range is the ClientConnections array (0x80), not the TMap, and we keep going.
+	constexpr uintptr_t MinTMapOffset = 0x100;
+
 	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"AddClientConnection: Added client connection: %s").Get();
 	if (StringAddr) {
-		for (int i = 0; i < 1024; i++)
+		for (int i = 0; i < 1024 && !Addr; i++)
 		{
 			auto Ptr = (uint8_t*)(StringAddr + i);
+			uintptr_t Offset = 0;
+
 			if (*Ptr == 0x4C && *(Ptr + 1) == 0x8D && *(Ptr + 2) == 0x9E) {
-				int32_t Offset = *reinterpret_cast<int32_t*>(Ptr + 3);
-				Addr = static_cast<uintptr_t>(Offset);
-				break;
+				Offset = static_cast<uintptr_t>(*reinterpret_cast<int32_t*>(Ptr + 3));
 			}
 			else if (*Ptr == 0x48 && *(Ptr + 1) == 0x8D && *(Ptr + 2) == 0x9E) {
-				int32_t Offset = *reinterpret_cast<int32_t*>(Ptr + 3);
-				Addr = static_cast<uintptr_t>(Offset);
-				break;
+				Offset = static_cast<uintptr_t>(*reinterpret_cast<int32_t*>(Ptr + 3));
 			}
 			else if (*Ptr == 0x48 && *(Ptr + 1) == 0x8D && *(Ptr + 2) == 0x8E) {
-				int32_t Offset = *reinterpret_cast<int32_t*>(Ptr + 3);
-				Addr = static_cast<uintptr_t>(Offset);
-				break;
+				Offset = static_cast<uintptr_t>(*reinterpret_cast<int32_t*>(Ptr + 3));
 			}
 			else if (*Ptr == 0x48 && *(Ptr + 1) == 0x81 && *(Ptr + 2) == 0xC6) {
-				uint32_t Offset = *reinterpret_cast<uint32_t*>(Ptr + 3);
-				Addr = static_cast<uintptr_t>(Offset);
-				break;
+				Offset = static_cast<uintptr_t>(*reinterpret_cast<uint32_t*>(Ptr + 3));
 			}
 			else if (*Ptr == 0x4D && *(Ptr + 1) == 0x8D) {
-				uint32_t Offset = *reinterpret_cast<uint32_t*>(Ptr + 3);
-				Addr = static_cast<uintptr_t>(Offset);
-				break;
+				Offset = static_cast<uintptr_t>(*reinterpret_cast<uint32_t*>(Ptr + 3));
+			}
+
+			if (Offset >= MinTMapOffset) {
+				Addr = Offset;
 			}
 		}
 	}

@@ -23,6 +23,7 @@ public:
 	DefineBitfieldUProperty(bCanBeDropped);
 	DefineBitfieldUProperty(bPersistInInventoryWhenFinalStackEmpty);
 	DefineBitfieldUProperty(bAllowedToBeLockedInInventory);
+	DefineBitfieldUProperty(bForceStayInOverflow);
 	DefineBitfieldUProperty(bDropOnDeath);
 	DefineBitfieldUProperty(bDropOnLogout);
 	DefineBitfieldUProperty(bSupportsQuickbarFocus);
@@ -34,6 +35,7 @@ public:
 	DefineBitfieldUProperty(bCanBeDepositedInStorageVault);
 	DefineBitfieldUProperty(bItemHasDurability);
 	DefineBitfieldUProperty(bOverridePickupMeshTransform);
+	DefineUProperty(bool, bCanAutoEquipByClass);
 	DefineUProperty(int32, PreferredQuickbarSlot);
 public:
 	bool ServerExecute(UFortItem* Item, AFortPlayerController* Instigator);

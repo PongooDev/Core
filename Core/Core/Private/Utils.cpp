@@ -269,7 +269,7 @@ void Utils::Hook() {
 	AFortAthenaMutator_Barrier::Hook();
 	AAthenaBarrierFlag::Hook();
 	ABuildingFoundation::Hook();
-	//AFortPlayerControllerGameplay::Hook();
+	AFortPlayerControllerGameplay::Hook();
 
 	status = MH_EnableHook(MH_ALL_HOOKS);
 	if (status != MH_OK) {

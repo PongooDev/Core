@@ -279,4 +279,228 @@ namespace StubCallsites {
 			PatchLeaFar(Addr, Detour);
 		}
 	}
+
+	// ---------------------------------------------------------------------------------
+	// Stripped helpers.
+	//
+	// Some helpers are compiled out of the shipping build - the callsite is intact but the
+	// callee is a bare `retn` or a `return 0`. These cannot go through Patch/FindCall: the
+	// branch to them is often a tail call, and it can be conditional
+	// (`jnz UserMathErrorFunction`), so there is no E8 to match.
+	//
+	// Everything below matches on the callee *being a stub* rather than on a known address,
+	// which is a far tighter filter than an address compare, and it never widens the scan
+	// used by Patch.
+	// ---------------------------------------------------------------------------------
+
+	inline bool IsInImage(uintptr_t Addr)
+	{
+		static uintptr_t End = [] {
+			auto* Dos = (IMAGE_DOS_HEADER*)ImageBase;
+			auto* Nt = (IMAGE_NT_HEADERS64*)(ImageBase + Dos->e_lfanew);
+			return ImageBase + Nt->OptionalHeader.SizeOfImage;
+			}();
+
+		return Addr >= ImageBase && Addr < End;
+	}
+
+	// call/jmp/jcc rel32 - fills Target and returns the instruction length, or 0. Targets
+	// outside the module are rejected: scanning byte by byte turns plenty of operand bytes
+	// into plausible looking branches.
+	inline int BranchAt(uintptr_t Cursor, uintptr_t& Target)
+	{
+		auto* b = reinterpret_cast<const uint8*>(Cursor);
+		int Length = 0;
+
+		if (b[0] == 0xE8 || b[0] == 0xE9)
+		{
+			Target = Cursor + 5 + *reinterpret_cast<const int32_t*>(Cursor + 1);
+			Length = 5;
+		}
+		else if (b[0] == 0x0F && (b[1] & 0xF0) == 0x80)
+		{
+			Target = Cursor + 6 + *reinterpret_cast<const int32_t*>(Cursor + 2);
+			Length = 6;
+		}
+
+		return (Length && IsInImage(Target)) ? Length : 0;
+	}
+
+	inline bool IsStrippedStub(uintptr_t Addr)
+	{
+		if (!Addr || !IsInImage(Addr))
+			return false;
+
+		auto* b = reinterpret_cast<const uint8*>(Addr);
+
+		if (b[0] == 0xC3 || b[0] == 0xC2)
+			return true;
+
+		if ((b[0] == 0x33 || b[0] == 0x31) && b[1] == 0xC0 && (b[2] == 0xC3 || b[2] == 0xC2))
+			return true;
+
+		if (b[0] == 0x48 && (b[1] == 0x33 || b[1] == 0x31) && b[2] == 0xC0 && (b[3] == 0xC3 || b[3] == 0xC2))
+			return true;
+
+		return false;
+	}
+
+	// UFunction::Func is the exec thunk; the implementation is what it hands off to last
+	inline uintptr_t FromReflectionImpl(const char* FunctionPath)
+	{
+		uintptr_t Thunk = FromReflection(FunctionPath);
+		if (!Thunk)
+			return 0;
+
+		uintptr_t End = Memcury::Scanner(Thunk).FindFunctionEnd().Get();
+		if (End <= Thunk)
+			return Thunk;
+
+		uintptr_t Impl = 0;
+		for (uintptr_t Cursor = Thunk; Cursor + 6 <= End; Cursor++)
+		{
+			uintptr_t Target = 0;
+			if (BranchAt(Cursor, Target) && Target != Thunk)
+				Impl = Target;
+		}
+
+		return Impl ? Impl : Thunk;
+	}
+
+	inline FLocator ByReflectionImpl(const char* FunctionPath) { return [=] { return FromReflectionImpl(FunctionPath); }; }
+
+	// where Function branches to a helper that got compiled out. Re-entry is prevented with a
+	// visited list rather than by skipping targets that look like they sit inside Function -
+	// FindFunctionEnd often overshoots into the next function, and that would silently drop
+	// the very call we need to follow.
+	// FindFunctionEnd cannot size a small leaf function - no prologue to unwind, no epilogue
+	// to recognise - and the helpers that call a stripped stub are exactly that shape:
+	//   test rcx, rcx / jz / test rdx, rdx / jnz <stub> / xor eax, eax / retn
+	// When it fails, walk to the first ret instead of giving up.
+	inline uintptr_t FunctionEnd(uintptr_t Function)
+	{
+		uintptr_t End = Memcury::Scanner(Function).FindFunctionEnd().Get();
+		if (End > Function)
+			return End;
+
+		for (uintptr_t Cursor = Function; Cursor < Function + 0x80; Cursor++)
+		{
+			if (*(uint8*)Cursor == 0xC3)
+				return Cursor + 1;
+		}
+
+		return 0;
+	}
+
+	inline uintptr_t FindStubBranchInternal(uintptr_t Function, int Depth, std::vector<uintptr_t>& Visited)
+	{
+		if (!Function || Depth < 0 || !IsInImage(Function))
+			return 0;
+
+		for (uintptr_t Seen : Visited)
+		{
+			if (Seen == Function)
+				return 0;
+		}
+		Visited.push_back(Function);
+
+		uintptr_t End = FunctionEnd(Function);
+		if (End <= Function)
+			return 0;
+
+		for (uintptr_t Cursor = Function; Cursor + 6 <= End; Cursor++)
+		{
+			uintptr_t Target = 0;
+			if (BranchAt(Cursor, Target) && Target != Function && IsStrippedStub(Target))
+				return Cursor;
+		}
+
+		if (Depth == 0)
+			return 0;
+
+		for (uintptr_t Cursor = Function; Cursor + 6 <= End; Cursor++)
+		{
+			uintptr_t Callee = 0;
+			if (!BranchAt(Cursor, Callee) || Callee == Function)
+				continue;
+
+			if (uintptr_t Addr = FindStubBranchInternal(Callee, Depth - 1, Visited))
+				return Addr;
+		}
+
+		return 0;
+	}
+
+	inline uintptr_t FindStubBranch(uintptr_t Function, int Depth = 3)
+	{
+		std::vector<uintptr_t> Visited;
+		return FindStubBranchInternal(Function, Depth, Visited);
+	}
+
+	// rewrites the branch's rel32 to reach Detour, keeping the opcode so a tail jump stays a
+	// tail jump and a conditional stays conditional
+	inline bool PatchBranchFar(uintptr_t Addr, void* Detour)
+	{
+		uintptr_t Target = 0;
+		int Length = BranchAt(Addr, Target);
+		if (!Length)
+			return false;
+
+		uintptr_t Base = Addr & ~0xFFFFull;
+		void* Trampoline = nullptr;
+
+		for (uintptr_t Cursor = Base; Cursor > Base - 0x80000000ull; Cursor -= 0x10000)
+		{
+			Trampoline = VirtualAlloc((void*)Cursor, 16, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+			if (Trampoline)
+				break;
+		}
+
+		if (!Trampoline)
+			return false;
+
+		uint8 Jmp[] = {
+			0xFF, 0x25, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+		};
+		memcpy(&Jmp[6], &Detour, sizeof(Detour));
+		memcpy(Trampoline, Jmp, sizeof(Jmp));
+
+		int32_t Rel = (int32_t)((uintptr_t)Trampoline - (Addr + Length));
+		return PatchBytes((void*)(Addr + Length - 4), &Rel, sizeof(Rel));
+	}
+
+	inline void PatchStub(const char* Label, void* Detour, std::initializer_list<FSite> Sites, bool bWarnIfNotFound = true)
+	{
+		for (const auto& Site : Sites)
+		{
+			uintptr_t Addr = 0;
+
+			for (const auto& Locator : Site.Locators)
+			{
+				uintptr_t Function = Locator();
+				if (!Function)
+					continue;
+
+				Addr = FindStubBranch(Function);
+				if (Addr)
+					break;
+			}
+
+			if (!Addr) {
+				if (bWarnIfNotFound) {
+					Log(std::string("Failed to find stub for ") + Label + ": " + Site.Name);
+				}
+				continue;
+			}
+
+			uintptr_t Stub = 0;
+			BranchAt(Addr, Stub);
+
+			Log(std::string(Label) + " Stub Patch: " + Site.Name + " @ 0x" + std::format("{:X}", Addr - ImageBase)
+				+ " -> stub 0x" + std::format("{:X}", Stub ? Stub - ImageBase : 0));
+
+			PatchBranchFar(Addr, Detour);
+		}
+	}
 }
