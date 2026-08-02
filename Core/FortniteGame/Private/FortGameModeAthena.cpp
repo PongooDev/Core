@@ -341,21 +341,40 @@ void AFortGameModeAthena::InitGameState(AFortGameModeAthena* This) {
 	}
 }
 
-UAthenaBattleBusItemDefinition* AFortGameModeAthena::GetBattleBusItemDefinition() {
+UAthenaBattleBusItemDefinition* AFortGameModeAthena::GetBattleBusItemDefinition()
+{
 	UAthenaBattleBusItemDefinition* BBID = nullptr;
+
 	if (Version::Fortnite_Version == 1.11
-		|| (Version::Fortnite_Version >= 2.1 && Version::Fortnite_Version <= 2.42)) {
-		BBID = (UAthenaBattleBusItemDefinition*)StaticLoadObject("/Game/Athena/Items/Cosmetics/BattleBuses/BBID_WinterBus.BBID_WinterBus");
+		|| Version::Fortnite_Version == 2.1
+		|| Version::Fortnite_Version == 7.10)
+	{
+		BBID = (UAthenaBattleBusItemDefinition*)StaticLoadObject(
+			"/Game/Athena/Items/Cosmetics/BattleBuses/BBID_WinterBus.BBID_WinterBus");
 	}
 
 	return BBID;
 }
 
-UClass* AFortGameModeAthena::GetSupplyDropClass() {
+UClass* AFortGameModeAthena::GetSupplyDropClass()
+{
 	UClass* SupplyDropClass = nullptr;
+
 	if (Version::Fortnite_Version == 1.11
-		|| (Version::Fortnite_Version >= 2.1 && Version::Fortnite_Version <= 2.42)) {
-		SupplyDropClass = (UClass*)StaticLoadObject("/Game/Athena/SupplyDrops/B_AthenaSupplyDrop_Gift.B_AthenaSupplyDrop_Gift_C");
+		|| Version::Fortnite_Version == 2.1
+		|| Version::Fortnite_Version == 7.10)
+	{
+		if (Version::Fortnite_Version == 1.11
+			|| Version::Fortnite_Version == 2.1)
+		{
+			SupplyDropClass = (UClass*)StaticLoadObject(
+				"/Game/Athena/SupplyDrops/B_AthenaSupplyDrop_Gift.B_AthenaSupplyDrop_Gift_C");
+		}
+		else
+		{
+			SupplyDropClass = (UClass*)StaticLoadObject(
+				"/Game/Athena/SupplyDrops/AthenaSupplyDrop_Holiday.AthenaSupplyDrop_Holiday_C");
+		}
 	}
 
 	return SupplyDropClass;
