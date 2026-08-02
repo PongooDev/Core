@@ -14,31 +14,6 @@ struct FNetDeltaSerializeInfo;
 struct FObjectInstancingGraph;
 struct FPropertyTag;
 
-#define DefineCustomProperty(PropertyType, PropertyName, Offset) \
-public: \
-    FORCEINLINE PropertyType& _Get##PropertyName() { \
-        if (!(this) || (uintptr_t)(Offset) <= 0) { \
-            static PropertyType dummy{}; \
-            return dummy; \
-        } \
-        return *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)); \
-    } \
-    FORCEINLINE PropertyType _Get##PropertyName() const { \
-        if (!(this) || (uintptr_t)(Offset) <= 0) { \
-            static PropertyType dummy{}; \
-            return dummy; \
-        } \
-        return *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)); \
-    } \
-    FORCEINLINE void _Set##PropertyName(PropertyType Value) { \
-        if (!(this) || (uintptr_t)(Offset) <= 0) { \
-            return; \
-        } \
-        *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)) = Value; \
-    } \
-public: \
-    __declspec(property(get = _Get##PropertyName, put = _Set##PropertyName)) PropertyType PropertyName;
-
 
 class UField : public UObject {
 public:

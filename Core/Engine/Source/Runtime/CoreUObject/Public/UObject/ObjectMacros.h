@@ -271,13 +271,24 @@ inline EClassFlags operator|(EClassFlags A, EClassFlags B) { return (EClassFlags
 #define DefineCustomProperty(PropertyType, PropertyName, Offset) \
 public: \
     FORCEINLINE PropertyType& _Get##PropertyName() { \
-        return *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset); \
+        if (!(this) || (uintptr_t)(Offset) <= 0) { \
+            static PropertyType dummy{}; \
+            return dummy; \
+        } \
+        return *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)); \
     } \
     FORCEINLINE PropertyType _Get##PropertyName() const { \
-        return *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset); \
+        if (!(this) || (uintptr_t)(Offset) <= 0) { \
+            static PropertyType dummy{}; \
+            return dummy; \
+        } \
+        return *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)); \
     } \
     FORCEINLINE void _Set##PropertyName(PropertyType Value) { \
-        *reinterpret_cast<PropertyType*>((uintptr_t)this + Offset) = Value; \
+        if (!(this) || (uintptr_t)(Offset) <= 0) { \
+            return; \
+        } \
+        *reinterpret_cast<PropertyType*>((uintptr_t)this + (uintptr_t)(Offset)) = Value; \
     } \
 public: \
     __declspec(property(get = _Get##PropertyName, put = _Set##PropertyName)) PropertyType PropertyName;
