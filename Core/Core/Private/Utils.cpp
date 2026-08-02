@@ -222,6 +222,7 @@ void Utils::Hook() {
 	UWorld::Hook();
 	AActor::Hook();
 	UNetDriver::Hook();
+	UNetConnection::Hook();
 	UDemoNetDriver::Hook();
 	AGameSession::Hook();
 	UAbilitySystemComponent::Hook();

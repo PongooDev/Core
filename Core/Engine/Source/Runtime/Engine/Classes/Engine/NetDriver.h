@@ -184,9 +184,9 @@ public:
 
 	int32 ServerReplicateActors_ProcessPrioritizedActors(UNetConnection* Connection, const TArray<FNetViewer>& ConnectionViewers, FActorPriority** PriorityActors, const int32 FinalSortedCount, int32& OutUpdated);
 public:
-	TMap<FNetworkGUID, FActorDestructionInfo>& DestroyedStartupOrDormantActors() {
-		return *(TMap<FNetworkGUID, FActorDestructionInfo>*)((uintptr_t)this + ServerOffsets::UNetDriver__DestroyedStartupOrDormantActors);
-	}
+	using FDestructionInfoMap = TMap<FNetworkGUID, FActorDestructionInfo>;
+
+	DefineCustomProperty(FDestructionInfoMap, DestroyedStartupOrDormantActors, ServerOffsets::UNetDriver__DestroyedStartupOrDormantActors);
 public:
 	static void Hook() {
 		MH_CreateHook((LPVOID)(ImageBase + Finder::FindUNetDriver_TickFlush()), TickFlush, (LPVOID*)&TickFlushOG);

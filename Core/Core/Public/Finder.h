@@ -769,6 +769,8 @@ public:
 
 	static uintptr_t FindUNetConnection_CreateChannel();
 
+	static uintptr_t FindUNetConnection_SendChallengeControlMessage();
+
 	static uintptr_t FindUActorChannel_SetChannelActorForDestroy();
 
 	static uintptr_t FindFOutBunch_Constructor();

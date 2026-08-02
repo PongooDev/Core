@@ -30,3 +30,28 @@ void UNetConnection::CleanUp()
 	void (*&CleanUpInternal)(UNetConnection*) = decltype(CleanUpInternal)(VTable[Finder::FindUNetConnection_CleanUpVFT()]);
 	CleanUpInternal(this);
 }
+
+void UNetConnection::SendChallengeControlMessage(UNetConnection* This, void* Response)
+{
+	FCoreConfig& Config = ConfigurationManager::GetConfig();
+	if (Config.bUseGameSessions && !Config.bSkipSessionValidation)
+		return SendChallengeControlMessageOG(This, Response);
+
+	if (Response)
+	{
+		uint8& ResponseCode = *(uint8*)Response;
+		if (ResponseCode != 1)
+		{
+			ResponseCode = 1;
+		}
+	}
+
+	return SendChallengeControlMessageOG(This, Response);
+}
+
+void UNetConnection::Hook()
+{
+	MH_CreateHook((LPVOID)(ImageBase + Finder::FindUNetConnection_SendChallengeControlMessage()), SendChallengeControlMessage, (LPVOID*)&SendChallengeControlMessageOG);
+
+	Log("UNetConnection Hooked");
+}

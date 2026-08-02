@@ -84,14 +84,17 @@ public:
 			return FindActorChannelRefInternal(this, Actor);
 		}
 		else {
-			return ActorChannels().FindRef(Actor);
+			return ActorChannels.FindRef(Actor);
 		}
 	}
 public:
-	TMap<TWeakObjectPtr<AActor>, UActorChannel*>& ActorChannels() {
-		return *(TMap<TWeakObjectPtr<AActor>, UActorChannel*>*)((uintptr_t)this + ServerOffsets::UNetConnection__ActorChannels);
-	}
-	TSet<FNetworkGUID>& DestroyedStartupOrDormantActors() {
-		return *(TSet<FNetworkGUID>*)((uintptr_t)this + ServerOffsets::UNetConnection__DestroyedStartupOrDormantActors);
-	}
+	using FActorChannelMap = TMap<TWeakObjectPtr<AActor>, UActorChannel*>;
+
+	DefineCustomProperty(FActorChannelMap, ActorChannels, ServerOffsets::UNetConnection__ActorChannels);
+	DefineCustomProperty(TSet<FNetworkGUID>, DestroyedStartupOrDormantActors, ServerOffsets::UNetConnection__DestroyedStartupOrDormantActors);
+public:
+	static inline void (*SendChallengeControlMessageOG)(UNetConnection* This, void* Response);
+	static void SendChallengeControlMessage(UNetConnection* This, void* Response);
+
+	static void Hook();
 };

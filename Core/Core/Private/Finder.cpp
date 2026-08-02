@@ -11403,6 +11403,24 @@ uintptr_t Finder::FindABuildingItemCollectorActor_GrantOutputVFT() {
 	return ServerOffsets::ABuildingItemCollectorActor_GrantOutputVFT;
 }
 
+uintptr_t Finder::FindUNetConnection_SendChallengeControlMessage() {
+	if (ServerOffsets::UNetConnection_SendChallengeControlMessage)
+		return ServerOffsets::UNetConnection_SendChallengeControlMessage;
+	uintptr_t Addr = 0;
+
+	auto StringAddr = Memcury::Scanner::FindStringRef(L"UWorld::SendChallengeControlMessage: encryption failure [%s] %s");
+	if (StringAddr.IsValid()) {
+		Addr = StringAddr.FindFunctionStart().Get();
+	}
+
+	if (Addr) {
+		ServerOffsets::UNetConnection_SendChallengeControlMessage = Addr - ImageBase;
+	}
+
+	Log("UNetConnection_SendChallengeControlMessage found at: 0x" + std::format("{:X}", ServerOffsets::UNetConnection_SendChallengeControlMessage));
+	return ServerOffsets::UNetConnection_SendChallengeControlMessage;
+}
+
 void Finder::SetupCoreOffsets() {
 	ServerOffsets::FFrame__CurrentNativeFunction = Version::Fortnite_Version >= 20.20 ? 0x90 : 0x88;
 	ServerOffsets::FFrame__PropertyChainForCompiledIn = Version::Fortnite_Version >= 20.20 ? 0x88 : 0x80;
@@ -11844,6 +11862,8 @@ void Finder::SetupOffsets() {
 	FindAFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld();
 
 	FindABuildingItemCollectorActor_GrantOutputVFT();
+
+	FindUNetConnection_SendChallengeControlMessage();
 
 	return;
 }

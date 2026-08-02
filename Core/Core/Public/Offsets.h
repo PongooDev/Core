@@ -528,6 +528,7 @@ namespace ServerOffsets {
 	inline uintptr_t UNetConnection__ClientWorldPackageName = 0;
 	inline uintptr_t UNetConnection__ClientVisibleLevelNames = 0;
 	inline uintptr_t UNetConnection_CreateChannel = 0;
+	inline uintptr_t UNetConnection_SendChallengeControlMessage = 0;
 	inline uintptr_t UNetConnection_CleanUp = 0;
 	inline uintptr_t UNetConnection_CleanUpVFT = 0;
 	inline uintptr_t UNetConnection__LastRecvAckTime = 0;

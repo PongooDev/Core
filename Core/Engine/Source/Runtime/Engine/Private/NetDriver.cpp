@@ -226,7 +226,7 @@ static void BuildActorChannelLookup(UNetConnection* Connection, FActorChannelLoo
 {
 	OutChannelsByActor.clear();
 
-	TMap<TWeakObjectPtr<AActor>, UActorChannel*>& ActorChannels = Connection->ActorChannels();
+	UNetConnection::FActorChannelMap& ActorChannels = Connection->ActorChannels;
 	if (!ActorChannels.IsValid())
 		return;
 
@@ -733,7 +733,7 @@ int32 UNetDriver::ServerReplicateActors_PrioritizeActors(UNetConnection* Connect
 
 		TWeakObjectPtr<UNetConnection> WeakConnection(Connection);
 
-		const int32 MaxSortedActors = ConsiderList.Num() + DestroyedStartupOrDormantActors().Num();
+		const int32 MaxSortedActors = ConsiderList.Num() + DestroyedStartupOrDormantActors.Num();
 		if (MaxSortedActors > 0)
 		{
 			OutPriorityList = new FActorPriority[MaxSortedActors];
@@ -810,9 +810,9 @@ int32 UNetDriver::ServerReplicateActors_PrioritizeActors(UNetConnection* Connect
 				}
 			}
 
-			for (int i = 0; i < Connection->DestroyedStartupOrDormantActors().Num(); i++)
+			for (int i = 0; i < Connection->DestroyedStartupOrDormantActors.Num(); i++)
 			{
-				FActorDestructionInfo* DInfo = DestroyedStartupOrDormantActors().Find(Connection->DestroyedStartupOrDormantActors()[i].Value);
+				FActorDestructionInfo* DInfo = DestroyedStartupOrDormantActors.Find(Connection->DestroyedStartupOrDormantActors[i].Value);
 				if (DInfo) {
 					OutPriorityList[FinalSortedCount] = FActorPriority(Connection, DInfo, ConnectionViewers);
 					OutPriorityActors[FinalSortedCount] = OutPriorityList + FinalSortedCount;
@@ -865,7 +865,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 					FinalRelevantCount++;
 
 					Channel->SetChannelActorForDestroy(PriorityActors[j]->DestructionInfo);
-					Connection->DestroyedStartupOrDormantActors().Remove(PriorityActors[j]->DestructionInfo->NetGUID);
+					Connection->DestroyedStartupOrDormantActors.Remove(PriorityActors[j]->DestructionInfo->NetGUID);
 				}
 				continue;
 			}
