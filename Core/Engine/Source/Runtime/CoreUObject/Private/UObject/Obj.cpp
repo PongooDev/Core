@@ -4,6 +4,9 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Class.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/Core/Public/Logging/LogMacros.h"
+
+DECLARE_LOG_CATEGORY_STATIC(LogObj, Log, All);
 
 UFunction* UObject::FindFunction(FName InName) const
 {

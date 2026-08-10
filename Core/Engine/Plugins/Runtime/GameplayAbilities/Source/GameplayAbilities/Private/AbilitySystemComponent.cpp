@@ -2,6 +2,7 @@
 #include "../Public/AbilitySystemComponent.h"
 
 #include "../Public/Abilities/GameplayAbility.h"
+#include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemLog.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
 UAbilitySystemComponent* UAbilitySystemComponent::GetAbilitySystemComponentFromActor(const AActor* Actor, bool bLookForComponent)
@@ -35,11 +36,12 @@ FGameplayAbilitySpec* UAbilitySystemComponent::FindAbilitySpecFromHandle(FGamepl
 }
 
 void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemComponent* This, FGameplayAbilitySpecHandle Handle, bool InputPressed, const FPredictionKey& PredictionKey, FGameplayEventData* TriggerEventData) {
-	//Log("UAbilitySystemComponent::InternalServerTryActivateAbility");
+	//UE_LOG(LogAbilitySystem, Verbose, TEXT("UAbilitySystemComponent::InternalServerTryActivateAbility"));
 	FGameplayAbilitySpec* Spec = This->FindAbilitySpecFromHandle(Handle);
 	if (!Spec)
 	{
-		Log("InternalServerTryActiveAbility. Rejecting ClientActivation of ability with invalid SpecHandle!");
+		// Can potentially happen in race conditions where client tries to activate ability that is removed server side before it is received.
+		UE_LOG(LogAbilitySystem, Display, TEXT("InternalServerTryActiveAbility. Rejecting ClientActivation of ability with invalid SpecHandle!"));
 		This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
 		return;
 	}
@@ -47,7 +49,7 @@ void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemCom
 	const UGameplayAbility* AbilityToActivate = Spec->Ability;
 	if (!AbilityToActivate)
 	{
-		Log("InternalServerTryActiveAbility. Rejecting ClientActivation of unconfigured spec ability!");
+		UE_LOG(LogAbilitySystem, Error, TEXT("InternalServerTryActiveAbility. Rejecting ClientActivation of unconfigured spec ability!"));
 		This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
 		return;
 	}
@@ -56,7 +58,7 @@ void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemCom
 		if (AbilityToActivate->NetSecurityPolicy == EGameplayAbilityNetSecurityPolicy::GetServerOnlyExecution() ||
 			AbilityToActivate->NetSecurityPolicy == EGameplayAbilityNetSecurityPolicy::GetServerOnly())
 		{
-			Log("InternalServerTryActiveAbility. Rejecting ClientActivation of " + AbilityToActivate->GetName().ToString() + " due to security policy violation.");
+			UE_LOG(LogAbilitySystem, Warning, TEXT("InternalServerTryActiveAbility. Rejecting ClientActivation of %s due to security policy violation."), *AbilityToActivate->GetName());
 			This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
 			return;
 		}
@@ -73,7 +75,7 @@ void UAbilitySystemComponent::InternalServerTryActivateAbility(UAbilitySystemCom
 	}
 	else
 	{
-		Log("InternalServerTryActiveAbility. Rejecting ClientActivation of " + Spec->Ability->GetName().ToString() + ". InternalTryActivateAbility failed.");
+		UE_LOG(LogAbilitySystem, Display, TEXT("InternalServerTryActiveAbility. Rejecting ClientActivation of %s. InternalTryActivateAbility failed."), *Spec->Ability->GetName());
 		This->ClientActivateAbilityFailed(Handle, PredictionKey.Current);
 		Spec->InputPressed = false;
 

@@ -366,6 +366,11 @@ void AFortGameStateAthena::UpdateGamePhaseStep() {
 	if (!_HasGamePhaseStep())
 		return;
 
+	AFortGameModeAthena* FortGMAthena = AuthorityGameMode->Cast<AFortGameModeAthena>();
+	if (!FortGMAthena) {
+		return; // the gamemode should be athena
+	}
+
 	float TimeRemaining = 0.0f;
 	const uint8 NewStep = GetGamePhaseStep(TimeRemaining);
 
@@ -376,6 +381,7 @@ void AFortGameStateAthena::UpdateGamePhaseStep() {
 	if (NewStep == GamePhaseStep)
 		return;
 
+	Log("AFortGameStateAthena::UpdateGamePhaseStep: GamePhaseStep " + std::to_string((uint8)GamePhaseStep) + " -> " + std::to_string((uint8)NewStep));
 	GamePhaseStep = NewStep;
 	ForceNetUpdate();
 
@@ -398,12 +404,8 @@ void AFortGameStateAthena::UpdateGamePhaseStep() {
 			}
 		}
 	}
-	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(this);
-	if (GameModeBase->IsA(AFortGameModeAthena::StaticClass())) {
-		((AFortGameModeAthena*)GameModeBase)->UpdateSpawnActorListDuringSafeZone((EAthenaGamePhaseStep)NewStep);
-	}
 
-	Log("AFortGameStateAthena::UpdateGamePhaseStep: GamePhaseStep -> " + std::to_string(NewStep));
+	FortGMAthena->UpdateSpawnActorListDuringSafeZone((EAthenaGamePhaseStep)NewStep);
 }
 
 FVector AFortGameStateAthena::GetSafeZoneCenter() {

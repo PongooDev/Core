@@ -3,6 +3,7 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Core/Public/Misc/Crc.h"
+#include "Engine/Source/Runtime/Core/Public/CoreGlobals.h"
 
 class FArchive;
 class FOutputDevice;
@@ -150,8 +151,14 @@ public:
 	 */
 	uint32& operator[](int32 Index)
 	{
-		if (!(Index >= 0)) Log("FGuid::operator[]: Index < 0");
-		if (!(Index < 4)) Log("FGuid::operator[]: Index >= 4");
+		if (!(Index >= 0))
+		{
+			UE_LOG(LogCore, Error, TEXT("FGuid::operator[]: Index %d is negative"), Index);
+		}
+		if (!(Index < 4))
+		{
+			UE_LOG(LogCore, Error, TEXT("FGuid::operator[]: Index %d is out of range, must be 0-3"), Index);
+		}
 
 		switch (Index)
 		{
@@ -172,8 +179,14 @@ public:
 	 */
 	const uint32& operator[](int32 Index) const
 	{
-		if (!(Index >= 0)) Log("FGuid::operator[] const: Index < 0");
-		if (!(Index < 4)) Log("FGuid::operator[] const: Index >= 4");
+		if (!(Index >= 0))
+		{
+			UE_LOG(LogCore, Error, TEXT("FGuid::operator[] const: Index %d is negative"), Index);
+		}
+		if (!(Index < 4))
+		{
+			UE_LOG(LogCore, Error, TEXT("FGuid::operator[] const: Index %d is out of range, must be 0-3"), Index);
+		}
 
 		switch (Index)
 		{

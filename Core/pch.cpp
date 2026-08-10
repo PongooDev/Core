@@ -13,33 +13,27 @@ void Log(const std::string& msg)
 	if (Config.bIsProd)
 		return;
 
-	std::string FileName = Config.bIsClient ? "Client_log.txt" : "Server_log.txt";
-	std::string LogType = Config.bIsClient ? "Client" : "Server";
+	const bool bClient = Config.bIsClient;
+	const char* LogType = bClient ? "Client" : "Server";
 
-	static bool firstCallClient = true;
-	static bool firstCallServer = true;
+	static FILE* Files[2] = { nullptr, nullptr };
+	FILE*& LogFile = Files[bClient ? 1 : 0];
 
-	bool& firstCall = Config.bIsClient ? firstCallClient : firstCallServer;
-
-	if (firstCall)
+	if (!LogFile)
 	{
-		std::ofstream logFile(FileName, std::ios::trunc);
-		if (logFile.is_open())
-		{
-			logFile << "Log" + LogType + ": Log file initialized!\n";
-			logFile.close();
-		}
-		firstCall = false;
+		fopen_s(&LogFile, bClient ? "Client_log.txt" : "Server_log.txt", "w");
+		if (LogFile)
+			fprintf(LogFile, "Log%s: Log file initialized!\n", LogType);
 	}
 
-	std::ofstream logFile(FileName, std::ios::app);
-	if (logFile.is_open())
+	if (LogFile)
 	{
-		logFile << "Log" + LogType + ": " << msg << std::endl;
-		logFile.close();
+		fprintf(LogFile, "Log%s: %s\n", LogType, msg.c_str());
+
+		fflush(LogFile);
 	}
 
-	std::cout << "Log" + LogType + ": " << msg << std::endl;
+	std::cout << "Log" << LogType << ": " << msg << '\n';
 }
 
 uintptr_t GetVTableIndex(class UFunction* Func) {

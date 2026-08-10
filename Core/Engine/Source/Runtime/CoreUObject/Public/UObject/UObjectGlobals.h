@@ -3,6 +3,9 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/ObjectPtr.h"
+#include "Engine/Source/Runtime/Core/Public/Logging/LogMacros.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogUObjectGlobals, Log, All);
 
 class FArchive;
 class FCbWriter;

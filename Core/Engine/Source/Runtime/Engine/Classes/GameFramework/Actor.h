@@ -11,6 +11,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Level.h"
 #include "Engine/Source/Runtime/GameplayTags/Classes/GameplayTagContainer.h"
 #include "Engine/Source/Runtime/Core/Public/Containers/Set.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class AActor;
 class AController;

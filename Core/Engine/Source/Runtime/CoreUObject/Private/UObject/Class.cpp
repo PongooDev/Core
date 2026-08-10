@@ -5,6 +5,8 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/Core/Public/Containers/Map.h"
 
+DEFINE_LOG_CATEGORY(LogClass);
+
 UClass* UField::GetOwnerClass() const
 {
 	UClass* (*GetOwnerClassInternal)(const UField*) = decltype(GetOwnerClassInternal)(ImageBase + Finder::FindUField_GetOwnerClass());
@@ -24,7 +26,7 @@ UProperty* UStruct::FindPropertyByName(FName InName) const
 		UProperty* Prop = FindPropertyByNameInternal(this, InName);
 
 		if (!Prop) {
-			//Log("Failed to find property for object: " + GetFName().ToString().ToString() + " with name: " + InName);
+			//UE_LOG(LogClass, Warning, TEXT("Failed to find property for object: %s with name: %s"), *GetFName().ToString(), *InName.ToString());
 			return nullptr;
 		}
 
@@ -173,7 +175,7 @@ UFunction* UClass::GetFunction(const std::string& FullName, bool bSilent) const
 	UObject* Function = FUObjectArray::FindObject(FullName);
 	if (!Function) {
 		if (!bSilent) {
-			//Log("Failed to find function with full name: " + FullName);
+			//UE_LOG(LogClass, Warning, TEXT("Failed to find function with full name: %hs"), FullName.c_str());
 		}
 		return nullptr;
 	}

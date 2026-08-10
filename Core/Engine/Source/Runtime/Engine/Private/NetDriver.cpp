@@ -18,6 +18,7 @@
 #include "Engine/Source/Runtime/Core/Public/Misc/AssertionMacros.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/PackageMapClient.h"
 #include "Engine/Source/Runtime/Core/Public/Math/UnrealMathUtility.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 static int32* CVarSetNetDormancyEnabled = Finder::FindCVarDirect<int32>(L"net.DormancyEnable");
 static int32 MaxConnectionsToTickPerServerFrame = 10; // its a cvar, idk how to get it so i just hardcoded it for now (can somebody help me with this)
@@ -104,7 +105,7 @@ void UNetDriver::TickFlush(UNetDriver* This, float DeltaSeconds)
 			static int32 LastUpdateCount = 0;
 			if ((LastUpdateCount && !Updated) || Updated)
 			{
-				//Log(This->NetDriverName.ToString().ToString() + " replicated " + std::to_string(Updated) + " actors");
+				//UE_LOG(LogNetTraffic, Verbose, TEXT("%s replicated %d actors"), *This->NetDriverName.ToString(), Updated);
 			}
 			LastUpdateCount = Updated;
 		}
@@ -220,34 +221,6 @@ bool UNetDriver::IsLevelInitializedForActor(const AActor* InActor, const UNetCon
 	return IsLevelInitializedForActorInternal(this, InActor, InConnection);
 }
 
-typedef std::unordered_map<AActor*, UActorChannel*> FActorChannelLookup;
-
-static void BuildActorChannelLookup(UNetConnection* Connection, FActorChannelLookup& OutChannelsByActor)
-{
-	OutChannelsByActor.clear();
-
-	UNetConnection::FActorChannelMap& ActorChannels = Connection->ActorChannels;
-	if (!ActorChannels.IsValid())
-		return;
-
-	OutChannelsByActor.reserve(ActorChannels.Num());
-
-	for (int32 Idx = 0; Idx < ActorChannels.NumAllocated(); Idx++)
-	{
-		if (!ActorChannels.IsValidIndex(Idx))
-			continue;
-
-		auto& Pair = ActorChannels[Idx];
-		OutChannelsByActor[Pair.Key().Get()] = Pair.Value();
-	}
-}
-
-static FORCEINLINE UActorChannel* FindChannel(const FActorChannelLookup& ChannelsByActor, AActor* Actor)
-{
-	auto It = ChannelsByActor.find(Actor);
-	return It != ChannelsByActor.end() ? It->second : nullptr;
-}
-
 void UNetDriver::TickDispatch(UNetDriver* This, float DeltaTime)
 {
 	TickDispatchOG(This, DeltaTime);
@@ -343,7 +316,7 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 
 	UEngine* GEngine = UEngine::GetEngine();
 
-	//Log("UNetDriver::ServerReplicateActors");
+	//UE_LOG(LogNetTraffic, Verbose, TEXT("UNetDriver::ServerReplicateActors"));
 	if (ClientConnections.Num() == 0)
 	{
 		return 0;
@@ -394,9 +367,6 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 
 			if (i >= NumClientsToTick)
 			{
-				static FActorChannelLookup ChannelsByActor;
-				BuildActorChannelLookup(Connection, ChannelsByActor);
-
 				for (int32 ConsiderIdx = 0; ConsiderIdx < ConsiderList.Num(); ConsiderIdx++)
 				{
 					FNetworkObjectInfo* ActorInfo = ConsiderList[ConsiderIdx];
@@ -404,7 +374,7 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 					AActor* Actor = ActorInfo->Actor;
 					if (Actor != NULL && !ActorInfo->bPendingNetUpdate)
 					{
-						UActorChannel* Channel = FindChannel(ChannelsByActor, Actor);
+						UActorChannel* Channel = Connection->FindActorChannelRef(TWeakObjectPtr<AActor>(Actor));
 
 						if (Channel != NULL && Channel->LastUpdateTime < ActorInfo->LastNetUpdateTime)
 						{
@@ -497,7 +467,7 @@ int32 UNetDriver::ServerReplicateActors(float DeltaSeconds)
 
 		/*if (ReplicationFrame % 150 == 0)
 		{
-			Log(std::format("ServerReplicateActors: {:.2f}ms | Considered={} | Updated={}", (Utils::NowSeconds() - ServerReplicateActorsTimeStart) * 1000.0, ConsiderList.Num(), Updated));
+			UE_LOG(LogNetTraffic, Verbose, TEXT("ServerReplicateActors: %.2fms | Considered=%d | Updated=%d"), (Utils::NowSeconds() - ServerReplicateActorsTimeStart) * 1000.0, ConsiderList.Num(), Updated);
 		}*/
 	}
 
@@ -563,7 +533,7 @@ int32 UNetDriver::ServerReplicateActors_PrepConnections(const float DeltaSeconds
 						}
 						else
 						{
-							Log("Player controller " + Connection->PlayerController->GetName().ToString() + "'s view target (" + ViewTarget->GetName().ToString() + ") no longer has a valid world! Was it unloaded as part a level instance?");
+							UE_LOG(LogNet, Warning, TEXT("Player controller %s's view target (%s) no longer has a valid world! Was it unloaded as part a level instance?"), *Connection->PlayerController->GetName(), *ViewTarget->GetName());
 						}
 					}
 				}
@@ -638,7 +608,7 @@ void UNetDriver::ServerReplicateActors_BuildConsiderList(TArray<FNetworkObjectIn
 
 			if (Actor->GetNetDriverName() != NetDriverName)
 			{
-				Log("Actor " + Actor->GetName().ToString() + " in wrong network actors list!");
+				UE_LOG(LogNetTraffic, Warning, TEXT("Actor %s in wrong network actors list!"), *Actor->GetName());
 				continue;
 			}
 
@@ -744,14 +714,11 @@ int32 UNetDriver::ServerReplicateActors_PrioritizeActors(UNetConnection* Connect
 			AGameNetworkManager* const NetworkManager = World->NetworkManager;
 			const bool bLowNetBandwidth = NetworkManager ? NetworkManager->IsInLowBandwidthMode() : false;
 
-			static FActorChannelLookup ChannelsByActor;
-			BuildActorChannelLookup(Connection, ChannelsByActor);
-			
 			for (FNetworkObjectInfo* ActorInfo : ConsiderList)
 			{
 				AActor* Actor = ActorInfo->Actor;
 
-				UActorChannel* Channel = FindChannel(ChannelsByActor, Actor);
+				UActorChannel* Channel = Connection->FindActorChannelRef(TWeakObjectPtr<AActor>(Actor));
 
 				if (!Channel)
 				{
@@ -892,7 +859,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 				}
 				else
 				{
-					Log("- Level not initialized for actor " + Actor->GetName().ToString());
+					UE_LOG(LogNetTraffic, Verbose, TEXT("- Level not initialized for actor %s"), *Actor->GetName());
 				}
 
 				const bool bIsRecentlyRelevant = bIsRelevant || (Channel && Time - Channel->RelevantTime < RelevantTimeout) || ActorInfo->bForceRelevantNextUpdate;
@@ -915,7 +882,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 						}
 						else if (Actor->NetUpdateFrequency < 1.0f)
 						{
-							Log("Unable to replicate " + Actor->GetName().ToString());
+							UE_LOG(LogNetTraffic, Log, TEXT("Unable to replicate %s"), *Actor->GetName());
 							ActorInfo->NextUpdateTime = Actor->GetWorld()->TimeSeconds + 0.2f * FMath::FRand();
 						}
 					}
@@ -946,7 +913,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 						}
 						else
 						{
-							Log("- Channel saturated, forcing pending update for " + Actor->GetName().ToString());
+							UE_LOG(LogNetTraffic, Verbose, TEXT("- Channel saturated, forcing pending update for %s"), *Actor->GetName());
 							Actor->ForceNetUpdate();
 						}
 						if (!Connection->IsNetReady(0))
@@ -960,7 +927,7 @@ int32 UNetDriver::ServerReplicateActors_ProcessPrioritizedActors(UNetConnection*
 				{
 					if (!bLevelInitializedForActor || !Actor->IsNetStartupActor())
 					{
-						//Log("- Closing channel for no longer relevant actor " + Actor->GetName().ToString());
+						//UE_LOG(LogNetTraffic, Verbose, TEXT("- Closing channel for no longer relevant actor %s"), *Actor->GetName());
 						Channel->Close();
 					}
 				}

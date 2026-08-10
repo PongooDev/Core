@@ -7,6 +7,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Package.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TransformNonVectorized.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 APawn* AGameModeBase::SpawnDefaultPawnFor(AController* NewPlayer, AActor* StartSpot)
 {
@@ -135,7 +136,7 @@ TSubclassOf<AGameSession>* AGameModeBase::GetGameSessionClass() const
 
 void AGameModeBase::ProcessServerTravel(AGameModeBase* This, FString& URL, bool bAbsolute)
 {
-	Log("ProcessServerTravel: " + URL.ToString());
+	UE_LOG(LogGameMode, Log, TEXT("ProcessServerTravel: %s"), *URL);
 
 	/*This->StartToLeaveMap();
 

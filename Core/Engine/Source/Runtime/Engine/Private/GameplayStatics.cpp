@@ -17,6 +17,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectArray.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectGlobals.h"
 #include "Engine/Source/Runtime/Core/Public/Math/TransformNonVectorized.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 static UWorld* GetWorldFromContext(const UObject* WorldContextObject)
 {
@@ -87,13 +88,13 @@ UObject* UGameplayStatics::SpawnObject(TSubclassOf<UObject> ObjectClass, UObject
 
 	if (Class->IsChildOf(AActor::StaticClass()))
 	{
-		Log("UGameplayStatics::SpawnObject: cannot spawn an actor class, use SpawnActor instead: " + Class->GetName().ToString());
+		UE_LOG(LogEngine, Warning, TEXT("UGameplayStatics::SpawnObject: cannot spawn an actor class, use SpawnActor instead: %s"), *Class->GetName());
 		return nullptr;
 	}
 
 	if (Class->IsChildOf(UActorComponent::StaticClass()))
 	{
-		Log("UGameplayStatics::SpawnObject: cannot spawn a component class: " + Class->GetName().ToString());
+		UE_LOG(LogEngine, Warning, TEXT("UGameplayStatics::SpawnObject: cannot spawn a component class: %s"), *Class->GetName());
 		return nullptr;
 	}
 
@@ -110,7 +111,7 @@ void UGameplayStatics::FlushLevelStreaming(const UObject* WorldContextObject)
 		Func = GetDefaultObj()->FindFunction("FlushLevelStreaming");
 
 		if (!Func) {
-			Log("UGameplayStatics::FlushLevelStreaming: function not found");
+			UE_LOG(LogEngine, Error, TEXT("UGameplayStatics::FlushLevelStreaming: function not found"));
 		}
 	}
 

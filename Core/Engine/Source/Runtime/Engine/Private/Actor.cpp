@@ -12,6 +12,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Components/SceneComponent.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectArray.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 float AActor::GetGameTimeSinceCreation() const
 {
@@ -93,7 +94,7 @@ ENetMode AActor::InternalGetNetMode(AActor* This)
 void AActor::FinishSpawning(const FTransform& UserTransform, bool bIsDefaultTransform, const FComponentInstanceDataCache* InstanceDataCache)
 {
 	if (bIsDefaultTransform || InstanceDataCache)
-		Log("AActor::FinishSpawning: bIsDefaultTransform/InstanceDataCache are not forwarded (routed through GameplayStatics.FinishSpawningActor)");
+		UE_LOG(LogSpawn, Warning, TEXT("FinishSpawning: bIsDefaultTransform/InstanceDataCache are not forwarded for %s (routed through GameplayStatics.FinishSpawningActor)"), *GetName());
 
 	UGameplayStatics::FinishSpawningActor(this, UserTransform);
 }
@@ -187,7 +188,7 @@ ENetRole AActor::GetRemoteRole() const
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName(L"GetRemoteRole"));
 
 	if (!Func) {
-		Log("AActor::GetRemoteRole: Failed to find function!");
+		UE_LOG(LogActor, Warning, TEXT("GetRemoteRole: Failed to find function GetRemoteRole on %s"), *GetName());
 		return ROLE_None;
 	}
 

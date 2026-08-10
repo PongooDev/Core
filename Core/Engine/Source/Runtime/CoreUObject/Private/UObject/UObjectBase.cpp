@@ -2,6 +2,9 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectBase.h"
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Class.h"
+#include "Engine/Source/Runtime/Core/Public/Logging/LogMacros.h"
+
+DECLARE_LOG_CATEGORY_STATIC(LogUObjectBase, Log, All);
 
 bool UObjectBase::IsValidLowLevel() const
 {
@@ -80,12 +83,12 @@ bool UObjectBase::IsA(UClass* TypeClass) const
 	}
 
 	if (!IsValidLowLevelFast()) {
-		Log("IsA: Object is not valid: 0x" + std::format("{:X}", (uintptr_t)this));
+		UE_LOG(LogUObjectBase, Warning, TEXT("IsA: Object is not valid: 0x%llX"), (uint64)(uintptr_t)this);
 		return false;
 	}
 
 	if (!GetClass()) {
-		Log("IsA: Object has no class: 0x" + std::format("{:X}", (uintptr_t)this));
+		UE_LOG(LogUObjectBase, Warning, TEXT("IsA: Object has no class: 0x%llX"), (uint64)(uintptr_t)this);
 		return false;
 	}
 

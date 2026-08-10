@@ -5,6 +5,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectGlobals.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 void FWorldContext::SetCurrentWorld(UWorld* World)
 {
@@ -45,7 +46,7 @@ UEngine* UEngine::GetEngine() {
 	}
 
 	if (!GEngine || !GEngine->IsA(UEngine::StaticClass())) {
-		Log("UEngine::GetEngine failed to find GEngine!");
+		UE_LOG(LogEngine, Error, TEXT("UEngine::GetEngine failed to find GEngine!"));
 		return GEngine = nullptr;
 	}
 
@@ -64,7 +65,7 @@ bool UEngine::LoadMap(UEngine* This, FWorldContext& WorldContext, FURL& URL, cla
 	{
 		if (!WorldContext.World()->Listen(URL))
 		{
-			//Log("LoadMap: failed to Listen(" + URL.ToString().ToString() + ")");
+			//UE_LOG(LogNet, Error, TEXT("LoadMap: failed to Listen(%s)"), *URL.ToString());
 		}
 	}
 
@@ -112,11 +113,11 @@ bool CreateNamedNetDriver_Local(UEngine* Engine, FWorldContext& Context, FName N
 
 	if (NetDriver)
 	{
-		Log("CreateNamedNetDriver " + NetDriverName.ToString().ToString() + " already exists as " + NetDriver->GetName().ToString());
+		UE_LOG(LogNet, Log, TEXT("CreateNamedNetDriver %s already exists as %s"), *NetDriverName.ToString(), *NetDriver->GetName());
 	}
 	else
 	{
-		Log("CreateNamedNetDriver failed to create driver " + NetDriverName.ToString().ToString() + " from definition " + NetDriverDefinition.ToString().ToString());
+		UE_LOG(LogNet, Log, TEXT("CreateNamedNetDriver failed to create driver %s from definition %s"), *NetDriverName.ToString(), *NetDriverDefinition.ToString());
 	}
 
 	return false;

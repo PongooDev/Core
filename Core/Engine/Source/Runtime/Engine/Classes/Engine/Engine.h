@@ -9,6 +9,7 @@
 #include "EngineBaseTypes.h"
 #include "EngineTypes.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class AMatineeActor;
 class APlayerController;

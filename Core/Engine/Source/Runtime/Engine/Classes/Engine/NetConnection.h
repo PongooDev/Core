@@ -73,6 +73,12 @@ public:
 
 	UChildConnection* GetUChildConnection();
 
+	static bool UsesChannelNames();
+
+	static const FName& ChannelTypeToName(EChannelType ChType);
+
+	UChannel* CreateChannelByName(const FName& ChName, uint32 CreateFlags, int32 ChannelIndex = INDEX_NONE);
+
 	UChannel* CreateChannel(EChannelType Type, bool bOpenedLocally, int32 ChannelIndex = INDEX_NONE);
 
 	void CleanUp();

@@ -37,18 +37,10 @@ public:
 public:
     ValueElementType* Find(const KeyElementType& Key)
     {
-        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
-        {
-            int32 Index = It.GetIndex();
-            ElementType& Pair = Elements[Index];
+        const int32 Index = Elements.FindIdByHashBy(GetTypeHash(Key),
+            [&Key](const ElementType& Pair) { return Pair.Key() == Key; });
 
-            if (Pair.Key() == Key)
-            {
-                return &Pair.Value();
-            }
-        }
-
-        return nullptr;
+        return Index != -1 ? &Elements[Index].Value() : nullptr;
     }
 
     const ValueElementType* Find(const KeyElementType& Key) const

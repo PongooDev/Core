@@ -4,6 +4,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetSerialization.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 FString UKismetSystemLibrary::GetEngineVersion()
 {
@@ -18,7 +19,7 @@ FString UKismetSystemLibrary::GetEngineVersion()
 			Func = StaticClass()->GetFunction("Function /Script/Engine.KismetSystemLibrary.GetEngineVersion");
 
 		if (!Func) {
-			Log("UKismetSystemLibrary::GetEngineVersion: Failed to find function!");
+			UE_LOG(LogEngine, Error, TEXT("UKismetSystemLibrary::GetEngineVersion: Failed to find function!"));
 			return FString();
 		}
 		else {
@@ -40,7 +41,7 @@ void UKismetSystemLibrary::ExecuteConsoleCommand(UObject* WorldContextObject, co
 			Func = StaticClass()->GetFunction("Function /Script/Engine.KismetSystemLibrary.ExecuteConsoleCommand");
 
 		if (!Func) {
-			Log("UKismetSystemLibrary::ExecuteConsoleCommand: Failed to find function!");
+			UE_LOG(LogEngine, Error, TEXT("UKismetSystemLibrary::ExecuteConsoleCommand: Failed to find function!"));
 			return;
 		}
 
@@ -59,7 +60,7 @@ bool UKismetSystemLibrary::LineTraceSingle(UObject* WorldContextObject, const FV
 		Func = StaticClass()->GetFunction("Function /Script/Engine.KismetSystemLibrary.LineTraceSingle_NEW");
 
 	if (!Func) {
-		Log("UKismetSystemLibrary::LineTraceSingle: Failed to find function!");
+		UE_LOG(LogEngine, Error, TEXT("UKismetSystemLibrary::LineTraceSingle: Failed to find function!"));
 		return false;
 	}
 

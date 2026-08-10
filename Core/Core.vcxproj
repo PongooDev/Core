@@ -155,6 +155,7 @@
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\AbilitySystemComponent.h" />
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\AbilitySystemInterface.h" />
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\ActiveGameplayEffectHandle.h" />
+    <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\AbilitySystemLog.h" />
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\AttributeSet.h" />
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\GameplayAbilitySpec.h" />
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\GameplayAbilitySpecHandle.h" />
@@ -326,6 +327,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Kismet\KismetMathLibrary.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Kismet\KismetStringLibrary.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Kismet\KismetSystemLibrary.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Public\EngineLogs.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\NetworkingDistanceConstants.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Net\DataBunch.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Public\Net\DataChannel.h" />
@@ -786,6 +788,7 @@
     <ClCompile Include="Core\Private\Version.cpp" />
     <ClCompile Include="CrashReporter\Private\CrashReporter.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent.cpp" />
+    <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemLog.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\GameplayAbility.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\GameplayAbilitySpecHandle.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\GameplayAbilityTypes.cpp" />
@@ -799,10 +802,12 @@
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Logging\LogMacros.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Math\UnrealMath.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Misc\AssertionMacros.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Private\Misc\CoreGlobals.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Misc\Guid.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\Misc\Parse.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Private\UObject\UnrealNames.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Actor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Private\EngineLogs.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\AI\Navigation\NavigationSystem.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Character.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Private\Components\ActorComponent.cpp" />

@@ -2,6 +2,7 @@
 #include "pch.h"
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+#include "Engine/Source/Runtime/Core/Public/CoreGlobals.h"
 
 class FOutputDevice
 {
@@ -100,7 +101,7 @@ __forceinline static void ExecHook(const std::string& _Name, void* _Detour, _Ot&
 	UObject* _Fn = FUObjectArray::FindObject(_Name);
 	if (!_Fn)
 	{
-		//Log("Failed to find function: " + _Name);
+		//UE_LOG(LogCore, Verbose, TEXT("Failed to find function: %s"), *FString(_Name));
 		return;
 	}
 	ExecHook((UFunction*)_Fn, _Detour, _Orig);

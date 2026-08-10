@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
+
 FName UKismetStringLibrary::Conv_StringToName(const FString& InString)
 {
 	if (Finder::FindUKismetStringLibrary_Conv_StringToName() != 0) {
@@ -14,7 +16,7 @@ FName UKismetStringLibrary::Conv_StringToName(const FString& InString)
 			Func = StaticClass()->GetFunction("Function /Script/Engine.KismetStringLibrary.Conv_StringToName");
 
 		if (!Func) {
-			Log("UKismetStringLibrary::Conv_StringToName: Failed to find function!");
+			UE_LOG(LogEngine, Error, TEXT("UKismetStringLibrary::Conv_StringToName: Failed to find function!"));
 			return FName();
 		}
 

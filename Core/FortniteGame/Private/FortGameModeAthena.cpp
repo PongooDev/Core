@@ -490,7 +490,7 @@ bool AFortGameModeAthena::StartEndGamePhaseTeam(AFortGameModeAthena* This, int32
 
 void AFortGameModeAthena::SpawnFortSpawnActors(AFortGameModeAthena* This, FFortSpawnActorData* SpawnActorData)
 {
-	void (*SpawnFortSpawnActorsInternal)(AFortGameModeAthena* , FFortSpawnActorData*) = decltype(SpawnFortSpawnActorsInternal)(ImageBase + Finder::FindAFortGameModeAthena_SpawnFortSpawnActors());
+	void (*SpawnFortSpawnActorsInternal)(AFortGameModeAthena*, FFortSpawnActorData*) = decltype(SpawnFortSpawnActorsInternal)(ImageBase + Finder::FindAFortGameModeAthena_SpawnFortSpawnActors());
 	SpawnFortSpawnActorsInternal(This, SpawnActorData);
 }
 

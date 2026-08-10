@@ -4,6 +4,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/Info.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/Templates/SubclassOf.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/NoExportTypes.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class AGameSession;
 class AGameStateBase;

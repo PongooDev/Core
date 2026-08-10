@@ -11,6 +11,7 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/WeakObjectPtr.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class Error;
 class FNetGUIDCache;

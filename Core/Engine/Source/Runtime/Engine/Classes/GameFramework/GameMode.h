@@ -6,6 +6,7 @@
 
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class APlayerState;
 class ULocalMessage;

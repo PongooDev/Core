@@ -4,6 +4,9 @@
 #include "Engine/Source/Runtime/Core/Public/HAL/Platform.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Object.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UObjectArray.h"
+#include "Engine/Source/Runtime/Core/Public/Logging/LogMacros.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogClass, Log, All);
 
 class UStruct;
 class UProperty;
@@ -95,6 +98,8 @@ public:
 class UFunction : public UStruct {
 public:
     DefineCustomProperty(void*, Func, ServerOffsets::ExecFunction);
+
+    DefineCustomProperty(EFunctionFlags, FunctionFlags, ServerOffsets::ExecFunction - 0x28);
 public:
     struct Param
     {
@@ -426,7 +431,7 @@ Ret UObject::Call(UFunction* Function, Args&&... args)
             Size = Class ? Class->PropertiesSize : 0; \
             if (Size <= 0) \
             { \
-                Log("Failed to find size for " #__Class "!"); \
+                UE_LOG(LogClass, Warning, TEXT("Failed to find size for %s!"), TEXT(#__Class)); \
                 return 0; \
             } \
         } \
@@ -484,7 +489,7 @@ Ret UObject::Call(UFunction* Function, Args&&... args)
             Size = Struct ? Struct->PropertiesSize : 0; \
             if (Size <= 0) \
             { \
-                Log("Failed to find size for " #__Class "!"); \
+                UE_LOG(LogClass, Warning, TEXT("Failed to find size for %s!"), TEXT(#__Class)); \
                 return 0; \
             } \
         } \
@@ -525,7 +530,7 @@ Ret UObject::Call(UFunction* Function, Args&&... args)
             Size = StaticStruct()->PropertiesSize; \
             if (Size <= 0) \
             { \
-                Log("Failed to find size for " #FullName "!"); \
+                UE_LOG(LogClass, Warning, TEXT("Failed to find size for %s!"), TEXT(FullName)); \
                 return 0; \
             } \
         } \

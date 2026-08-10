@@ -3,6 +3,7 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/SoftObjectPtr.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class ULevel;
 class UWorld;
@@ -55,7 +56,7 @@ public:
 			}
 
 			if (!Func) {
-				Log("ULevelStreamingDynamic::LoadLevelInstanceBySoftObjectPtr: function not found");
+				UE_LOG(LogLevelStreaming, Error, TEXT("ULevelStreamingDynamic::LoadLevelInstanceBySoftObjectPtr: function not found"));
 			}
 		}
 

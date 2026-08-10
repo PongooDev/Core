@@ -2,6 +2,7 @@
 #include "pch.h"
 
 #include "NetDriver.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class Error;
 class FNetworkNotify;

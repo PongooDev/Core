@@ -2,6 +2,7 @@
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LocalPlayer.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 ULocalPlayer* APlayerController::GetLocalPlayer() const
 {
@@ -46,7 +47,7 @@ void APlayerController::ClientMessage(const FString& S, FName Type, float MsgLif
 	if (Func == nullptr)
 		Func = FindFunction(UKismetStringLibrary::Conv_StringToName("ClientMessage"));
 
-	Log(S.ToString());
+	UE_LOG(LogPlayerController, Log, TEXT("%s"), *S);
 
 	Call(Func, S, Type, MsgLifeTime);
 }

@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "Core/Public/Version.h"
 
+#include "Engine/Source/Runtime/Core/Public/Templates/TypeHash.h"
+
 class FNetworkGUID
 {
 public:
@@ -29,6 +31,11 @@ public:
 	friend bool operator!=(const FNetworkGUID& X, const FNetworkGUID& Y)
 	{
 		return X.Value != Y.Value;
+	}
+
+	friend uint32 GetTypeHash(const FNetworkGUID& Guid)
+	{
+		return GetTypeHash(Guid.Value);
 	}
 
 public:

@@ -13,6 +13,7 @@
 #include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LevelStreaming.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class ULevel;
 class AController;

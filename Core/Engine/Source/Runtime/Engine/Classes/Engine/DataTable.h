@@ -5,6 +5,7 @@
 #include "Engine/Source/Runtime/Core/Public/Containers/Map.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 #include "Engine/Source/Runtime/Core/Public/UObject/NameTypes.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 class UDataTable : public UObject {
 public:
@@ -28,7 +29,7 @@ public:
 	{
 		if (RowStruct == nullptr)
 		{
-			Log("UDataTable::GetAllRows : DataTable '" + GetPathName().ToString() + "' has no RowStruct specified.");
+			UE_LOG(LogDataTable, Error, TEXT("UDataTable::GetAllRows : DataTable '%s' has no RowStruct specified."), *GetPathName());
 			return;
 		}
 
@@ -55,13 +56,13 @@ public:
 	{
 		if (RowStruct == nullptr)
 		{
-			Log("UDataTable::FindRow : specified no row for DataTable '" + GetPathName().ToString() + "'.");
+			UE_LOG(LogDataTable, Error, TEXT("UDataTable::FindRow : specified no row for DataTable '%s'."), *GetPathName());
 			return nullptr;
 		}
 
 		if (RowName == UKismetStringLibrary::Conv_StringToName(L"None"))
 		{
-			Log("UDataTable::FindRow : requested invalid row 'None' from DataTable '" + GetPathName().ToString() + "'.");
+			UE_LOG(LogDataTable, Warning, TEXT("UDataTable::FindRow : requested invalid row 'None' from DataTable '%s'."), *GetPathName());
 			return nullptr;
 		}
 
@@ -70,7 +71,7 @@ public:
 		{
 			if (bWarnIfRowMissing)
 			{
-				Log("UDataTable::FindRow : requested row '" + RowName.ToString().ToString() + "' not in DataTable '" + GetPathName().ToString() + "'.");
+				UE_LOG(LogDataTable, Warning, TEXT("UDataTable::FindRow : requested row '%s' not in DataTable '%s'."), *RowName.ToString(), *GetPathName());
 			}
 			return nullptr;
 		}
@@ -78,7 +79,7 @@ public:
 		uint8* RowData = *RowDataPtr;
 		if (RowData == nullptr)
 		{
-			Log("UDataTable::FindRow: RowData is nullptr!");
+			UE_LOG(LogDataTable, Error, TEXT("UDataTable::FindRow : RowData is nullptr for row '%s' in DataTable '%s'."), *RowName.ToString(), *GetPathName());
 			return nullptr;
 		}
 

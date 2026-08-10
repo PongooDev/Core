@@ -7,6 +7,7 @@
 #include "Engine/Source/Runtime/Core/Public/Math/TransformNonVectorized.h"
 #include "Engine/Source/Runtime/Engine/Classes/AI/Navigation/NavigationSystem.h"
 #include "Engine/Source/Runtime/Engine/Classes/GameFramework/GameStateBase.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 UWorld* UWorld::GetWorld() {
 	if (ServerOffsets::GWorld != 0)
@@ -82,7 +83,7 @@ AActor* UWorld::SpawnActor(UClass* Class, FTransform Transform, AActor* Owner) {
 		return UGameplayStatics::FinishSpawningActor(Actor, Transform);
 	}
 	else {
-		Log("Failed to spawn actor of class " + Class->GetName().ToString());
+		UE_LOG(LogSpawn, Warning, TEXT("SpawnActor failed to spawn actor of class %s"), *Class->GetName());
 		return nullptr;
 	}
 }
@@ -104,7 +105,7 @@ bool UWorld::ServerTravel(const FString& FURL, bool bAbsolute, bool bShouldSkipG
 bool UWorld::Listen(FURL& InURL)
 {
 	if (!this) {
-		Log("UWorld::Listen: World is null!");
+		UE_LOG(LogWorld, Error, TEXT("UWorld::Listen: World is null!"));
 		return false;
 	}
 
@@ -148,7 +149,7 @@ bool UWorld::Listen(FURL& InURL)
 		FString Error;
 		if (!NetDriver->InitListen(this, InURL, false, Error)) {
 			Engine->BroadcastNetworkFailure(this, NetDriver, ENetworkFailure::NetDriverListenFailure, Error);
-			Log("Failed to listen: " + Error.ToString());
+			UE_LOG(LogWorld, Log, TEXT("Failed to listen: %s"), *Error);
 			
 			if (Version::Engine_Version >= 4.23) {
 				Engine->DestroyNamedNetDriver(this, NetDriver->NetDriverName);

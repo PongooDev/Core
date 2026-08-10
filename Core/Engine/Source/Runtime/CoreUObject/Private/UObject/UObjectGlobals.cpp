@@ -3,6 +3,8 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Package.h"
 
+DEFINE_LOG_CATEGORY(LogUObjectGlobals);
+
 static UObject* GetTransientPackage()
 {
 	static UObject* TransientPackage = nullptr;
@@ -29,7 +31,7 @@ UObject* StaticConstructObject_Internal(UClass* Class, UObject* Outer, FName Nam
 	const uintptr_t Offset = Finder::FindStaticConstructObject_Internal();
 	if (!Offset)
 	{
-		Log("StaticConstructObject_Internal: engine function not resolved for this build; returning null");
+		UE_LOG(LogUObjectGlobals, Error, TEXT("StaticConstructObject_Internal: engine function not resolved for this build; returning null"));
 		return nullptr;
 	}
 

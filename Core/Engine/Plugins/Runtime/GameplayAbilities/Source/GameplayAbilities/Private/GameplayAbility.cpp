@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/Abilities/GameplayAbility.h"
+#include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemLog.h"
 
 bool UGameplayAbility::CanActivateAbility(UGameplayAbility* This, FGameplayAbilitySpecHandle Handle, FGameplayAbilityActorInfo* ActorInfo, FGameplayTagContainer* SourceTags, FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags)
 {

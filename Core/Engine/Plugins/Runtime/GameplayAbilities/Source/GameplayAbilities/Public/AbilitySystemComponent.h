@@ -3,6 +3,7 @@
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/GameplayTasks/Classes/GameplayTasksComponent.h"
+#include "Engine/Plugins/Runtime/GameplayAbilities/Source/GameplayAbilities/Public/AbilitySystemLog.h"
 #include "GameplayPrediction.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "GameplayAbilitySpecHandle.h"

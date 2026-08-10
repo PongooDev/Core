@@ -3,6 +3,7 @@
 
 #include "Info.h"
 #include "../Engine/World.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
 struct FJoinabilitySettings;
 struct FUniqueNetId;

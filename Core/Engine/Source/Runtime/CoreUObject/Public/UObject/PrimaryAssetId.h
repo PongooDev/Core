@@ -20,6 +20,12 @@ public:
 	DefineStructProperty(FName, PrimaryAssetName);
 public:
 	uint8 Padding[0x10];
+
+public:
+	friend uint32 GetTypeHash(const FPrimaryAssetId& Id)
+	{
+		return HashCombine(GetTypeHash(Id.PrimaryAssetType.Name), GetTypeHash(Id.PrimaryAssetName));
+	}
 };
 
 

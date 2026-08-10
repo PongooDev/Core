@@ -90,6 +90,11 @@ public:
 		return ObjectIndex != Other.ObjectIndex;
 	}
 
+	friend FORCEINLINE uint32 GetTypeHash(const FWeakObjectPtr& WeakObjectPtr)
+	{
+		return (uint32)(WeakObjectPtr.ObjectIndex ^ WeakObjectPtr.ObjectSerialNumber);
+	}
+
 	bool operator==(const class UObject* Other) const
 	{
 		return ObjectIndex == Other->InternalIndex;

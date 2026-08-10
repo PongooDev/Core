@@ -147,6 +147,59 @@ private:
         return false;
     }
 
+private:
+    static inline bool bHashUnreliable = false;
+
+    template <typename PredicateType>
+    int32 FindIdLinearBy(PredicateType Predicate) const
+    {
+        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
+        {
+            const int32 Index = It.GetIndex();
+            if (Predicate(Elements[Index].Value))
+                return Index;
+        }
+
+        return -1;
+    }
+
+public:
+    template <typename PredicateType>
+    int32 FindIdByHashBy(uint32 KeyHash, PredicateType Predicate) const
+    {
+        const int32 NumAllocatedElements = Elements.NumAllocated();
+
+        if (bHashUnreliable || HashSize <= 0 || (HashSize & (HashSize - 1)) != 0 || !Hash.GetAllocation())
+            return FindIdLinearBy(Predicate);
+
+        int32 Guard = NumAllocatedElements + 1;
+
+        for (int32 Index = Hash.GetAllocation()[KeyHash & (uint32)(HashSize - 1)];
+             Index != -1 && Guard-- > 0;
+             Index = Elements[Index].HashNextId)
+        {
+            if (Index < 0 || Index >= NumAllocatedElements)
+                break;
+
+            if (!Elements.IsAllocated(Index))
+                break;
+
+            if (Predicate(Elements[Index].Value))
+                return Index;
+        }
+
+        const int32 LinearIndex = FindIdLinearBy(Predicate);
+        if (LinearIndex != -1)
+        {
+            bHashUnreliable = true;
+            Log("TSet: a hashed lookup missed an element that a linear scan found. GetTypeHash disagrees "
+                "with the hash chains this container was built with - falling back to linear lookups for "
+                "this element type.");
+        }
+
+        return LinearIndex;
+    }
+
 public:
     inline int32 NumAllocated() const { return Elements.NumAllocated(); }
 
@@ -192,72 +245,38 @@ public:
 
     const SetElementType* Find(const SetElementType& Item) const
     {
-        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
-        {
-            int32 Index = It.GetIndex();
-            if (Elements[Index].Value == Item)
-            {
-                return &Elements[Index].Value;
-            }
-        }
-
-        return nullptr;
+        const int32 Index = FindId(Item);
+        return Index != -1 ? &Elements[Index].Value : nullptr;
     }
 
     SetElementType* Find(const SetElementType& Item)
     {
-        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
-        {
-            int32 Index = It.GetIndex();
-            if (Elements[Index].Value == Item)
-            {
-                return &Elements[Index].Value;
-            }
-        }
-
-        return nullptr;
+        const int32 Index = FindId(Item);
+        return Index != -1 ? &Elements[Index].Value : nullptr;
     }
 
     int32 FindId(const SetElementType& Item) const
     {
-        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
-        {
-            int32 Index = It.GetIndex();
-            if (Elements[Index].Value == Item)
-            {
-                return Index;
-            }
-        }
-
-        return -1;
+        return FindIdByHashBy(GetTypeHash(Item),
+            [&Item](const SetElementType& Value) { return Value == Item; });
     }
 
     template <typename ComparisonType>
     bool Contains(ComparisonType Item) const
     {
-        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
-        {
-            int32 Index = It.GetIndex();
-            if (Elements[Index].Value == Item)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return FindIdByHashBy(GetTypeHash(Item),
+            [&Item](const SetElementType& Value) { return Value == Item; }) != -1;
     }
 
     bool Remove(const SetElementType& Item)
     {
-        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It; ++It)
+        const int32 Index = FindId(Item);
+        if (Index != -1)
         {
-            int32 Index = It.GetIndex();
-            if (Elements[Index].Value == Item)
-            {
-                RemoveAt(Index);
-                return true;
-            }
+            RemoveAt(Index);
+            return true;
         }
+
         return false;
     }
 

@@ -66,6 +66,11 @@ public:
 		return AbilityHandle == Other.AbilityHandle && PredictionKeyAtCreation == Other.PredictionKeyAtCreation;
 	}
 
+	friend uint32 GetTypeHash(const FGameplayAbilitySpecHandleAndPredictionKey& Key)
+	{
+		return HashCombine(GetTypeHash(Key.AbilityHandle.Handle), GetTypeHash(Key.PredictionKeyAtCreation));
+	}
+
 	bool operator!=(const FGameplayAbilitySpecHandleAndPredictionKey& Other) const
 	{
 		return AbilityHandle != Other.AbilityHandle || PredictionKeyAtCreation != Other.PredictionKeyAtCreation;

@@ -1,0 +1,21 @@
+#include "pch.h"
+#include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
+
+DEFINE_LOG_CATEGORY(LogEngine);
+DEFINE_LOG_CATEGORY(LogActor);
+DEFINE_LOG_CATEGORY(LogSpawn);
+DEFINE_LOG_CATEGORY(LogWorld);
+DEFINE_LOG_CATEGORY(LogLevel);
+DEFINE_LOG_CATEGORY(LogLevelStreaming);
+DEFINE_LOG_CATEGORY(LogGameMode);
+DEFINE_LOG_CATEGORY(LogPlayerController);
+DEFINE_LOG_CATEGORY(LogPlayerManagement);
+DEFINE_LOG_CATEGORY(LogBlueprintUserMessages);
+DEFINE_LOG_CATEGORY(LogDataTable);
+
+DEFINE_LOG_CATEGORY(LogNet);
+DEFINE_LOG_CATEGORY(LogRep);
+DEFINE_LOG_CATEGORY(LogDemo);
+DEFINE_LOG_CATEGORY(LogNetTraffic);
+DEFINE_LOG_CATEGORY(LogNetDormancy);
+DEFINE_LOG_CATEGORY(LogNetPlayerMovement);
