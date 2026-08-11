@@ -7136,6 +7136,9 @@ uintptr_t Finder::FindAActor_GetWorld() {
 	if (!Addr) {
 		Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 8B 41 ? 48 8B D9 C1 E8 ? A8 ? 75 ? 48 8B 49 ? 8B 41").Get();
 	}
+	if (!Addr) {
+		Addr = Memcury::Scanner::FindPattern("40 53 48 83 EC ? 8B 41 ? 48 8B D9 C1 E8 ? A8 ? 75 ? 48 8B 51").Get();
+	}
 
 	if (Addr) {
 		ServerOffsets::AActor_GetWorld = Addr - ImageBase;
