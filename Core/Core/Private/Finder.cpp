@@ -1129,27 +1129,23 @@ uintptr_t Finder::FindUObjectBase_IsValidLowLevel() {
 	if (ServerOffsets::UObjectBase_IsValidLowLevel)
 		return ServerOffsets::UObjectBase_IsValidLowLevel;
 	static uintptr_t Addr = 0;
+	static bool bInitialized = false;
+	if (bInitialized)
+		return ServerOffsets::UObjectBase_IsValidLowLevel;
 
-	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"NULL object").Get();
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"Object is not registered").Get();
+	auto StringAddr = Memcury::Scanner::FindStringRef(L"NULL object");
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Object is not registered");
 	}
-	if (StringAddr) {
-		for (int i = 0; i < 1024; i++)
-		{
-			auto Ptr = (uint8_t*)(StringAddr - i);
-			if (*Ptr == 0x48 && *(Ptr + 1) == 0x83 && *(Ptr + 2) == 0xEC)
-			{
-				Addr = uint64_t(Ptr);
-				break;
-			}
-		}
+	if (StringAddr.IsValid()) {
+		Addr = StringAddr.FindFunctionStart().Get();
 	}
 
 	if (Addr) {
 		ServerOffsets::UObjectBase_IsValidLowLevel = Addr - ImageBase;
 	}
 
+	bInitialized = true;
 	Log("UObjectBase::IsValidLowLevel found at: 0x" + std::format("{:X}", ServerOffsets::UObjectBase_IsValidLowLevel));
 	return ServerOffsets::UObjectBase_IsValidLowLevel;
 }
@@ -1158,42 +1154,38 @@ uintptr_t Finder::FindUObjectBase_IsValidLowLevelFast() {
 	if (ServerOffsets::UObjectBase_IsValidLowLevelFast)
 		return ServerOffsets::UObjectBase_IsValidLowLevelFast;
 	static uintptr_t Addr = 0;
+	static bool bInitialized = false;
+	if (bInitialized)
+		return ServerOffsets::UObjectBase_IsValidLowLevel;
 
-	uintptr_t StringAddr = Memcury::Scanner::FindStringRef(L"'this' pointer is misaligned.").Get();
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"Virtual functions table is invalid.").Get();
+	auto StringAddr = Memcury::Scanner::FindStringRef(L"'this' pointer is misaligned.");
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Virtual functions table is invalid.");
 	}
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"Object flags are invalid or either Class or Outer is misaligned").Get();
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Object flags are invalid or either Class or Outer is misaligned");
 	}
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"Class object failed IsValidLowLevelFast test.").Get();
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Class object failed IsValidLowLevelFast test.");
 	}
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"Object array index or name index is invalid.").Get();
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Object array index or name index is invalid.");
 	}
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"Class pointer is invalid or CDO is invalid.").Get();
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"Class pointer is invalid or CDO is invalid.");
 	}
-	if (!StringAddr) {
-		StringAddr = Memcury::Scanner::FindStringRef(L"'this' pointer is invalid.").Get();
+	if (!StringAddr.IsValid()) {
+		StringAddr = Memcury::Scanner::FindStringRef(L"'this' pointer is invalid.");
 	}
-	if (StringAddr) {
-		for (int i = 0; i < 1024; i++)
-		{
-			auto Ptr = (uint8_t*)(StringAddr - i);
-			if (*Ptr == 0x40 && *(Ptr + 1) == 0x53)
-			{
-				Addr = uint64_t(Ptr);
-				break;
-			}
-		}
+	if (StringAddr.IsValid()) {
+		Addr = StringAddr.FindFunctionStart().Get();
 	}
 
 	if (Addr) {
 		ServerOffsets::UObjectBase_IsValidLowLevelFast = Addr - ImageBase;
 	}
 
+	bInitialized = true;
 	Log("UObjectBase::IsValidLowLevelFast found at: 0x" + std::format("{:X}", ServerOffsets::UObjectBase_IsValidLowLevelFast));
 	return ServerOffsets::UObjectBase_IsValidLowLevelFast;
 }
