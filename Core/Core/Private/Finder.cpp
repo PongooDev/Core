@@ -9174,6 +9174,9 @@ uintptr_t Finder::FindAActor_BeginPlay() {
 	if (ServerOffsets::AActor_BeginPlay)
 		return ServerOffsets::AActor_BeginPlay;
 	uintptr_t Addr = 0;
+	static bool bInitialized = false;
+	if (bInitialized)
+		return ServerOffsets::AActor_BeginPlay;
 
 	Addr = Memcury::Scanner::FindPattern("4C 8B DC 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? ? ? ? F3 0F 10 89").Get();
 
@@ -9181,6 +9184,7 @@ uintptr_t Finder::FindAActor_BeginPlay() {
 		ServerOffsets::AActor_BeginPlay = Addr - ImageBase;
 	}
 
+	bInitialized = true;
 	Log("AActor_BeginPlay found at: 0x" + std::format("{:X}", ServerOffsets::AActor_BeginPlay));
 	return ServerOffsets::AActor_BeginPlay;
 }
