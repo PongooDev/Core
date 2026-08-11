@@ -6622,10 +6622,17 @@ uintptr_t Finder::FindUNetConnection__ActorChannels() {
 					Addr = static_cast<uintptr_t>(Offset);
 					break;
 				}
-				else if (*Ptr == 0x49 && *(Ptr + 1) == 0x8B) {
-					int32_t Offset = *reinterpret_cast<int32_t*>(Ptr + 3);
-					Addr = static_cast<uintptr_t>(Offset);
-					break;
+			}
+
+			if (!Addr) {
+				for (int i = 0; i < 512; i++)
+				{
+					auto Ptr = (uint8_t*)(StringAddr2 + i);
+					if (*Ptr == 0x49 && *(Ptr + 1) == 0x8B) {
+						int32_t Offset = *reinterpret_cast<int32_t*>(Ptr + 3);
+						Addr = static_cast<uintptr_t>(Offset);
+						break;
+					}
 				}
 			}
 		}

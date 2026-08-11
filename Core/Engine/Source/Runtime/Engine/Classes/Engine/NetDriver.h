@@ -31,6 +31,7 @@ class IAnalyticsProvider;
 class FNetAnalyticsAggregator;
 class UNetDriver;
 class UWorld;
+class ULevel;
 
 struct FActorPriority
 {
@@ -61,13 +62,220 @@ struct FActorPriority
 struct FActorDestructionInfo
 {
 public:
-	TWeakObjectPtr<UObject> ObjOuter;
-	FVector DestroyedPosition;
-	uint32 NetGUID;
-	FString PathName;
-	FName StreamingLevelName;
+	enum class ELayout : uint8 { Unknown = 0, WithLevel = 1, WithoutLevel = 2 };
+
+	static inline ELayout Layout = ELayout::Unknown;
+
+	static FORCEINLINE bool HasLevelField() { return Layout == ELayout::WithLevel; }
+	static FORCEINLINE uint32 StructSize() { return HasLevelField() ? 0x38u : 0x30u; }
+
+	static FORCEINLINE uint32 FieldOffset(uint32 WithLevel, uint32 WithoutLevel)
+	{
+		return HasLevelField() ? WithLevel : WithoutLevel;
+	}
+
+	static FORCEINLINE uint32 OffsetObjOuter() { return FieldOffset(0x08, 0x00); }
+	static FORCEINLINE uint32 OffsetDestroyedPosition() { return FieldOffset(0x10, 0x08); }
+	static FORCEINLINE uint32 OffsetNetGUID() { return FieldOffset(0x1C, 0x14); }
+	static FORCEINLINE uint32 OffsetPathName() { return FieldOffset(0x20, 0x18); }
+	static FORCEINLINE uint32 OffsetStreamingLevelName() { return FieldOffset(0x30, 0x28); }
+
+private:
+	uint8 OpaqueStorage[0x38];
+
+public:
+#define DefineDestructionInfoField(FieldType, FieldName) \
+	FORCEINLINE FieldType& _Get##FieldName() \
+	{ \
+		return *reinterpret_cast<FieldType*>((uintptr_t)this + Offset##FieldName()); \
+	} \
+	FORCEINLINE const FieldType& _Get##FieldName() const \
+	{ \
+		return *reinterpret_cast<const FieldType*>((uintptr_t)this + Offset##FieldName()); \
+	} \
+	__declspec(property(get = _Get##FieldName)) FieldType FieldName;
+
+	DefineDestructionInfoField(TWeakObjectPtr<UObject>, ObjOuter);
+	DefineDestructionInfoField(FVector, DestroyedPosition);
+	DefineDestructionInfoField(FNetworkGUID, NetGUID);
+	DefineDestructionInfoField(FString, PathName);
+	DefineDestructionInfoField(FName, StreamingLevelName);
+
+#undef DefineDestructionInfoField
 };
-static_assert(sizeof(FActorDestructionInfo) == 0x30, "Wrong size on FActorDestructionInfo");
+static_assert(sizeof(FActorDestructionInfo) == 0x38, "Wrong size on FActorDestructionInfo");
+
+class FDestructionInfoMap
+{
+public:
+	uint8* ElementsData;
+	int32 ElementsArrayNum;
+	int32 ElementsArrayMax;
+	FBitArray ElementsAllocationFlags;
+	int32 ElementsFirstFreeIndex;
+	int32 ElementsNumFreeIndices;
+
+	TInlineAllocator<1>::ForElementType<int32> Hash;
+	int32 HashSize;
+
+private:
+	enum class EHashTrust : uint8 { Unknown, Trusted, Unreliable };
+	static inline EHashTrust HashTrust = EHashTrust::Unknown;
+
+	enum class EValueKind : uint8 { Unknown, Inline, Pointer };
+	static inline EValueKind ValueKind = EValueKind::Unknown;
+
+	static FORCEINLINE uint32 ValueOffset() { return 8; }
+	static FORCEINLINE uint32 StrideFor(uint32 StructSize) { return 8 + StructSize + 8; }
+	static FORCEINLINE uint32 StrideForPointer() { return 8 + 8 + 8; }
+
+	static FORCEINLINE uint32 Stride()
+	{
+		return ValueKind == EValueKind::Pointer
+			? StrideForPointer()
+			: StrideFor(FActorDestructionInfo::StructSize());
+	}
+
+	FORCEINLINE FActorDestructionInfo* ValueAt(uint8* Element) const
+	{
+		if (ValueKind == EValueKind::Pointer)
+			return *reinterpret_cast<FActorDestructionInfo**>(Element + ValueOffset());
+
+		return reinterpret_cast<FActorDestructionInfo*>(Element + ValueOffset());
+	}
+
+	FORCEINLINE bool IsAllocated(int32 Index) const
+	{
+		return Index >= 0 && Index < ElementsArrayNum
+			&& ElementsAllocationFlags.IsValidIndex(Index)
+			&& (bool)ElementsAllocationFlags[Index];
+	}
+
+	FORCEINLINE uint8* ElementAt(int32 Index, uint32 InStride) const
+	{
+		return ElementsData + (size_t)Index * InStride;
+	}
+
+	static void ResolveLayout()
+	{
+		if (ValueKind != EValueKind::Unknown)
+			return;
+
+		const double V = Version::Engine_Version;
+
+		const bool bUniquePtrValue = (V == 4.20 || V >= 4.21);
+		const bool bHasLevelField = bUniquePtrValue || V >= 4.18;
+
+		ValueKind = bUniquePtrValue ? EValueKind::Pointer : EValueKind::Inline;
+
+		FActorDestructionInfo::Layout = bHasLevelField
+			? FActorDestructionInfo::ELayout::WithLevel
+			: FActorDestructionInfo::ELayout::WithoutLevel;
+	}
+
+	FORCEINLINE size_t SafeByteLimit() const
+	{
+		const uint32 KnownStride = (ValueKind != EValueKind::Unknown) ? Stride() : StrideForPointer();
+		return (size_t)ElementsArrayMax * KnownStride;
+	}
+
+	static FORCEINLINE uint32 ValueSize()
+	{
+		return ValueKind == EValueKind::Pointer ? 8u : FActorDestructionInfo::StructSize();
+	}
+
+	static FORCEINLINE uint32 HashNextIdOffset() { return ValueOffset() + ValueSize(); }
+	static FORCEINLINE uint32 HashIndexOffset() { return HashNextIdOffset() + 4; }
+
+	FORCEINLINE bool IsElementInBounds(int32 Index, uint32 InStride) const
+	{
+		return (size_t)(Index + 1) * InStride <= SafeByteLimit();
+	}
+
+public:
+	FORCEINLINE int32 NumAllocated() const { return ElementsArrayNum; }
+	FORCEINLINE int32 Num() const { return ElementsArrayNum - ElementsNumFreeIndices; }
+
+	FActorDestructionInfo* Find(const FNetworkGUID& Key) const
+	{
+		if (!ElementsData || ElementsArrayNum <= 0)
+			return nullptr;
+
+		ResolveLayout();
+
+		const uint32 ElementStride = Stride();
+
+		if (HashSize > 0 && (HashSize & (HashSize - 1)) == 0 && Hash.GetAllocation())
+		{
+			const uint32 BucketMask = (uint32)(HashSize - 1);
+			const uint32 StoredBucketOffset = HashIndexOffset();
+
+			if (HashTrust == EHashTrust::Unknown && HashSize > 1)
+			{
+				int32 Verified = 0;
+				EHashTrust Result = EHashTrust::Trusted;
+
+				for (int32 Index = 0; Index < ElementsArrayNum; ++Index)
+				{
+					if (!IsAllocated(Index) || !IsElementInBounds(Index, ElementStride))
+						continue;
+
+					const uint8* Element = ElementAt(Index, ElementStride);
+					const uint32 ElementKey = *reinterpret_cast<const uint32*>(Element);
+					const int32 StoredBucket = *reinterpret_cast<const int32*>(Element + StoredBucketOffset);
+
+					if (StoredBucket != (int32)(GetTypeHash(FNetworkGUID(ElementKey)) & BucketMask))
+					{
+						Result = EHashTrust::Unreliable;
+						break;
+					}
+
+					++Verified;
+				}
+
+				if (Result == EHashTrust::Unreliable || Verified > 0)
+					HashTrust = Result;
+			}
+
+			if (HashTrust == EHashTrust::Trusted || HashSize == 1)
+			{
+				int32 Guard = ElementsArrayNum + 1;
+
+				for (int32 Index = Hash.GetAllocation()[GetTypeHash(Key) & BucketMask];
+					 Index != -1 && Guard-- > 0;
+					 Index = *reinterpret_cast<const int32*>(ElementAt(Index, ElementStride) + HashNextIdOffset()))
+				{
+					if (!IsAllocated(Index) || !IsElementInBounds(Index, ElementStride))
+						break;
+
+					uint8* Element = ElementAt(Index, ElementStride);
+					if (*reinterpret_cast<const uint32*>(Element) == Key.Value)
+						return ValueAt(Element);
+				}
+
+				return nullptr;
+			}
+		}
+
+		for (int32 Index = 0; Index < ElementsArrayNum; ++Index)
+		{
+			if (!IsAllocated(Index) || !IsElementInBounds(Index, ElementStride))
+				continue;
+
+			uint8* Element = ElementAt(Index, ElementStride);
+			if (*reinterpret_cast<const uint32*>(Element) == Key.Value)
+				return ValueAt(Element);
+		}
+
+		return nullptr;
+	}
+};
+
+static_assert(sizeof(FDestructionInfoMap) == 0x50, "FDestructionInfoMap must match TSet's 0x50 layout");
+static_assert(offsetof(FDestructionInfoMap, ElementsAllocationFlags) == 0x10, "AllocationFlags must sit at 0x10 like TSparseArray");
+static_assert(offsetof(FDestructionInfoMap, ElementsFirstFreeIndex) == 0x30, "FirstFreeIndex must sit at 0x30 like TSparseArray");
+static_assert(offsetof(FDestructionInfoMap, Hash) == 0x38, "Hash must sit at 0x38 like TSet");
+static_assert(offsetof(FDestructionInfoMap, HashSize) == 0x48, "HashSize must sit at 0x48 like TSet");
 
 class UNetDriver : public UObject {
 public:
@@ -244,8 +452,6 @@ public:
 
 	int32 ServerReplicateActors_ProcessPrioritizedActors(UNetConnection* Connection, const TArray<FNetViewer>& ConnectionViewers, FActorPriority** PriorityActors, const int32 FinalSortedCount, int32& OutUpdated);
 public:
-	using FDestructionInfoMap = TMap<FNetworkGUID, FActorDestructionInfo>;
-
 	DefineCustomProperty(FDestructionInfoMap, DestroyedStartupOrDormantActors, ServerOffsets::UNetDriver__DestroyedStartupOrDormantActors);
 public:
 	static void Hook() {

@@ -38,7 +38,8 @@ public:
     ValueElementType* Find(const KeyElementType& Key)
     {
         const int32 Index = Elements.FindIdByHashBy(GetTypeHash(Key),
-            [&Key](const ElementType& Pair) { return Pair.Key() == Key; });
+            [&Key](const ElementType& Pair) { return Pair.Key() == Key; },
+            &TMap::GetPairKeyHash);
 
         return Index != -1 ? &Elements[Index].Value() : nullptr;
     }

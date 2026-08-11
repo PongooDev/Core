@@ -777,9 +777,9 @@ int32 UNetDriver::ServerReplicateActors_PrioritizeActors(UNetConnection* Connect
 				}
 			}
 
-			for (int i = 0; i < Connection->DestroyedStartupOrDormantActors.Num(); i++)
+			for (const FNetworkGUID& DestroyedGuid : Connection->DestroyedStartupOrDormantActors)
 			{
-				FActorDestructionInfo* DInfo = DestroyedStartupOrDormantActors.Find(Connection->DestroyedStartupOrDormantActors[i].Value);
+				FActorDestructionInfo* DInfo = DestroyedStartupOrDormantActors.Find(DestroyedGuid);
 				if (DInfo) {
 					OutPriorityList[FinalSortedCount] = FActorPriority(Connection, DInfo, ConnectionViewers);
 					OutPriorityActors[FinalSortedCount] = OutPriorityList + FinalSortedCount;

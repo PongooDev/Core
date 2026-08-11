@@ -148,7 +148,9 @@ private:
     }
 
 private:
-    static inline bool bHashUnreliable = false;
+    enum class EHashTrust : uint8 { Unknown, Trusted, Unreliable };
+
+    static inline EHashTrust HashTrust = EHashTrust::Unknown;
 
     template <typename PredicateType>
     int32 FindIdLinearBy(PredicateType Predicate) const
@@ -163,18 +165,94 @@ private:
         return -1;
     }
 
+private:
+    FORCEINLINE bool IsHashUsable() const
+    {
+        return HashSize > 0 && (HashSize & (HashSize - 1)) == 0 && Hash.GetAllocation() != nullptr;
+    }
+
+    static inline int32 LastTrustAttemptCount = -1;
+
+    static FORCEINLINE int32 BucketBits(int32 InHashSize)
+    {
+        int32 Bits = 0;
+        for (int32 Value = InHashSize; Value > 1; Value >>= 1)
+            ++Bits;
+        return Bits;
+    }
+
+    FORCEINLINE void DemoteHashTrust() const
+    {
+        HashTrust = EHashTrust::Unreliable;
+        Log("TSet: our GetTypeHash does not reproduce the engine's bucket for this element type - "
+            "falling back to linear lookups (correct, but O(N) per lookup).");
+    }
+
+    template <typename KeyHashFuncType>
+    void EstablishHashTrust(KeyHashFuncType GetKeyHash) const
+    {
+        if (HashTrust != EHashTrust::Unknown)
+            return;
+
+        const int32 NumAllocatedElements = Elements.NumAllocated();
+
+        if (!IsHashUsable() || HashSize <= 1 || NumAllocatedElements <= 0)
+            return;
+
+        if (NumAllocatedElements == LastTrustAttemptCount)
+            return;
+
+        LastTrustAttemptCount = NumAllocatedElements;
+
+        const int32 Bits = BucketBits(HashSize);
+        const int32 Needed = (32 + Bits - 1) / Bits;
+
+        const uint32 BucketMask = (uint32)(HashSize - 1);
+        int32 Verified = 0;
+
+        for (FBitArray::FSetBitIterator It(Elements.GetAllocationFlags()); It && Verified < Needed; ++It)
+        {
+            const int32 Index = It.GetIndex();
+            const SetDataType& Element = Elements[Index];
+            const uint32 ElementHash = GetKeyHash(Element.Value);
+
+            if (Element.HashIndex != (int32)(ElementHash & BucketMask))
+            {
+                DemoteHashTrust();
+                return;
+            }
+
+            ++Verified;
+        }
+
+        if (Verified >= Needed)
+            HashTrust = EHashTrust::Trusted;
+    }
+
 public:
-    template <typename PredicateType>
-    int32 FindIdByHashBy(uint32 KeyHash, PredicateType Predicate) const
+    template <typename PredicateType, typename KeyHashFuncType>
+    int32 FindIdByHashBy(uint32 KeyHash, PredicateType Predicate, KeyHashFuncType GetKeyHash) const
     {
         const int32 NumAllocatedElements = Elements.NumAllocated();
 
-        if (bHashUnreliable || HashSize <= 0 || (HashSize & (HashSize - 1)) != 0 || !Hash.GetAllocation())
+        if (NumAllocatedElements <= 0)
+            return -1;
+
+        if (!IsHashUsable())
             return FindIdLinearBy(Predicate);
 
+        if (HashSize > 1)
+        {
+            EstablishHashTrust(GetKeyHash);
+
+            if (HashTrust != EHashTrust::Trusted)
+                return FindIdLinearBy(Predicate);
+        }
+
+        const uint32 BucketMask = (uint32)(HashSize - 1);
         int32 Guard = NumAllocatedElements + 1;
 
-        for (int32 Index = Hash.GetAllocation()[KeyHash & (uint32)(HashSize - 1)];
+        for (int32 Index = Hash.GetAllocation()[KeyHash & BucketMask];
              Index != -1 && Guard-- > 0;
              Index = Elements[Index].HashNextId)
         {
@@ -184,20 +262,30 @@ public:
             if (!Elements.IsAllocated(Index))
                 break;
 
-            if (Predicate(Elements[Index].Value))
+            const SetDataType& Element = Elements[Index];
+
+            if (HashSize > 1)
+            {
+                const uint32 ElementHash = GetKeyHash(Element.Value);
+                if (Element.HashIndex != (int32)(ElementHash & BucketMask))
+                {
+                    DemoteHashTrust();
+                    return FindIdLinearBy(Predicate);
+                }
+            }
+
+            if (Predicate(Element.Value))
                 return Index;
         }
 
-        const int32 LinearIndex = FindIdLinearBy(Predicate);
-        if (LinearIndex != -1)
-        {
-            bHashUnreliable = true;
-            Log("TSet: a hashed lookup missed an element that a linear scan found. GetTypeHash disagrees "
-                "with the hash chains this container was built with - falling back to linear lookups for "
-                "this element type.");
-        }
+        return -1;
+    }
 
-        return LinearIndex;
+    template <typename PredicateType>
+    int32 FindIdByHashBy(uint32 KeyHash, PredicateType Predicate) const
+    {
+        return FindIdByHashBy(KeyHash, Predicate,
+            [](const SetElementType& Value) { return GetTypeHash(Value); });
     }
 
 public:
@@ -241,6 +329,11 @@ public:
         }
 
         return Index;
+    }
+
+    bool ContainsLinear(const SetElementType& Item) const
+    {
+        return FindIdLinearBy([&Item](const SetElementType& Value) { return Value == Item; }) != -1;
     }
 
     const SetElementType* Find(const SetElementType& Item) const
@@ -336,7 +429,7 @@ public:
         for (FBitArray::FSetBitIterator It(OtherSet.Elements.GetAllocationFlags()); It; ++It)
         {
             const SetElementType& Value = OtherSet.Elements[It.GetIndex()].Value;
-            if (!Result.Contains(Value))
+            if (!Result.ContainsLinear(Value))
             {
                 Result.Add(Value);
             }
