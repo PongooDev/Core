@@ -618,7 +618,7 @@ void UNetDriver::ServerReplicateActors_BuildConsiderList(TArray<FNetworkObjectIn
 			}
 
 			ULevel* Level = Actor->GetLevel();
-			if (Level->HasVisibilityChangeRequestPending()/* || Level->bIsAssociatingLevel*/)
+			if (Level->HasVisibilityChangeRequestPending() || Level->IsAssociatingLevel())
 			{
 				continue;
 			}

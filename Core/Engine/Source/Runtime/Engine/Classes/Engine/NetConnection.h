@@ -68,6 +68,66 @@ public:
 	DefineCustomProperty(float, LastRecvAckTime, ServerOffsets::UNetConnection__LastRecvAckTime);
 
 	DefineUProperty(TArray<UChannel*>, OpenChannels);
+
+public:
+	static FORCEINLINE bool ClockBlockValid()
+	{
+		static int32 Cached = -1;
+
+		if (Cached < 0)
+		{
+			const uintptr_t TickCount = ServerOffsets::UNetConnection__TickCount;
+			const uintptr_t Reflected = UNetConnection::StaticClass()->GetPropertyOffset("LastReceiveTime");
+
+			Cached = (TickCount > 0x2C && Reflected != (uintptr_t)-1 && TickCount - 0x2C == Reflected) ? 1 : 0;
+
+			if (!Cached)
+			{
+				Log("UNetConnection clock block check failed - LastReceiveRealtime/LastGoodPacketRealtime/"
+					"LastSendTime/LastTickTime/QueuedBits are unavailable on this build.");
+			}
+		}
+
+		return Cached == 1;
+	}
+
+	static FORCEINLINE uintptr_t ClockOffset(int32 DeltaFromTickCount)
+	{
+		return ClockBlockValid() ? ServerOffsets::UNetConnection__TickCount + DeltaFromTickCount : 0;
+	}
+
+	DefineCustomProperty(double, LastReceiveRealtime, UNetConnection::ClockOffset(-0x24));
+	DefineCustomProperty(double, LastGoodPacketRealtime, UNetConnection::ClockOffset(-0x1C));
+	DefineCustomProperty(double, LastSendTime, UNetConnection::ClockOffset(-0x14));
+	DefineCustomProperty(double, LastTickTime, UNetConnection::ClockOffset(-0x0C));
+	DefineCustomProperty(int32, QueuedBits, UNetConnection::ClockOffset(-0x04));
+
+	static FORCEINLINE uintptr_t ConnectTimeOffset()
+	{
+		const uintptr_t TickCount = ServerOffsets::UNetConnection__TickCount;
+		const uintptr_t LastRecvAck = ServerOffsets::UNetConnection__LastRecvAckTime;
+
+		if (!TickCount || !LastRecvAck || LastRecvAck != TickCount + 0x04)
+			return 0;
+
+		return LastRecvAck + 0x04;
+	}
+
+	DefineCustomProperty(float, ConnectTime, UNetConnection::ConnectTimeOffset());
+
+	static FORCEINLINE uintptr_t MergeInfoOffset(int32 DeltaFromTimeSensitive)
+	{
+		const uintptr_t Base = ServerOffsets::UNetConnection__TimeSensitive;
+		if (!Base)
+			return 0;
+
+		const int64 Result = (int64)Base + DeltaFromTimeSensitive;
+		return Result > 0 ? (uintptr_t)Result : 0;
+	}
+
+	DefineCustomProperty(bool, AllowMerge, UNetConnection::MergeInfoOffset(-0x01));
+
+	DefineCustomProperty(FOutBunch*, LastOutBunch, ServerOffsets::UNetConnection__TimeSensitive ? ((ServerOffsets::UNetConnection__TimeSensitive + 1 + 7) & ~(uintptr_t)7) : 0);
 public:
 	int32 IsNetReady(bool Saturate);
 

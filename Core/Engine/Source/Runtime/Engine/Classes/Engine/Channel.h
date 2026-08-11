@@ -27,6 +27,20 @@ public:
     DefineCustomProperty(int32, NumInRec, ServerOffsets::UChannel__NumInRec);
     DefineCustomProperty(int32, NumOutRec, ServerOffsets::UChannel__NumOutRec);
 
+    static FORCEINLINE uintptr_t BunchQueueOffset(int32 PointerIndex)
+    {
+        const uintptr_t NumOutRecOffset = ServerOffsets::UChannel__NumOutRec;
+        if (!NumOutRecOffset)
+            return 0;
+
+        const uintptr_t FirstPointer = (NumOutRecOffset + sizeof(int32) + 7) & ~(uintptr_t)7;
+        return FirstPointer + (uintptr_t)PointerIndex * sizeof(void*);
+    }
+
+    DefineCustomProperty(FInBunch*, InRec, UChannel::BunchQueueOffset(0));
+    DefineCustomProperty(FOutBunch*, OutRec, UChannel::BunchQueueOffset(1));
+    DefineCustomProperty(FInBunch*, InPartialBunch, UChannel::BunchQueueOffset(2));
+
 public:
     static FORCEINLINE uintptr_t FlagsOffset()
     {
@@ -64,6 +78,20 @@ public:
         else
             Word &= ~(1u << BitIndex);
     }
+
+    static FORCEINLINE uintptr_t ChIndexOffset()
+    {
+        const uintptr_t Flags = FlagsOffset();
+        return Flags ? Flags + sizeof(uint32) : 0;
+    }
+
+    FORCEINLINE int32 _GetChIndex() const
+    {
+        const uintptr_t Offset = ChIndexOffset();
+        return Offset ? *reinterpret_cast<int32*>((uintptr_t)this + Offset) : INDEX_NONE;
+    }
+
+    __declspec(property(get = _GetChIndex)) int32 ChIndex;
 
     FORCEINLINE bool _GetDormant() const { return GetChannelFlag(2); }
     FORCEINLINE void _SetDormant(bool bValue) { SetChannelFlag(2, bValue); }

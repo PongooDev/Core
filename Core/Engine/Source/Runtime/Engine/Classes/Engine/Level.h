@@ -53,6 +53,31 @@ public:
 	DefineUProperty(AWorldSettings*, WorldSettings);
 
 	DefineBitfieldUProperty(bLocked);
+
+public:
+	FORCEINLINE bool IsAssociatingLevel()
+	{
+		(void)_GetbIsVisible();
+
+		if (bIsVisible_Offset < 0 || bIsVisible_FieldMask == 0)
+			return false;
+
+		int32 BitInByte = 0;
+		for (uint8 Mask = bIsVisible_FieldMask; Mask > 1; Mask >>= 1)
+			BitInByte++;
+
+		int32 Distance = 9;
+		if (Version::Engine_Version >= 4.27)
+			Distance = 11;
+		else if (Version::Engine_Version >= 4.23)
+			Distance = 10;
+
+		const int32 TargetBit = bIsVisible_Offset * 8 + BitInByte + Distance;
+
+		const uint8 Byte = *reinterpret_cast<uint8*>((uintptr_t)this + (TargetBit / 8));
+		return (Byte & (1u << (TargetBit % 8))) != 0;
+	}
+
 public:
 	TArray<AActor*> GetActors() const;
 

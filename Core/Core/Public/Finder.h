@@ -731,6 +731,8 @@ public:
 
 	static uintptr_t FindUNetDriver__NetTag();
 
+	static void ValidateNetDriverLayout();
+
 	static uintptr_t FindUNetDriver__DebugRelevantActors();
 
 	static uintptr_t FindUNetDriver__LastPrioritizedActors();

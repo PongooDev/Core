@@ -127,6 +127,65 @@ public:
 
 	DefineCustomProperty(double, LastTickDispatchRealtime, ServerOffsets::UNetDriver__LastTickDispatchRealtime);
 
+	static FORCEINLINE bool ClockBlockValid()
+	{
+		static int32 Cached = -1;
+
+		if (Cached < 0)
+		{
+			const uintptr_t Realtime = ServerOffsets::UNetDriver__LastTickDispatchRealtime;
+			const uintptr_t Send = ServerOffsets::UNetDriver__SendCycles;
+
+			Cached = (Realtime > 0x10 && (!Send || Send == Realtime + 0x0C)) ? 1 : 0;
+
+			if (!Cached)
+			{
+				Log("UNetDriver clock block check failed - ElapsedTime/bIsPeer/ProfileStats/"
+					"bSkipLocalStats are unavailable on this build.");
+			}
+		}
+
+		return Cached == 1;
+	}
+
+	static FORCEINLINE uintptr_t ClockOffset(int32 DeltaFromLastTickDispatchRealtime)
+	{
+		if (!ClockBlockValid())
+			return 0;
+
+		const int64 Result = (int64)ServerOffsets::UNetDriver__LastTickDispatchRealtime + DeltaFromLastTickDispatchRealtime;
+		return Result > 0 ? (uintptr_t)Result : 0;
+	}
+
+	static FORCEINLINE uintptr_t ElapsedTimeOffset()
+	{
+		static uintptr_t Cached = (uintptr_t)-1;
+
+		if (Cached == (uintptr_t)-1)
+		{
+			Cached = 0;
+
+			const uintptr_t Reflected = UNetDriver::StaticClass()->GetPropertyOffset("Time");
+			const uintptr_t Realtime = ServerOffsets::UNetDriver__LastTickDispatchRealtime;
+
+			if (Reflected != (uintptr_t)-1 && Reflected > 0 && Realtime > 0)
+			{
+				const uintptr_t AfterTime = (Reflected + sizeof(float) + 7) & ~(uintptr_t)7;
+				if (Realtime == AfterTime + 0x08)
+					Cached = AfterTime;
+			}
+		}
+
+		return Cached;
+	}
+
+	DefineCustomProperty(double, ElapsedTime, UNetDriver::ElapsedTimeOffset());
+
+	DefineCustomProperty(bool, bIsPeer, UNetDriver::ClockOffset(0x08));
+	DefineCustomProperty(bool, ProfileStats, UNetDriver::ClockOffset(0x09));
+
+	DefineCustomProperty(bool, bSkipLocalStats, ServerOffsets::UNetDriver__SendCycles ? UNetDriver::ClockOffset(0x0A) : 0);
+
 	DefineCustomProperty(bool, bIsStandbyCheckingEnabled, ServerOffsets::UNetDriver__bIsStandbyCheckingEnabled);
 
 	DefineCustomProperty(bool, bHasStandbyCheatTriggered, ServerOffsets::UNetDriver__bHasStandbyCheatTriggered);

@@ -363,7 +363,7 @@ uint8 AFortGameStateAthena::GetGamePhaseStep(float& OutTimeRemaining) {
 }
 
 void AFortGameStateAthena::UpdateGamePhaseStep() {
-	if (!_HasGamePhaseStep())
+	if (!_HasGamePhaseStep() || Version::Fortnite_Version <= 1.72)
 		return;
 
 	AFortGameModeAthena* FortGMAthena = AuthorityGameMode->Cast<AFortGameModeAthena>();

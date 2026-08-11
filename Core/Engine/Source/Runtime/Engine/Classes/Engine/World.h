@@ -12,6 +12,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/NoExportTypes.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Rotator.h"
 #include "Engine/Source/Runtime/Core/Public/Math/Vector.h"
+#include "Engine/Source/Runtime/Core/Public/Math/IntVector.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/LevelStreaming.h"
 #include "Engine/Source/Runtime/Engine/Public/EngineLogs.h"
 
@@ -141,6 +142,57 @@ public:
 	DefineUProperty(AGameNetworkManager*, NetworkManager);
 
 	DefineCustomProperty(float, TimeSeconds, ServerOffsets::UWorld__TimeSeconds);
+
+	static FORCEINLINE uintptr_t ClockOffset(int32 DeltaFromTimeSeconds)
+	{
+		const uintptr_t Base = ServerOffsets::UWorld__TimeSeconds;
+		return Base ? Base + DeltaFromTimeSeconds : 0;
+	}
+
+	DefineCustomProperty(float, UnpausedTimeSeconds, UWorld::ClockOffset(0x04));
+	DefineCustomProperty(float, RealTimeSeconds, UWorld::ClockOffset(0x08));
+	DefineCustomProperty(float, AudioTimeSeconds, UWorld::ClockOffset(0x0C));
+	DefineCustomProperty(float, DeltaTimeSeconds, UWorld::ClockOffset(0x10));
+	DefineCustomProperty(float, PauseDelay, UWorld::ClockOffset(0x14));
+
+	static FORCEINLINE bool OriginBlockValid()
+	{
+		static int32 Cached = -1;
+
+		if (Cached < 0)
+		{
+			const uintptr_t Base = ServerOffsets::UWorld__TimeSeconds;
+			const uintptr_t Composition = UWorld::StaticClass()->GetPropertyOffset("WorldComposition");
+
+			Cached = (Base && Composition != (uintptr_t)-1 && Composition == Base + 0x40) ? 1 : 0;
+
+			if (!Cached)
+			{
+				if (Composition != (uintptr_t)-1 && Base)
+				{
+					UE_LOG(LogWorld, Warning,
+						TEXT("UWorld origin block check failed - WorldComposition is at 0x%X but TimeSeconds 0x%X implies 0x%X. ")
+						TEXT("UnpausedTimeSeconds/RealTimeSeconds/AudioTimeSeconds/DeltaTimeSeconds/PauseDelay are suspect on this build."),
+						(uint32)Composition, (uint32)Base, (uint32)(Base + 0x40));
+				}
+				else
+				{
+					UE_LOG(LogWorld, Warning, TEXT("UWorld origin block could not be verified - OriginLocation/RequestedOriginLocation/OriginOffsetThisFrame are unavailable."));
+				}
+			}
+		}
+
+		return Cached == 1;
+	}
+
+	static FORCEINLINE uintptr_t OriginOffset(int32 DeltaFromTimeSeconds)
+	{
+		return OriginBlockValid() ? ServerOffsets::UWorld__TimeSeconds + DeltaFromTimeSeconds : 0;
+	}
+
+	DefineCustomProperty(FIntVector, OriginLocation, UWorld::OriginOffset(0x18));
+	DefineCustomProperty(FIntVector, RequestedOriginLocation, UWorld::OriginOffset(0x24));
+	DefineCustomProperty(FVector, OriginOffsetThisFrame, UWorld::OriginOffset(0x30));
 
 	DefineUProperty(UNavigationSystem*, NavigationSystem);
 public:

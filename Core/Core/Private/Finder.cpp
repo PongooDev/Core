@@ -6,6 +6,8 @@
 #include "../Public/Offsets.h"
 #include "../Public/Utils.h"
 
+static uintptr_t NetTagRelative(int32 Delta);
+
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Object.h"
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/Class.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
@@ -6644,7 +6646,11 @@ uintptr_t Finder::FindUActorChannel__LastUpdateTime() {
 		return ServerOffsets::UActorChannel__LastUpdateTime;
 	uintptr_t Addr = 0;
 
-	Addr = UActorChannel::StaticClass()->GetPropertyOffset("Actor") + 4 + 4 + 8 + 8; // idk if this will change in future
+	const uintptr_t ActorOffset = UActorChannel::StaticClass()->GetPropertyOffset("Actor");
+	if (ActorOffset != (uintptr_t)-1)
+	{
+		Addr = ActorOffset + 0x18;
+	}
 
 	if (Addr) {
 		ServerOffsets::UActorChannel__LastUpdateTime = Addr;
@@ -6849,7 +6855,7 @@ uintptr_t Finder::FindUNetDriver__NetTag() {
 uintptr_t Finder::FindUNetDriver__DebugRelevantActors() {
 	if (ServerOffsets::UNetDriver__DebugRelevantActors)
 		return ServerOffsets::UNetDriver__DebugRelevantActors;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(4);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__DebugRelevantActors = Addr;
@@ -6863,7 +6869,7 @@ uintptr_t Finder::FindUNetDriver__LastPrioritizedActors() {
 	if (ServerOffsets::UNetDriver__LastPrioritizedActors)
 		return ServerOffsets::UNetDriver__LastPrioritizedActors;
 
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(8);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__LastPrioritizedActors = Addr;
@@ -7347,7 +7353,7 @@ uintptr_t Finder::FindFOutBunch_Constructor() {
 uintptr_t Finder::FindUNetDriver__LastRelevantActors() {
 	if (ServerOffsets::UNetDriver__LastRelevantActors)
 		return ServerOffsets::UNetDriver__LastRelevantActors;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(24);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__LastRelevantActors = Addr;
@@ -7360,7 +7366,7 @@ uintptr_t Finder::FindUNetDriver__LastRelevantActors() {
 uintptr_t Finder::FindUNetDriver__LastSentActors() {
 	if (ServerOffsets::UNetDriver__LastSentActors)
 		return ServerOffsets::UNetDriver__LastSentActors;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(40);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__LastSentActors = Addr;
@@ -7373,7 +7379,7 @@ uintptr_t Finder::FindUNetDriver__LastSentActors() {
 uintptr_t Finder::FindUNetDriver__LastNonRelevantActors() {
 	if (ServerOffsets::UNetDriver__LastNonRelevantActors)
 		return ServerOffsets::UNetDriver__LastNonRelevantActors;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(56);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__LastNonRelevantActors = Addr;
@@ -7725,11 +7731,37 @@ uintptr_t Finder::FindUNetConnection_CleanUpVFT() {
 	return ServerOffsets::UNetConnection_CleanUpVFT;
 }
 
+static uintptr_t NetTagRelative(int32 Delta)
+{
+	const uintptr_t NetTag = Finder::FindUNetDriver__NetTag();
+	if (!NetTag)
+		return 0;
+
+	const int64 Result = (int64)NetTag + Delta;
+	return Result > 0 ? (uintptr_t)Result : 0;
+}
+
+void Finder::ValidateNetDriverLayout()
+{
+	const uintptr_t LastNonRelevant = FindUNetDriver__LastNonRelevantActors();
+	const uintptr_t Destroyed = FindUNetDriver__DestroyedStartupOrDormantActors();
+
+	if (!LastNonRelevant || !Destroyed)
+		return;
+
+	if (LastNonRelevant + 0x10 != Destroyed)
+	{
+		Log("UNetDriver layout check FAILED: LastNonRelevantActors(0x" + std::format("{:X}", LastNonRelevant)
+			+ ") + 0x10 != DestroyedStartupOrDormantActors(0x" + std::format("{:X}", Destroyed)
+			+ "). The NetTag-relative offsets do not match this build - treat them as unreliable.");
+	}
+}
+
 uintptr_t Finder::FindUNetDriver__bIsStandbyCheckingEnabled() {
 	if (ServerOffsets::UNetDriver__bIsStandbyCheckingEnabled)
 		return ServerOffsets::UNetDriver__bIsStandbyCheckingEnabled;
 
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-32);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__bIsStandbyCheckingEnabled = Addr;
@@ -7743,7 +7775,7 @@ uintptr_t Finder::FindUNetDriver__bHasStandbyCheatTriggered() {
 	if (ServerOffsets::UNetDriver__bHasStandbyCheatTriggered)
 		return ServerOffsets::UNetDriver__bHasStandbyCheatTriggered;
 
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-31);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__bHasStandbyCheatTriggered = Addr;
@@ -7758,6 +7790,23 @@ uintptr_t Finder::FindAActor__CreationTime() {
 		return ServerOffsets::AActor__CreationTime;
 	uintptr_t Addr = 0;
 
+	const uintptr_t SpawnHandling = AActor::StaticClass()->GetPropertyOffset("SpawnCollisionHandlingMethod");
+	const uintptr_t Instigator = AActor::StaticClass()->GetPropertyOffset("Instigator");
+
+	if (SpawnHandling != (uintptr_t)-1 && Instigator != (uintptr_t)-1 && SpawnHandling > 0)
+	{
+		const uintptr_t Candidate = (SpawnHandling + 1 + 3) & ~(uintptr_t)3;
+
+		if (((Candidate + 4 + 7) & ~(uintptr_t)7) == Instigator)
+		{
+			Addr = Candidate;
+		}
+		else
+		{
+			Log("AActor__CreationTime: SpawnCollisionHandlingMethod/Instigator do not bracket it as expected on this build - leaving unresolved.");
+		}
+	}
+
 	if (Addr) {
 		ServerOffsets::AActor__CreationTime = Addr;
 	}
@@ -7769,7 +7818,7 @@ uintptr_t Finder::FindAActor__CreationTime() {
 uintptr_t Finder::FindUNetDriver__JoinInProgressStandbyWaitTime() {
 	if (ServerOffsets::UNetDriver__JoinInProgressStandbyWaitTime)
 		return ServerOffsets::UNetDriver__JoinInProgressStandbyWaitTime;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-4);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__JoinInProgressStandbyWaitTime = Addr;
@@ -7782,7 +7831,7 @@ uintptr_t Finder::FindUNetDriver__JoinInProgressStandbyWaitTime() {
 uintptr_t Finder::FindUNetConnection__LastRecvAckTime() {
 	if (ServerOffsets::UNetConnection__LastRecvAckTime)
 		return ServerOffsets::UNetConnection__LastRecvAckTime;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = Finder::FindUNetConnection__TickCount() ? Finder::FindUNetConnection__TickCount() + 4 : 0;
 
 	if (Addr) {
 		ServerOffsets::UNetConnection__LastRecvAckTime = Addr;
@@ -7795,7 +7844,7 @@ uintptr_t Finder::FindUNetConnection__LastRecvAckTime() {
 uintptr_t Finder::FindUNetDriver__StandbyRxCheatTime() {
 	if (ServerOffsets::UNetDriver__StandbyRxCheatTime)
 		return ServerOffsets::UNetDriver__StandbyRxCheatTime;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-28);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__StandbyRxCheatTime = Addr;
@@ -7808,7 +7857,7 @@ uintptr_t Finder::FindUNetDriver__StandbyRxCheatTime() {
 uintptr_t Finder::FindUNetDriver__StandbyTxCheatTime() {
 	if (ServerOffsets::UNetDriver__StandbyTxCheatTime)
 		return ServerOffsets::UNetDriver__StandbyTxCheatTime;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-24);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__StandbyTxCheatTime = Addr;
@@ -7821,7 +7870,7 @@ uintptr_t Finder::FindUNetDriver__StandbyTxCheatTime() {
 uintptr_t Finder::FindUNetDriver__BadPingThreshold() {
 	if (ServerOffsets::UNetDriver__BadPingThreshold)
 		return ServerOffsets::UNetDriver__BadPingThreshold;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-20);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__BadPingThreshold = Addr;
@@ -7834,7 +7883,7 @@ uintptr_t Finder::FindUNetDriver__BadPingThreshold() {
 uintptr_t Finder::FindUNetDriver__PercentMissingForRxStandby() {
 	if (ServerOffsets::UNetDriver__PercentMissingForRxStandby)
 		return ServerOffsets::UNetDriver__PercentMissingForRxStandby;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-16);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__PercentMissingForRxStandby = Addr;
@@ -7847,7 +7896,7 @@ uintptr_t Finder::FindUNetDriver__PercentMissingForRxStandby() {
 uintptr_t Finder::FindUNetDriver__PercentMissingForTxStandby() {
 	if (ServerOffsets::UNetDriver__PercentMissingForTxStandby)
 		return ServerOffsets::UNetDriver__PercentMissingForTxStandby;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-12);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__PercentMissingForTxStandby = Addr;
@@ -7860,7 +7909,7 @@ uintptr_t Finder::FindUNetDriver__PercentMissingForTxStandby() {
 uintptr_t Finder::FindUNetDriver__PercentForBadPing() {
 	if (ServerOffsets::UNetDriver__PercentForBadPing)
 		return ServerOffsets::UNetDriver__PercentForBadPing;
-	uintptr_t Addr = 0;
+	uintptr_t Addr = NetTagRelative(-8);
 
 	if (Addr) {
 		ServerOffsets::UNetDriver__PercentForBadPing = Addr;
@@ -11511,6 +11560,9 @@ void Finder::SetupOffsets() {
 	FindUNetDriver__LastRelevantActors();
 	FindUNetDriver__LastSentActors();
 	FindUNetDriver__LastNonRelevantActors();
+
+	ValidateNetDriverLayout();
+
 	FindUNetDriver__GuidCache();
 	FindUNetDriver__SendCycles();
 	FindUNetDriver__RecvCycles();
