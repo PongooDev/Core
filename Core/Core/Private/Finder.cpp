@@ -1547,6 +1547,12 @@ uintptr_t Finder::FindUStruct_FindPropertyByName() {
 	else if (Version::Engine_Version == 4.22) {
 		Addr = Memcury::Scanner::FindPattern("48 8B 41 ? 48 89 54 24 ? 48 85 C0").Get();
 	}
+	else if (Version::Engine_Version == 4.23) {
+		Addr = Memcury::Scanner::FindPattern("48 8B 41 ? 48 89 54 24 ? 48 85 C0").Get();
+	}
+	else if (Version::Engine_Version == 4.24) {
+		Addr = Memcury::Scanner::FindPattern("48 8B 41 ? 48 89 54 24 ? 48 85 C0").Get();
+	}
 
 	if (Addr) {
 		ServerOffsets::UStruct_FindPropertyByName = Addr - ImageBase;
@@ -8580,6 +8586,9 @@ uintptr_t Finder::FindUNetDriver_IsLevelInitializedForActor() {
 	if (ServerOffsets::UNetDriver_IsLevelInitializedForActor)
 		return ServerOffsets::UNetDriver_IsLevelInitializedForActor;
 	uintptr_t Addr = 0;
+	static bool bInitialized = false;
+	if (bInitialized)
+		return ServerOffsets::UNetDriver_IsLevelInitializedForActor;
 
 	if (Version::Engine_Version <= 4.21) {
 		Addr = Memcury::Scanner::FindPattern("48 89 5C 24 ? 57 48 83 EC ? 48 8B 81 ? ? ? ? 49 8B D8 48 8B FA").Get();
@@ -8592,6 +8601,7 @@ uintptr_t Finder::FindUNetDriver_IsLevelInitializedForActor() {
 		ServerOffsets::UNetDriver_IsLevelInitializedForActor = Addr - ImageBase;
 	}
 
+	bInitialized = true;
 	Log("UNetDriver_IsLevelInitializedForActor found at: 0x" + std::format("{:X}", ServerOffsets::UNetDriver_IsLevelInitializedForActor));
 	return ServerOffsets::UNetDriver_IsLevelInitializedForActor;
 }
