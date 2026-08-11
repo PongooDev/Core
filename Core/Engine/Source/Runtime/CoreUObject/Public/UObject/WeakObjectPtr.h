@@ -82,12 +82,12 @@ public:
 
 	bool operator==(const FWeakObjectPtr& Other) const
 	{
-		return ObjectIndex == Other.ObjectIndex;
+		return ObjectIndex == Other.ObjectIndex && ObjectSerialNumber == Other.ObjectSerialNumber;
 	}
 
 	bool operator!=(const FWeakObjectPtr& Other) const
 	{
-		return ObjectIndex != Other.ObjectIndex;
+		return !(*this == Other);
 	}
 
 	friend FORCEINLINE uint32 GetTypeHash(const FWeakObjectPtr& WeakObjectPtr)
