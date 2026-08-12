@@ -17,6 +17,8 @@ namespace
 		StatusPanel()
 			: StartedAt(GetTickCount64())
 		{
+			GuiDetail::PrimeEngineClasses();
+			AFortGameStateAthena::StaticClass();
 			AFortSafeZoneIndicator::StaticClass();
 			EAthenaGamePhase::StaticEnum();
 			EAthenaGamePhaseStep::StaticEnum();

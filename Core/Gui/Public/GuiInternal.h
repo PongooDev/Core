@@ -8,6 +8,7 @@
 #include <deque>
 
 class FString;
+class APlayerState;
 
 struct FGuiScopedLock
 {
@@ -61,6 +62,17 @@ namespace GuiDetail
 	void StatCard(const char* Label, const std::string& Value, const ImVec4& ValueColor, float Width);
 	ImVec4 PingColor(int PingMs);
 	std::string ReadNameBounded(const FString& Name);
+
+	struct FPlayerNameInfo
+	{
+		std::string Name;
+		std::string AccountName;
+		std::string NetName;
+		const char* Source = "none";
+	};
+
+	FPlayerNameInfo ReadPlayerName(APlayerState* PlayerState);
+	void PrimeEngineClasses();
 	std::string FormatDuration(ULONGLONG TotalSeconds);
 
 	GuiPanel* CreateConsolePanel();

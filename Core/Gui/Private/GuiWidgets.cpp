@@ -3,6 +3,14 @@
 #include "Gui/Public/GuiInternal.h"
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/NetConnection.h"
+#include "Engine/Source/Runtime/Engine/Classes/GameFramework/GameStateBase.h"
+#include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerController.h"
+#include "Engine/Source/Runtime/Engine/Classes/GameFramework/PlayerState.h"
+#include "FortniteGame/Public/Player/FortPlayerController.h"
+#include "FortniteGame/Public/Player/FortRegisteredPlayerInfo.h"
 
 void GuiDetail::SectionLabel(const char* Text)
 {
@@ -96,6 +104,60 @@ std::string GuiDetail::ReadNameBounded(const FString& Name)
 
 	std::string Out(Size, 0);
 	WideCharToMultiByte(CP_UTF8, 0, Wide.data(), (int)Wide.size(), Out.data(), Size, nullptr, nullptr);
+	return Out;
+}
+
+void GuiDetail::PrimeEngineClasses()
+{
+	UWorld::StaticClass();
+	AActor::StaticClass();
+	AController::StaticClass();
+	APlayerController::StaticClass();
+	AGameStateBase::StaticClass();
+	APlayerState::StaticClass();
+	UNetDriver::StaticClass();
+	UNetConnection::StaticClass();
+	AFortPlayerController::StaticClass();
+	UFortRegisteredPlayerInfo::StaticClass();
+}
+
+GuiDetail::FPlayerNameInfo GuiDetail::ReadPlayerName(APlayerState* PlayerState)
+{
+	FPlayerNameInfo Out;
+
+	if (!PlayerState)
+		return Out;
+
+	if (PlayerState->_HasPlayerNamePrivate())
+		Out.NetName = ReadNameBounded(PlayerState->PlayerNamePrivate);
+
+	if (Out.NetName.empty() && PlayerState->_HasPlayerName())
+		Out.NetName = ReadNameBounded(PlayerState->PlayerName);
+
+	if (PlayerState->_HasOwner())
+	{
+		AActor* Owner = PlayerState->Owner;
+		AFortPlayerController* Controller = Owner ? Owner->Cast<AFortPlayerController>() : nullptr;
+
+		if (Controller && Controller->_HasMyPlayerInfo())
+		{
+			UFortRegisteredPlayerInfo* Info = Controller->MyPlayerInfo;
+			if (Info && Info->_HasPlayerName())
+				Out.AccountName = ReadNameBounded(Info->PlayerName);
+		}
+	}
+
+	if (!Out.AccountName.empty())
+	{
+		Out.Name = Out.AccountName;
+		Out.Source = "account";
+	}
+	else if (!Out.NetName.empty())
+	{
+		Out.Name = Out.NetName;
+		Out.Source = "connection";
+	}
+
 	return Out;
 }
 

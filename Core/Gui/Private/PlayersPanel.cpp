@@ -16,6 +16,9 @@ namespace
 	struct FPlayerRow
 	{
 		std::string Name;
+		std::string AccountName;
+		std::string NetName;
+		const char* NameSource = "none";
 		std::string DeathCause;
 		int PlayerId = -1;
 		int PingMs = 0;
@@ -43,7 +46,7 @@ namespace
 	public:
 		PlayersPanel()
 		{
-			APlayerState::StaticClass();
+			GuiDetail::PrimeEngineClasses();
 			AFortPlayerStateAthena::StaticClass();
 			EDeathCause::StaticEnum();
 			FDeathInfo::StaticStruct();
@@ -95,9 +98,13 @@ namespace
 				continue;
 
 			FPlayerRow& Row = Rows.emplace_back();
-			Row.Name = GuiDetail::ReadNameBounded(PlayerState->_HasPlayerNamePrivate()
-				? PlayerState->PlayerNamePrivate
-				: PlayerState->PlayerName);
+
+			const GuiDetail::FPlayerNameInfo NameInfo = GuiDetail::ReadPlayerName(PlayerState);
+			Row.Name = NameInfo.Name;
+			Row.AccountName = NameInfo.AccountName;
+			Row.NetName = NameInfo.NetName;
+			Row.NameSource = NameInfo.Source;
+
 			Row.PingMs = (int)PlayerState->Ping * 4;
 			Row.bIsBot = PlayerState->bIsABot;
 
@@ -289,8 +296,16 @@ namespace
 			else
 				ImGui::TextDisabled("(unnamed)");
 
-			if (Row.PlayerId >= 0 && ImGui::IsItemHovered())
-				ImGui::SetTooltip("Player id %d", Row.PlayerId);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				if (Row.PlayerId >= 0)
+					ImGui::Text("Player id %d", Row.PlayerId);
+				ImGui::Text("Account name: %s", Row.AccountName.empty() ? "-" : Row.AccountName.c_str());
+				ImGui::Text("Connection name: %s", Row.NetName.empty() ? "-" : Row.NetName.c_str());
+				ImGui::TextDisabled("showing the %s name", Row.NameSource);
+				ImGui::EndTooltip();
+			}
 
 			if (Row.bIsBot)
 			{

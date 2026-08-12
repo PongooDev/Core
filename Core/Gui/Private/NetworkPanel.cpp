@@ -55,6 +55,11 @@ namespace
 	class NetworkPanel : public GuiPanel
 	{
 	public:
+		NetworkPanel()
+		{
+			GuiDetail::PrimeEngineClasses();
+		}
+
 		const char* Name() const override { return "Network"; }
 		const char* Category() const override { return "DIAGNOSTICS"; }
 		void Render() override;
@@ -182,9 +187,7 @@ namespace
 				{
 					if (APlayerState* PlayerState = Controller->PlayerState)
 					{
-						Row.PlayerName = GuiDetail::ReadNameBounded(PlayerState->_HasPlayerNamePrivate()
-							? PlayerState->PlayerNamePrivate
-							: PlayerState->PlayerName);
+						Row.PlayerName = GuiDetail::ReadPlayerName(PlayerState).Name;
 						Row.PingMs = (int)PlayerState->Ping * 4;
 					}
 				}
