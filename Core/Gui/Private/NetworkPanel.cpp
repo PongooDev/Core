@@ -58,6 +58,7 @@ namespace
 		const char* Name() const override { return "Network"; }
 		const char* Category() const override { return "DIAGNOSTICS"; }
 		void Render() override;
+		void Tick() override;
 
 	private:
 		void Refresh();
@@ -65,7 +66,42 @@ namespace
 		FDriverInfo Driver;
 		std::vector<FConnectionRow> Connections;
 		ULONGLONG LastRefresh = 0;
+
+		uint32 RateLastFrame = 0;
+		ULONGLONG RateLastTick = 0;
+		float ReplicationRate = -1.0f;
 	};
+
+	void NetworkPanel::Tick()
+	{
+		const ULONGLONG Now = GetTickCount64();
+		if (Now - LastRefresh < 250)
+			return;
+
+		LastRefresh = Now;
+		Refresh();
+
+		if (!Driver.bValid || !ServerOffsets::UNetDriver__ReplicationFrame)
+		{
+			RateLastTick = 0;
+			ReplicationRate = -1.0f;
+			return;
+		}
+
+		if (!RateLastTick || Driver.ReplicationFrame < RateLastFrame)
+		{
+			RateLastTick = Now;
+			RateLastFrame = Driver.ReplicationFrame;
+		}
+		else if (Now - RateLastTick >= 1000)
+		{
+			const float Seconds = (float)(Now - RateLastTick) / 1000.0f;
+			ReplicationRate = (float)(Driver.ReplicationFrame - RateLastFrame) / Seconds;
+
+			RateLastTick = Now;
+			RateLastFrame = Driver.ReplicationFrame;
+		}
+	}
 
 	void NetworkPanel::Refresh()
 	{
@@ -173,13 +209,6 @@ namespace
 
 	void NetworkPanel::Render()
 	{
-		const ULONGLONG Now = GetTickCount64();
-		if (Now - LastRefresh >= 250)
-		{
-			LastRefresh = Now;
-			Refresh();
-		}
-
 		if (!Driver.bValid)
 		{
 			ImGui::TextDisabled("No net driver yet - the server is not listening.");
@@ -199,6 +228,9 @@ namespace
 			? GuiDetail::FormatDuration((ULONGLONG)Driver.Time)
 			: std::string("-"));
 		GuiDetail::LabelledValue("Replication frame", std::to_string(Driver.ReplicationFrame));
+		GuiDetail::LabelledValue("Replication rate", ReplicationRate >= 0.0f
+			? std::format("{:.1f} /s", ReplicationRate)
+			: std::string("-"));
 
 		const std::string ConnectionsLabel = Connections.empty()
 			? std::string("CONNECTIONS")

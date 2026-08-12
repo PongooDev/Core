@@ -18,4 +18,5 @@ public:
 
 	static void PushLog(const std::string& Line);
 	static void SetTitle(const std::string& Title);
+	static void SetListenEndpoint(const std::string& Endpoint);
 };

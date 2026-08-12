@@ -52,6 +52,9 @@ namespace
 		const char* Name() const override { return "Players"; }
 		const char* Category() const override { return "SERVER"; }
 		void Render() override;
+		void Tick() override;
+
+		int BadgeCount() const override { return (int)Rows.size(); }
 
 	private:
 		void Refresh(UWorld* World);
@@ -186,17 +189,22 @@ namespace
 		ImGui::SetClipboardText(Out.c_str());
 	}
 
-	void PlayersPanel::Render()
+	void PlayersPanel::Tick()
 	{
 		UWorld* World = UWorld::GetWorld();
 
 		const ULONGLONG Now = GetTickCount64();
-		if (World && Now - LastRefresh >= 250)
-		{
-			LastRefresh = Now;
-			Refresh(World);
-			SortRows();
-		}
+		if (!World || Now - LastRefresh < 250)
+			return;
+
+		LastRefresh = Now;
+		Refresh(World);
+		SortRows();
+	}
+
+	void PlayersPanel::Render()
+	{
+		UWorld* World = UWorld::GetWorld();
 
 		const float Scale = GuiDetail::GetUiScale();
 

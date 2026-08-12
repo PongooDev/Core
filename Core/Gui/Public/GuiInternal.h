@@ -48,6 +48,7 @@ namespace GuiDetail
 	constexpr size_t MaxLogLines = 5000;
 
 	bool TakePendingLog(std::deque<std::string>& Out);
+	std::string GetListenEndpoint();
 
 	ImFont* GetMonoFont();
 	ImFont* GetHeadingFont();

@@ -30,6 +30,9 @@ namespace
 	SRWLOCK GTitleLock = SRWLOCK_INIT;
 	std::string* GPendingTitle = nullptr;
 
+	SRWLOCK GEndpointLock = SRWLOCK_INIT;
+	std::string* GListenEndpoint = nullptr;
+
 	SRWLOCK GPanelLock = SRWLOCK_INIT;
 	std::vector<GuiPanel*>* GPanels = nullptr;
 
@@ -144,6 +147,25 @@ void Gui::SetTitle(const std::string& Title)
 		GPendingTitle = new std::string();
 
 	*GPendingTitle = Title;
+}
+
+void Gui::SetListenEndpoint(const std::string& Endpoint)
+{
+	if (!IsEnabled())
+		return;
+
+	FGuiScopedLock Lock(GEndpointLock);
+
+	if (!GListenEndpoint)
+		GListenEndpoint = new std::string();
+
+	*GListenEndpoint = Endpoint;
+}
+
+std::string GuiDetail::GetListenEndpoint()
+{
+	FGuiScopedLock Lock(GEndpointLock);
+	return GListenEndpoint ? *GListenEndpoint : std::string();
 }
 
 void Gui::RegisterPanel(GuiPanel* Panel)
@@ -581,7 +603,7 @@ namespace
 		return bClicked;
 	}
 
-	bool NavItem(const char* Label, bool bSelected, float& OutTop, float& OutBottom)
+	bool NavItem(const char* Label, bool bSelected, int BadgeCount, bool bBadgeAlert, float& OutTop, float& OutBottom)
 	{
 		const float Height = 36.0f * GUiScale;
 		const float Rounding = 7.0f * GUiScale;
@@ -616,6 +638,35 @@ namespace
 		Draw->AddText(
 			ImVec2(Pos.x + TextPad + Slide, Pos.y + (Size.y - TextSize.y) * 0.5f),
 			ImGui::GetColorU32(Color), Label);
+
+		if (BadgeCount > 0)
+		{
+			const std::string Badge = BadgeCount > 99 ? std::string("99+") : std::to_string(BadgeCount);
+			const ImVec2 BadgeSize = ImGui::CalcTextSize(Badge.c_str());
+			const float PadRight = 10.0f * GUiScale;
+
+			if (bBadgeAlert)
+			{
+				const float PillPadX = 6.0f * GUiScale;
+				const float PillHeight = BadgeSize.y + 2.0f * GUiScale;
+				const float PillWidth = BadgeSize.x + PillPadX * 2.0f;
+
+				const ImVec2 PillMin = ImVec2(End.x - PadRight - PillWidth, Pos.y + (Size.y - PillHeight) * 0.5f);
+				const ImVec2 PillMax = ImVec2(End.x - PadRight, PillMin.y + PillHeight);
+
+				Draw->AddRectFilled(PillMin, PillMax,
+					ImGui::GetColorU32(ImVec4(Theme::Bad.x, Theme::Bad.y, Theme::Bad.z, 0.90f)), PillHeight * 0.5f);
+				Draw->AddText(
+					ImVec2(PillMin.x + PillPadX, PillMin.y + (PillHeight - BadgeSize.y) * 0.5f),
+					ImGui::GetColorU32(ImVec4(1.0f, 1.0f, 1.0f, 1.0f)), Badge.c_str());
+			}
+			else
+			{
+				Draw->AddText(
+					ImVec2(End.x - PadRight - BadgeSize.x, Pos.y + (Size.y - BadgeSize.y) * 0.5f),
+					ImGui::GetColorU32(Theme::TextDim), Badge.c_str());
+			}
+		}
 
 		return bClicked;
 	}
@@ -702,7 +753,7 @@ namespace
 			const float Left = ImGui::GetCursorScreenPos().x;
 			const float Right = Left + ImGui::GetContentRegionAvail().x;
 
-			if (NavItem(Panels[i]->Name(), bSelected, Top, Bottom))
+			if (NavItem(Panels[i]->Name(), bSelected, Panels[i]->BadgeCount(), Panels[i]->BadgeIsAlert(), Top, Bottom))
 				GActivePanel = i;
 
 			if (bSelected)
@@ -884,6 +935,19 @@ namespace
 		}
 	}
 
+	void TickPanels()
+	{
+		std::vector<GuiPanel*> Panels;
+		{
+			FGuiScopedLock Lock(GPanelLock);
+			if (GPanels)
+				Panels = *GPanels;
+		}
+
+		for (GuiPanel* Panel : Panels)
+			Panel->Tick();
+	}
+
 	DWORD WINAPI GuiThreadProc(LPVOID)
 	{
 		for (const wchar_t* Module : { L"d3d11.dll", L"d3dcompiler_47.dll", L"imm32.dll" })
@@ -943,6 +1007,7 @@ namespace
 				break;
 
 			ApplyPendingTitle();
+			TickPanels();
 
 			if (bOccluded && GSwapChain->Present(0, DXGI_PRESENT_TEST) == DXGI_STATUS_OCCLUDED)
 			{

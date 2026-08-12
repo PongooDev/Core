@@ -87,6 +87,16 @@ namespace
 		const char* Category() const override { return "DIAGNOSTICS"; }
 		void Render() override;
 
+		void Tick() override
+		{
+			const ULONGLONG Now = GetTickCount64();
+			if (Now - LastSample < 1000)
+				return;
+
+			LastSample = Now;
+			Sample();
+		}
+
 	private:
 		void Sample();
 
@@ -165,12 +175,6 @@ namespace
 	void PerformancePanel::Render()
 	{
 		const ULONGLONG Now = GetTickCount64();
-		if (Now - LastSample >= 1000)
-		{
-			LastSample = Now;
-			Sample();
-		}
-
 		const ImGuiIO& IO = ImGui::GetIO();
 
 		GuiDetail::SectionLabel("CPU");

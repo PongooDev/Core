@@ -204,6 +204,7 @@ bool UWorld::Listen(FURL& InURL)
 	const std::string ListenTitle = std::format("Core ({:.2f}) | Listening: ", Version::Fortnite_Version) + GetName().ToString() + " | " + std::to_string(InURL.Port);
 	SetConsoleTitleA(ListenTitle.c_str());
 	Gui::SetTitle(ListenTitle);
+	Gui::SetListenEndpoint(GetName().ToString() + ":" + std::to_string(InURL.Port));
 	return true;
 }
 

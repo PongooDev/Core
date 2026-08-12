@@ -93,6 +93,10 @@ namespace
 		const char* Category() const override { return "SERVER"; }
 		void Render() override;
 
+		void Tick() override { Drain(); }
+		int BadgeCount() const override { return ErrorCount; }
+		bool BadgeIsAlert() const override { return true; }
+
 	private:
 		void Drain();
 		void RebuildVisible();
@@ -103,6 +107,8 @@ namespace
 		ULONGLONG SaveResultAt = 0;
 
 		std::deque<FLogLine> Lines;
+		int ErrorCount = 0;
+		int WarningCount = 0;
 
 		std::vector<int> Visible;
 		std::string AppliedFilter;
@@ -136,6 +142,16 @@ namespace
 
 		while (Lines.size() > GuiDetail::MaxLogLines)
 			Lines.pop_front();
+
+		ErrorCount = 0;
+		WarningCount = 0;
+		for (const FLogLine& Line : Lines)
+		{
+			if (Line.Severity == ELogSeverity::Error)
+				++ErrorCount;
+			else if (Line.Severity == ELogSeverity::Warning)
+				++WarningCount;
+		}
 
 		bVisibleDirty = true;
 	}
@@ -213,8 +229,6 @@ namespace
 
 	void ConsolePanel::Render()
 	{
-		Drain();
-
 		if (AppliedFilter != Filter.InputBuf)
 		{
 			AppliedFilter = Filter.InputBuf;
@@ -229,6 +243,8 @@ namespace
 		if (ImGui::Button("Clear"))
 		{
 			Lines.clear();
+			ErrorCount = 0;
+			WarningCount = 0;
 			bVisibleDirty = true;
 		}
 		ImGui::SameLine();
@@ -258,25 +274,15 @@ namespace
 		else
 			ImGui::TextDisabled("%d lines", (int)Lines.size());
 
-		int Errors = 0;
-		int Warnings = 0;
-		for (const FLogLine& Line : Lines)
-		{
-			if (Line.Severity == ELogSeverity::Error)
-				++Errors;
-			else if (Line.Severity == ELogSeverity::Warning)
-				++Warnings;
-		}
-
-		if (Errors > 0)
+		if (ErrorCount > 0)
 		{
 			ImGui::SameLine();
-			ImGui::TextColored(Theme::Bad, "%d errors", Errors);
+			ImGui::TextColored(Theme::Bad, "%d errors", ErrorCount);
 		}
-		if (Warnings > 0)
+		if (WarningCount > 0)
 		{
 			ImGui::SameLine();
-			ImGui::TextColored(Theme::Warn, "%d warnings", Warnings);
+			ImGui::TextColored(Theme::Warn, "%d warnings", WarningCount);
 		}
 
 		ImGui::Separator();
