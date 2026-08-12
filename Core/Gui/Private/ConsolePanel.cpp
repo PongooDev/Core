@@ -45,6 +45,7 @@ namespace
 	struct FLogLine
 	{
 		std::string Text;
+		std::string Stamp;
 		ELogSeverity Severity = ELogSeverity::Normal;
 	};
 
@@ -110,6 +111,7 @@ namespace
 		ImGuiTextFilter Filter;
 		bool bAutoScroll = true;
 		bool bErrorsOnly = false;
+		bool bShowTimestamps = false;
 		bool bScrollToBottom = false;
 	};
 
@@ -119,11 +121,16 @@ namespace
 		if (!GuiDetail::TakePendingLog(Incoming))
 			return;
 
+		SYSTEMTIME Time = {};
+		GetLocalTime(&Time);
+		const std::string Stamp = std::format("{:02}:{:02}:{:02}", Time.wHour, Time.wMinute, Time.wSecond);
+
 		for (std::string& Text : Incoming)
 		{
 			FLogLine Line;
 			Line.Severity = Classify(Text);
 			Line.Text = std::move(Text);
+			Line.Stamp = Stamp;
 			Lines.push_back(std::move(Line));
 		}
 
@@ -236,6 +243,8 @@ namespace
 		if (ImGui::Checkbox("Problems only", &bErrorsOnly))
 			bVisibleDirty = true;
 		ImGui::SameLine();
+		ImGui::Checkbox("Timestamps", &bShowTimestamps);
+		ImGui::SameLine();
 
 		if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_F))
 			ImGui::SetKeyboardFocusHere();
@@ -248,6 +257,27 @@ namespace
 			ImGui::TextDisabled("%d / %d lines", (int)Visible.size(), (int)Lines.size());
 		else
 			ImGui::TextDisabled("%d lines", (int)Lines.size());
+
+		int Errors = 0;
+		int Warnings = 0;
+		for (const FLogLine& Line : Lines)
+		{
+			if (Line.Severity == ELogSeverity::Error)
+				++Errors;
+			else if (Line.Severity == ELogSeverity::Warning)
+				++Warnings;
+		}
+
+		if (Errors > 0)
+		{
+			ImGui::SameLine();
+			ImGui::TextColored(Theme::Bad, "%d errors", Errors);
+		}
+		if (Warnings > 0)
+		{
+			ImGui::SameLine();
+			ImGui::TextColored(Theme::Warn, "%d warnings", Warnings);
+		}
 
 		ImGui::Separator();
 
@@ -268,6 +298,12 @@ namespace
 				for (int Row = Clipper.DisplayStart; Row < Clipper.DisplayEnd; Row++)
 				{
 					const FLogLine& Line = Lines[Visible[Row]];
+
+					if (bShowTimestamps && !Line.Stamp.empty())
+					{
+						ImGui::TextDisabled("%s", Line.Stamp.c_str());
+						ImGui::SameLine();
+					}
 
 					if (bHighlight)
 						DrawMatchHighlights(Line.Text, Needle);

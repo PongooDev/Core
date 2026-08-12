@@ -51,22 +51,6 @@ namespace
 	int GActivePanel = 0;
 }
 
-namespace Theme
-{
-	const ImVec4 Accent = ImVec4(0.07f, 0.84f, 0.63f, 1.00f);
-	const ImVec4 AccentSoft = ImVec4(0.07f, 0.84f, 0.63f, 0.45f);
-	const ImVec4 AccentBright = ImVec4(0.20f, 0.93f, 0.73f, 1.00f);
-
-	const ImVec4 Background = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
-	const ImVec4 Sidebar = ImVec4(0.055f, 0.06f, 0.07f, 1.00f);
-	const ImVec4 Surface = ImVec4(0.11f, 0.12f, 0.14f, 1.00f);
-	const ImVec4 SurfaceHover = ImVec4(0.16f, 0.18f, 0.21f, 1.00f);
-	const ImVec4 Line = ImVec4(0.19f, 0.21f, 0.24f, 1.00f);
-
-	const ImVec4 Text = ImVec4(0.90f, 0.92f, 0.94f, 1.00f);
-	const ImVec4 TextDim = ImVec4(0.48f, 0.52f, 0.57f, 1.00f);
-}
-
 namespace Anim
 {
 	float Approach(float Current, float Target, float Speed)
@@ -876,7 +860,9 @@ namespace
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0, 4.0f * GUiScale));
 
+			ImGui::PushID(Active->Name());
 			Active->Render();
+			ImGui::PopID();
 
 			ImGui::PopStyleVar();
 		}
@@ -1013,6 +999,7 @@ void Gui::Start()
 
 	RegisterPanel(GuiDetail::CreateConsolePanel());
 	RegisterPanel(GuiDetail::CreateStatusPanel());
+	RegisterPanel(GuiDetail::CreatePlayersPanel());
 	RegisterPanel(GuiDetail::CreateNetworkPanel());
 	RegisterPanel(GuiDetail::CreatePerformancePanel());
 	RegisterPanel(GuiDetail::CreateOffsetsPanel());

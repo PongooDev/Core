@@ -2417,6 +2417,12 @@
     </ClCompile>
     <ClCompile Include="Gui\Private\StatusPanel.cpp">
       <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\GuiWidgets.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\PlayersPanel.cpp">
+      <Filter>Gui\Private</Filter>
     </ClCompile>    <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent.cpp">
       <Filter>Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private</Filter>
     </ClCompile>

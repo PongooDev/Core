@@ -2,8 +2,6 @@
 
 #include "Gui/Public/GuiInternal.h"
 
-#include "../../../includes/imgui/imgui.h"
-
 #include <vector>
 
 namespace
@@ -69,29 +67,6 @@ namespace
 		return std::format("{:.1f} MB", Mb);
 	}
 
-	void SectionLabel(const char* Text)
-	{
-		ImGui::Spacing();
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.07f, 0.84f, 0.63f, 0.85f));
-		ImGui::TextUnformatted(Text);
-		ImGui::PopStyleColor();
-
-		const ImVec2 Pos = ImGui::GetCursorScreenPos();
-		ImGui::GetWindowDrawList()->AddLine(
-			ImVec2(Pos.x, Pos.y + 1.0f),
-			ImVec2(Pos.x + ImGui::GetContentRegionAvail().x, Pos.y + 1.0f),
-			ImGui::GetColorU32(ImVec4(0.19f, 0.21f, 0.24f, 1.0f)));
-
-		ImGui::Dummy(ImVec2(0, 6.0f));
-	}
-
-	void LabelledValue(const char* Label, const std::string& Value)
-	{
-		ImGui::TextDisabled("%s", Label);
-		ImGui::SameLine(200.0f);
-		ImGui::TextUnformatted(Value.c_str());
-	}
-
 	constexpr int HistorySize = 120;
 
 	class PerformancePanel : public GuiPanel
@@ -100,7 +75,12 @@ namespace
 		PerformancePanel()
 			: StartedAt(GetTickCount64())
 		{
-			History.resize(HistorySize, 0.0f);
+			MemoryHistory.resize(HistorySize, 0.0f);
+			CpuHistory.resize(HistorySize, 0.0f);
+
+			SYSTEM_INFO Info = {};
+			GetSystemInfo(&Info);
+			Cores = Info.dwNumberOfProcessors ? Info.dwNumberOfProcessors : 1;
 		}
 
 		const char* Name() const override { return "Performance"; }
@@ -116,9 +96,16 @@ namespace
 		FMemoryCounters Memory = {};
 		bool bHaveMemory = false;
 		DWORD Handles = 0;
+		DWORD Cores = 1;
 
-		std::vector<float> History;
-		float PeakSample = 1.0f;
+		std::vector<float> MemoryHistory;
+		float MemoryPeak = 1.0f;
+
+		std::vector<float> CpuHistory;
+		float CpuPercent = -1.0f;
+		float CpuPeak = 10.0f;
+		ULONGLONG PrevCpu100ns = 0;
+		ULONGLONG PrevCpuWallMs = 0;
 	};
 
 	void PerformancePanel::Sample()
@@ -130,13 +117,49 @@ namespace
 
 		const float Mb = bHaveMemory ? (float)((double)Memory.WorkingSet / (1024.0 * 1024.0)) : 0.0f;
 
-		History.erase(History.begin());
-		History.push_back(Mb);
+		MemoryHistory.erase(MemoryHistory.begin());
+		MemoryHistory.push_back(Mb);
 
-		PeakSample = 1.0f;
-		for (float Value : History)
-			if (Value > PeakSample)
-				PeakSample = Value;
+		MemoryPeak = 1.0f;
+		for (float Value : MemoryHistory)
+			if (Value > MemoryPeak)
+				MemoryPeak = Value;
+
+		FILETIME Creation, Exit, Kernel, User;
+		if (GetProcessTimes(GetCurrentProcess(), &Creation, &Exit, &Kernel, &User))
+		{
+			ULARGE_INTEGER KernelTime, UserTime;
+			KernelTime.LowPart = Kernel.dwLowDateTime;
+			KernelTime.HighPart = Kernel.dwHighDateTime;
+			UserTime.LowPart = User.dwLowDateTime;
+			UserTime.HighPart = User.dwHighDateTime;
+
+			const ULONGLONG Used = KernelTime.QuadPart + UserTime.QuadPart;
+			const ULONGLONG NowMs = GetTickCount64();
+
+			if (PrevCpuWallMs && NowMs > PrevCpuWallMs && Used >= PrevCpu100ns)
+			{
+				const double UsedMs = (double)(Used - PrevCpu100ns) / 10000.0;
+				const double WallMs = (double)(NowMs - PrevCpuWallMs) * (double)Cores;
+
+				float Percent = (float)(100.0 * UsedMs / WallMs);
+				if (Percent > 100.0f)
+					Percent = 100.0f;
+
+				CpuPercent = Percent;
+			}
+
+			PrevCpu100ns = Used;
+			PrevCpuWallMs = NowMs;
+		}
+
+		CpuHistory.erase(CpuHistory.begin());
+		CpuHistory.push_back(CpuPercent > 0.0f ? CpuPercent : 0.0f);
+
+		CpuPeak = 10.0f;
+		for (float Value : CpuHistory)
+			if (Value > CpuPeak)
+				CpuPeak = Value;
 	}
 
 	void PerformancePanel::Render()
@@ -150,48 +173,66 @@ namespace
 
 		const ImGuiIO& IO = ImGui::GetIO();
 
-		SectionLabel("MEMORY");
+		GuiDetail::SectionLabel("CPU");
+
+		GuiDetail::LabelledValue("Usage", CpuPercent >= 0.0f ? std::format("{:.1f} %", CpuPercent) : std::string("-"));
+		GuiDetail::LabelledValue("Logical cores", std::to_string(Cores));
+
+		ImGui::Dummy(ImVec2(0, 6.0f));
+
+		const std::string CpuOverlay = CpuPercent >= 0.0f
+			? std::format("cpu - {:.1f} %", CpuPercent)
+			: std::string("cpu - sampling...");
+
+		ImGui::PushStyleColor(ImGuiCol_PlotLines, Theme::Accent);
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, Theme::Recessed);
+
+		ImGui::PlotLines("##Cpu", CpuHistory.data(), (int)CpuHistory.size(), 0,
+			CpuOverlay.c_str(), 0.0f, CpuPeak * 1.15f,
+			ImVec2(-1.0f, 80.0f * GuiDetail::GetUiScale()));
+
+		ImGui::PopStyleColor(2);
+		ImGui::TextDisabled("last %d seconds", (int)CpuHistory.size());
+
+		GuiDetail::SectionLabel("MEMORY");
 
 		if (bHaveMemory)
 		{
-			LabelledValue("Working set", FormatBytes(Memory.WorkingSet));
-			LabelledValue("Peak working set", FormatBytes(Memory.PeakWorkingSet));
-			LabelledValue("Commit", FormatBytes(Memory.PagefileUsage));
-			LabelledValue("Peak commit", FormatBytes(Memory.PeakPagefileUsage));
+			GuiDetail::LabelledValue("Working set", FormatBytes(Memory.WorkingSet));
+			GuiDetail::LabelledValue("Peak working set", FormatBytes(Memory.PeakWorkingSet));
+			GuiDetail::LabelledValue("Commit", FormatBytes(Memory.PagefileUsage));
+			GuiDetail::LabelledValue("Peak commit", FormatBytes(Memory.PeakPagefileUsage));
 
 			ImGui::Dummy(ImVec2(0, 6.0f));
 
-			const std::string Overlay = std::format("working set - {:.1f} MB", History.back());
-			ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.07f, 0.84f, 0.63f, 1.0f));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.09f, 0.10f, 0.11f, 1.0f));
+			const std::string Overlay = std::format("working set - {:.1f} MB", MemoryHistory.back());
+			ImGui::PushStyleColor(ImGuiCol_PlotLines, Theme::Accent);
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, Theme::Recessed);
 
-			ImGui::PlotLines("##Memory", History.data(), (int)History.size(), 0,
-				Overlay.c_str(), 0.0f, PeakSample * 1.15f,
+			ImGui::PlotLines("##Memory", MemoryHistory.data(), (int)MemoryHistory.size(), 0,
+				Overlay.c_str(), 0.0f, MemoryPeak * 1.15f,
 				ImVec2(-1.0f, 80.0f * GuiDetail::GetUiScale()));
 
 			ImGui::PopStyleColor(2);
-			ImGui::TextDisabled("last %d seconds", (int)History.size());
+			ImGui::TextDisabled("last %d seconds", (int)MemoryHistory.size());
 		}
 		else
 		{
 			ImGui::TextDisabled("Memory counters are unavailable on this system.");
 		}
 
-		SectionLabel("PROCESS");
+		GuiDetail::SectionLabel("PROCESS");
 
-		LabelledValue("Handles", Handles ? std::to_string(Handles) : "-");
-		LabelledValue("Process id", std::to_string(GetCurrentProcessId()));
+		GuiDetail::LabelledValue("Handles", Handles ? std::to_string(Handles) : "-");
+		GuiDetail::LabelledValue("Process id", std::to_string(GetCurrentProcessId()));
+		GuiDetail::LabelledValue("GUI uptime", GuiDetail::FormatDuration((Now - StartedAt) / 1000));
 
-		const ULONGLONG Seconds = (Now - StartedAt) / 1000;
-		LabelledValue("GUI uptime", std::format("{:02}:{:02}:{:02}",
-			Seconds / 3600, (Seconds / 60) % 60, Seconds % 60));
+		GuiDetail::SectionLabel("INTERFACE");
 
-		SectionLabel("INTERFACE");
-
-		LabelledValue("Frame time", std::format("{:.2f} ms", IO.DeltaTime * 1000.0f));
-		LabelledValue("Frame rate", std::format("{:.0f} fps", IO.Framerate));
-		LabelledValue("Draw calls", std::to_string(IO.MetricsRenderIndices / 3));
-		LabelledValue("Vertices", std::to_string(IO.MetricsRenderVertices));
+		GuiDetail::LabelledValue("Frame time", std::format("{:.2f} ms", IO.DeltaTime * 1000.0f));
+		GuiDetail::LabelledValue("Frame rate", std::format("{:.0f} fps", IO.Framerate));
+		GuiDetail::LabelledValue("Draw calls", std::to_string(IO.MetricsRenderIndices / 3));
+		GuiDetail::LabelledValue("Vertices", std::to_string(IO.MetricsRenderVertices));
 	}
 }
 
