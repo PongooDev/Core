@@ -9,7 +9,8 @@ FString APlayerState::GetPlayerName() const
 		Func = FindFunction("GetPlayerName");
 
 	if (!Func) {
-		return PlayerName;
+		APlayerState* Mutable = const_cast<APlayerState*>(this);
+		return Mutable->_HasPlayerNamePrivate() ? Mutable->PlayerNamePrivate : Mutable->PlayerName;
 	}
 
 	return const_cast<APlayerState*>(this)->Call<FString>(Func);

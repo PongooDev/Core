@@ -48,6 +48,43 @@ namespace
 		ELogSeverity Severity = ELogSeverity::Normal;
 	};
 
+	void DrawMatchHighlights(const std::string& Text, const char* Needle)
+	{
+		const size_t NeedleLength = strlen(Needle);
+		if (NeedleLength == 0 || Text.empty())
+			return;
+
+		ImDrawList* Draw = ImGui::GetWindowDrawList();
+		const ImVec2 Origin = ImGui::GetCursorScreenPos();
+		const float Height = ImGui::GetTextLineHeight();
+
+		for (size_t At = 0; At + NeedleLength <= Text.size(); )
+		{
+			size_t i = 0;
+			for (; i < NeedleLength; i++)
+			{
+				if (tolower((unsigned char)Text[At + i]) != tolower((unsigned char)Needle[i]))
+					break;
+			}
+
+			if (i < NeedleLength)
+			{
+				++At;
+				continue;
+			}
+
+			const float Start = ImGui::CalcTextSize(Text.c_str(), Text.c_str() + At).x;
+			const float End = ImGui::CalcTextSize(Text.c_str(), Text.c_str() + At + NeedleLength).x;
+
+			Draw->AddRectFilled(
+				ImVec2(Origin.x + Start - 1.0f, Origin.y),
+				ImVec2(Origin.x + End + 1.0f, Origin.y + Height),
+				ImGui::GetColorU32(ImVec4(0.07f, 0.84f, 0.63f, 0.28f)), 2.0f);
+
+			At += NeedleLength;
+		}
+	}
+
 	class ConsolePanel : public GuiPanel
 	{
 	public:
@@ -67,6 +104,8 @@ namespace
 
 		ImGuiTextFilter Filter;
 		bool bAutoScroll = true;
+		bool bErrorsOnly = false;
+		bool bScrollToBottom = false;
 	};
 
 	void ConsolePanel::Drain()
@@ -95,8 +134,15 @@ namespace
 		Visible.reserve(Lines.size());
 
 		for (int i = 0; i < (int)Lines.size(); i++)
-			if (Filter.PassFilter(Lines[i].Text.c_str()))
+		{
+			const FLogLine& Line = Lines[i];
+
+			if (bErrorsOnly && Line.Severity != ELogSeverity::Error && Line.Severity != ELogSeverity::Warning)
+				continue;
+
+			if (Filter.PassFilter(Line.Text.c_str()))
 				Visible.push_back(i);
+		}
 
 		bVisibleDirty = false;
 	}
@@ -139,6 +185,12 @@ namespace
 		ImGui::SameLine();
 		ImGui::Checkbox("Auto-scroll", &bAutoScroll);
 		ImGui::SameLine();
+		if (ImGui::Checkbox("Problems only", &bErrorsOnly))
+			bVisibleDirty = true;
+		ImGui::SameLine();
+
+		if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_F))
+			ImGui::SetKeyboardFocusHere();
 		Filter.Draw("Filter", 200.0f);
 
 		ImGui::SameLine();
@@ -152,6 +204,12 @@ namespace
 		if (ImGui::BeginChild("Scroll", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));
+			ImGui::PushFont(GuiDetail::GetMonoFont(), 0.0f);
+
+			const char* Needle = AppliedFilter.c_str();
+			const bool bHighlight = Filter.IsActive()
+				&& AppliedFilter.find(',') == std::string::npos
+				&& AppliedFilter.front() != '-';
 
 			ImGuiListClipper Clipper;
 			Clipper.Begin((int)Visible.size());
@@ -160,6 +218,9 @@ namespace
 				for (int Row = Clipper.DisplayStart; Row < Clipper.DisplayEnd; Row++)
 				{
 					const FLogLine& Line = Lines[Visible[Row]];
+
+					if (bHighlight)
+						DrawMatchHighlights(Line.Text, Needle);
 
 					ImVec4 Color;
 					const bool bColored = SeverityColor(Line.Severity, Color);
@@ -175,10 +236,36 @@ namespace
 			}
 			Clipper.End();
 
+			ImGui::PopFont();
 			ImGui::PopStyleVar();
 
-			if (bNewLines && ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 5.0f)
+			const bool bAtBottom = ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 5.0f;
+
+			if (bNewLines && bAtBottom)
 				ImGui::SetScrollHereY(1.0f);
+
+			if (bScrollToBottom)
+			{
+				ImGui::SetScrollY(ImGui::GetScrollMaxY());
+				bScrollToBottom = false;
+			}
+
+			if (!bAtBottom)
+			{
+				const float Pad = 12.0f * GuiDetail::GetUiScale();
+				const ImVec2 Avail = ImGui::GetWindowSize();
+				const char* Label = "Jump to latest";
+				const ImVec2 Size = ImGui::CalcTextSize(Label);
+				const float Width = Size.x + ImGui::GetStyle().FramePadding.x * 2.0f;
+				const float Height = Size.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+
+				ImGui::SetCursorPos(ImVec2(
+					ImGui::GetScrollX() + Avail.x - Width - Pad,
+					ImGui::GetScrollY() + Avail.y - Height - Pad));
+
+				if (ImGui::Button(Label))
+					bScrollToBottom = true;
+			}
 		}
 		ImGui::EndChild();
 	}

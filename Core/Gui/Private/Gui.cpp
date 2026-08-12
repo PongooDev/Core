@@ -11,6 +11,7 @@
 #include <d3d11.h>
 #include <deque>
 #include <vector>
+#include <cmath>
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -41,6 +42,76 @@ namespace
 	ID3D11ShaderResourceView* GLogoTexture = nullptr;
 	HICON GIconLarge = nullptr;
 	HICON GIconSmall = nullptr;
+
+	ImFont* GUiFont = nullptr;
+	ImFont* GMonoFont = nullptr;
+	ImFont* GHeadingFont = nullptr;
+
+	float GUiScale = 1.0f;
+	int GActivePanel = 0;
+}
+
+namespace Theme
+{
+	const ImVec4 Accent = ImVec4(0.07f, 0.84f, 0.63f, 1.00f);
+	const ImVec4 AccentSoft = ImVec4(0.07f, 0.84f, 0.63f, 0.45f);
+	const ImVec4 AccentBright = ImVec4(0.20f, 0.93f, 0.73f, 1.00f);
+
+	const ImVec4 Background = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
+	const ImVec4 Sidebar = ImVec4(0.055f, 0.06f, 0.07f, 1.00f);
+	const ImVec4 Surface = ImVec4(0.11f, 0.12f, 0.14f, 1.00f);
+	const ImVec4 SurfaceHover = ImVec4(0.16f, 0.18f, 0.21f, 1.00f);
+	const ImVec4 Line = ImVec4(0.19f, 0.21f, 0.24f, 1.00f);
+
+	const ImVec4 Text = ImVec4(0.90f, 0.92f, 0.94f, 1.00f);
+	const ImVec4 TextDim = ImVec4(0.48f, 0.52f, 0.57f, 1.00f);
+}
+
+namespace Anim
+{
+	float Approach(float Current, float Target, float Speed)
+	{
+		const float Delta = ImGui::GetIO().DeltaTime;
+		const float Alpha = 1.0f - expf(-Speed * (Delta > 0.1f ? 0.1f : Delta));
+		return Current + (Target - Current) * Alpha;
+	}
+
+	float EaseOutCubic(float T)
+	{
+		const float Inv = 1.0f - T;
+		return 1.0f - Inv * Inv * Inv;
+	}
+
+	ImVec4 Lerp(const ImVec4& A, const ImVec4& B, float T)
+	{
+		return ImVec4(
+			A.x + (B.x - A.x) * T,
+			A.y + (B.y - A.y) * T,
+			A.z + (B.z - A.z) * T,
+			A.w + (B.w - A.w) * T);
+	}
+
+	float& StateFor(ImGuiID Id, float Initial)
+	{
+		static ImGuiStorage Storage;
+		float* Value = Storage.GetFloatRef(Id, Initial);
+		return *Value;
+	}
+}
+
+ImFont* GuiDetail::GetMonoFont()
+{
+	return GMonoFont;
+}
+
+ImFont* GuiDetail::GetHeadingFont()
+{
+	return GHeadingFont;
+}
+
+float GuiDetail::GetUiScale()
+{
+	return GUiScale;
 }
 
 bool Gui::IsEnabled()
@@ -331,47 +402,321 @@ namespace
 		Texture->Release();
 	}
 
+	float GetWindowScale()
+	{
+		if (HMODULE User32 = GetModuleHandleW(L"user32.dll"))
+		{
+			typedef UINT(WINAPI* GetDpiForWindowFn)(HWND);
+			if (auto GetDpi = (GetDpiForWindowFn)GetProcAddress(User32, "GetDpiForWindow"))
+			{
+				const UINT Dpi = GetDpi(GWindow);
+				if (Dpi >= 96)
+					return (float)Dpi / 96.0f;
+			}
+		}
+
+		return 1.0f;
+	}
+
+	ImFont* LoadSystemFont(const char* FileName, float Size)
+	{
+		char Path[MAX_PATH] = {};
+		const UINT Length = GetWindowsDirectoryA(Path, MAX_PATH);
+		if (Length == 0 || Length >= MAX_PATH)
+			return nullptr;
+
+		strcat_s(Path, "\\Fonts\\");
+		strcat_s(Path, FileName);
+
+		if (GetFileAttributesA(Path) == INVALID_FILE_ATTRIBUTES)
+			return nullptr;
+
+		return ImGui::GetIO().Fonts->AddFontFromFileTTF(Path, Size);
+	}
+
+	void LoadFonts()
+	{
+		ImGuiIO& IO = ImGui::GetIO();
+
+		GUiFont = LoadSystemFont("segoeui.ttf", 17.0f);
+		if (!GUiFont)
+			GUiFont = IO.Fonts->AddFontDefaultVector();
+
+		GMonoFont = LoadSystemFont("consola.ttf", 15.0f);
+		if (!GMonoFont)
+			GMonoFont = GUiFont;
+
+		GHeadingFont = LoadSystemFont("seguisb.ttf", 21.0f);
+		if (!GHeadingFont)
+			GHeadingFont = LoadSystemFont("segoeuib.ttf", 21.0f);
+		if (!GHeadingFont)
+			GHeadingFont = GUiFont;
+
+		IO.FontDefault = GUiFont;
+	}
+
 	void ApplyStyle()
 	{
 		ImGuiStyle& Style = ImGui::GetStyle();
+		ImVec4* Colors = Style.Colors;
+
+		const ImVec4& Accent = Theme::Accent;
+		const ImVec4& AccentSoft = Theme::AccentSoft;
+		const ImVec4& AccentBright = Theme::AccentBright;
+		const ImVec4& Background = Theme::Background;
+		const ImVec4& Surface = Theme::Surface;
+		const ImVec4& SurfaceHover = Theme::SurfaceHover;
+		const ImVec4& Line = Theme::Line;
+
+		Colors[ImGuiCol_Text] = Theme::Text;
+		Colors[ImGuiCol_TextDisabled] = Theme::TextDim;
+		Colors[ImGuiCol_TextSelectedBg] = AccentSoft;
+
+		Colors[ImGuiCol_WindowBg] = Background;
+		Colors[ImGuiCol_ChildBg] = ImVec4(0.09f, 0.10f, 0.11f, 1.00f);
+		Colors[ImGuiCol_PopupBg] = Surface;
+		Colors[ImGuiCol_Border] = Line;
+		Colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+
+		Colors[ImGuiCol_FrameBg] = Surface;
+		Colors[ImGuiCol_FrameBgHovered] = SurfaceHover;
+		Colors[ImGuiCol_FrameBgActive] = SurfaceHover;
+
+		Colors[ImGuiCol_TitleBg] = Background;
+		Colors[ImGuiCol_TitleBgActive] = Surface;
+		Colors[ImGuiCol_MenuBarBg] = Surface;
+
+		Colors[ImGuiCol_ScrollbarBg] = Background;
+		Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.22f, 0.25f, 0.28f, 1.00f);
+		Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.30f, 0.34f, 0.38f, 1.00f);
+		Colors[ImGuiCol_ScrollbarGrabActive] = AccentSoft;
+
+		Colors[ImGuiCol_CheckMark] = Accent;
+		Colors[ImGuiCol_SliderGrab] = Accent;
+		Colors[ImGuiCol_SliderGrabActive] = AccentBright;
+
+		Colors[ImGuiCol_Button] = Surface;
+		Colors[ImGuiCol_ButtonHovered] = SurfaceHover;
+		Colors[ImGuiCol_ButtonActive] = AccentSoft;
+
+		Colors[ImGuiCol_Header] = Surface;
+		Colors[ImGuiCol_HeaderHovered] = SurfaceHover;
+		Colors[ImGuiCol_HeaderActive] = SurfaceHover;
+
+		Colors[ImGuiCol_Separator] = Line;
+		Colors[ImGuiCol_SeparatorHovered] = AccentSoft;
+		Colors[ImGuiCol_SeparatorActive] = Accent;
+
+		Colors[ImGuiCol_Tab] = Background;
+		Colors[ImGuiCol_TabHovered] = SurfaceHover;
+		Colors[ImGuiCol_TabSelected] = Surface;
+		Colors[ImGuiCol_TabSelectedOverline] = Accent;
+		Colors[ImGuiCol_TabDimmed] = Background;
+		Colors[ImGuiCol_TabDimmedSelected] = Surface;
+
+		Colors[ImGuiCol_TableHeaderBg] = Surface;
+		Colors[ImGuiCol_TableBorderStrong] = Line;
+		Colors[ImGuiCol_TableBorderLight] = ImVec4(0.15f, 0.17f, 0.19f, 1.00f);
+		Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.02f);
+
+		Colors[ImGuiCol_NavCursor] = Accent;
+
 		Style.WindowRounding = 0.0f;
-		Style.FrameRounding = 3.0f;
-		Style.ScrollbarRounding = 3.0f;
-		Style.TabRounding = 3.0f;
-		Style.FramePadding = ImVec2(6.0f, 3.0f);
-		Style.ItemSpacing = ImVec2(8.0f, 5.0f);
+		Style.ChildRounding = 4.0f;
+		Style.FrameRounding = 4.0f;
+		Style.PopupRounding = 4.0f;
+		Style.ScrollbarRounding = 4.0f;
+		Style.TabRounding = 4.0f;
+		Style.GrabRounding = 4.0f;
+
+		Style.WindowPadding = ImVec2(12.0f, 10.0f);
+		Style.FramePadding = ImVec2(8.0f, 4.0f);
+		Style.ItemSpacing = ImVec2(8.0f, 6.0f);
+		Style.ItemInnerSpacing = ImVec2(6.0f, 4.0f);
+		Style.CellPadding = ImVec2(8.0f, 4.0f);
+		Style.ScrollbarSize = 13.0f;
+
 		Style.WindowBorderSize = 0.0f;
+		Style.FrameBorderSize = 0.0f;
+		Style.TabBarBorderSize = 0.0f;
+
+		GUiScale = GetWindowScale();
+		if (GUiScale > 1.0f)
+		{
+			Style.ScaleAllSizes(GUiScale);
+			Style.FontScaleDpi = GUiScale;
+		}
 	}
 }
 
 namespace
 {
-	void RenderHeader()
+	bool NavItem(const char* Label, bool bSelected, float& OutTop, float& OutBottom)
 	{
-		constexpr float LogoSize = 34.0f;
+		const float Height = 36.0f * GUiScale;
+		const float Rounding = 7.0f * GUiScale;
+		const float TextPad = 15.0f * GUiScale;
 
+		const ImVec2 Pos = ImGui::GetCursorScreenPos();
+		const ImVec2 Size = ImVec2(ImGui::GetContentRegionAvail().x, Height);
+
+		const bool bClicked = ImGui::InvisibleButton(Label, Size);
+		const bool bHovered = ImGui::IsItemHovered();
+		const bool bHeld = ImGui::IsItemActive();
+
+		OutTop = Pos.y;
+		OutBottom = Pos.y + Height;
+
+		float& Hover = Anim::StateFor(ImGui::GetItemID(), 0.0f);
+		Hover = Anim::Approach(Hover, (bHovered || bSelected) ? 1.0f : 0.0f, 14.0f);
+
+		ImDrawList* Draw = ImGui::GetWindowDrawList();
+		const ImVec2 End = ImVec2(Pos.x + Size.x, Pos.y + Size.y);
+
+		if (!bSelected && Hover > 0.001f)
+		{
+			const float Alpha = (bHeld ? 0.07f : 0.045f) * Hover;
+			Draw->AddRectFilled(Pos, End, ImGui::GetColorU32(ImVec4(1.0f, 1.0f, 1.0f, Alpha)), Rounding);
+		}
+
+		const ImVec2 TextSize = ImGui::CalcTextSize(Label);
+		const ImVec4 Color = Anim::Lerp(Theme::TextDim, Theme::Text, bSelected ? 1.0f : Hover * 0.75f);
+		const float Slide = Hover * 2.0f * GUiScale;
+
+		Draw->AddText(
+			ImVec2(Pos.x + TextPad + Slide, Pos.y + (Size.y - TextSize.y) * 0.5f),
+			ImGui::GetColorU32(Color), Label);
+
+		return bClicked;
+	}
+
+	void RenderSidebar(const std::vector<GuiPanel*>& Panels)
+	{
+		const float Pad = 14.0f * GUiScale;
+
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, Theme::Sidebar);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(Pad, Pad));
+
+		ImGui::BeginChild("Sidebar", ImVec2(190.0f * GUiScale, 0),
+			ImGuiChildFlags_AlwaysUseWindowPadding, ImGuiWindowFlags_NoScrollbar);
+
+		const float LogoSize = 30.0f * GUiScale;
+
+		ImGui::BeginGroup();
 		if (GLogoTexture)
 		{
 			ImGui::Image((ImTextureID)GLogoTexture, ImVec2(LogoSize, LogoSize));
 			ImGui::SameLine();
 		}
 
-		const float TextHeight = ImGui::GetTextLineHeight();
-		const float Top = ImGui::GetCursorPosY();
-
-		ImGui::BeginGroup();
-		ImGui::SetCursorPosY(Top + (LogoSize * 0.5f) - TextHeight - 1.0f);
+		ImGui::PushFont(GHeadingFont, 0.0f);
+		const float WordmarkHeight = ImGui::GetTextLineHeight();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (LogoSize - WordmarkHeight) * 0.5f);
 		ImGui::TextUnformatted("Core");
-
-		ImGui::SetCursorPosY(Top + (LogoSize * 0.5f) + 1.0f);
-		if (Version::Fortnite_Version > 0.0)
-			ImGui::TextDisabled("Fortnite %.2f  |  Engine %.2f", Version::Fortnite_Version, Version::Engine_Version);
-		else
-			ImGui::TextDisabled("Starting...");
+		ImGui::PopFont();
 		ImGui::EndGroup();
 
-		ImGui::SetCursorPosY(Top + LogoSize + 4.0f);
-		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0, 10.0f * GUiScale));
+
+		ImDrawList* NavDraw = ImGui::GetWindowDrawList();
+		NavDraw->ChannelsSplit(2);
+		NavDraw->ChannelsSetCurrent(1);
+
+		float SelectedTop = 0.0f;
+		float SelectedBottom = 0.0f;
+		float NavLeft = 0.0f;
+		float NavRight = 0.0f;
+		bool bHaveSelection = false;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 3.0f * GUiScale));
+		for (int i = 0; i < (int)Panels.size(); i++)
+		{
+			const bool bSelected = (i == GActivePanel);
+
+			float Top = 0.0f;
+			float Bottom = 0.0f;
+			const float Left = ImGui::GetCursorScreenPos().x;
+			const float Right = Left + ImGui::GetContentRegionAvail().x;
+
+			if (NavItem(Panels[i]->Name(), bSelected, Top, Bottom))
+				GActivePanel = i;
+
+			if (bSelected)
+			{
+				SelectedTop = Top;
+				SelectedBottom = Bottom;
+				NavLeft = Left;
+				NavRight = Right;
+				bHaveSelection = true;
+			}
+		}
+		ImGui::PopStyleVar();
+
+		NavDraw->ChannelsSetCurrent(0);
+
+		if (bHaveSelection)
+		{
+			static float HighlightTop = 0.0f;
+			static float HighlightBottom = 0.0f;
+
+			if (HighlightBottom <= 0.0f)
+			{
+				HighlightTop = SelectedTop;
+				HighlightBottom = SelectedBottom;
+			}
+
+			HighlightTop = Anim::Approach(HighlightTop, SelectedTop, 18.0f);
+			HighlightBottom = Anim::Approach(HighlightBottom, SelectedBottom, 18.0f);
+
+			const float Rounding = 7.0f * GUiScale;
+			NavDraw->AddRectFilled(
+				ImVec2(NavLeft, HighlightTop), ImVec2(NavRight, HighlightBottom),
+				ImGui::GetColorU32(Theme::Surface), Rounding);
+
+			const float BarPad = 9.0f * GUiScale;
+			NavDraw->AddRectFilled(
+				ImVec2(NavLeft, HighlightTop + BarPad),
+				ImVec2(NavLeft + 3.0f * GUiScale, HighlightBottom - BarPad),
+				ImGui::GetColorU32(Theme::Accent), 2.0f * GUiScale);
+		}
+
+		NavDraw->ChannelsMerge();
+
+		const float FooterHeight = ImGui::GetTextLineHeightWithSpacing() * 2.0f + Pad;
+		ImGui::SetCursorPosY(ImGui::GetWindowHeight() - FooterHeight);
+
+		ImDrawList* Draw = ImGui::GetWindowDrawList();
+		const ImVec2 Dot = ImGui::GetCursorScreenPos();
+		const float DotRadius = 3.5f * GUiScale;
+		const bool bReady = Version::Fortnite_Version > 0.0;
+
+		const ImVec4 DotColor = bReady ? Theme::Accent : ImVec4(1.0f, 0.72f, 0.25f, 1.0f);
+		const ImVec2 DotCenter = ImVec2(Dot.x + DotRadius, Dot.y + ImGui::GetTextLineHeight() * 0.5f);
+
+		const float Pulse = 0.5f + 0.5f * sinf((float)ImGui::GetTime() * 2.0f);
+		Draw->AddCircleFilled(DotCenter, DotRadius + (2.5f + Pulse * 2.0f) * GUiScale,
+			ImGui::GetColorU32(ImVec4(DotColor.x, DotColor.y, DotColor.z, 0.16f * (1.0f - Pulse * 0.5f))));
+
+		Draw->AddCircleFilled(DotCenter, DotRadius, ImGui::GetColorU32(DotColor));
+
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + DotRadius * 2.0f + 7.0f * GUiScale);
+
+		if (bReady)
+		{
+			ImGui::TextUnformatted(std::format("Fortnite {:.2f}", Version::Fortnite_Version).c_str());
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + DotRadius * 2.0f + 7.0f * GUiScale);
+			ImGui::TextDisabled("Engine %.2f  CL %d", Version::Engine_Version, Version::Fortnite_CL);
+		}
+		else
+		{
+			ImGui::TextUnformatted("Starting...");
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + DotRadius * 2.0f + 7.0f * GUiScale);
+			ImGui::TextDisabled("Finding build");
+		}
+
+		ImGui::EndChild();
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
 	}
 
 	void RenderFrame()
@@ -380,33 +725,73 @@ namespace
 		ImGui::SetNextWindowPos(Viewport->WorkPos);
 		ImGui::SetNextWindowSize(Viewport->WorkSize);
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("##Core", nullptr,
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
 			ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus |
 			ImGuiWindowFlags_NoSavedSettings);
+		ImGui::PopStyleVar();
 
-		RenderHeader();
-
-		if (ImGui::BeginTabBar("CoreTabs"))
+		std::vector<GuiPanel*> Panels;
 		{
-			std::vector<GuiPanel*> Panels;
-			{
-				FGuiScopedLock Lock(GPanelLock);
-				if (GPanels)
-					Panels = *GPanels;
-			}
-
-			for (GuiPanel* Panel : Panels)
-			{
-				if (ImGui::BeginTabItem(Panel->Name()))
-				{
-					Panel->Render();
-					ImGui::EndTabItem();
-				}
-			}
-
-			ImGui::EndTabBar();
+			FGuiScopedLock Lock(GPanelLock);
+			if (GPanels)
+				Panels = *GPanels;
 		}
+
+		if (GActivePanel >= (int)Panels.size())
+			GActivePanel = 0;
+
+		for (int i = 0; i < (int)Panels.size() && i < 9; i++)
+		{
+			if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | (ImGuiKey)(ImGuiKey_1 + i)))
+				GActivePanel = i;
+		}
+
+		RenderSidebar(Panels);
+
+		ImGui::SameLine(0.0f, 0.0f);
+
+		const float Pad = 18.0f * GUiScale;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(Pad, 14.0f * GUiScale));
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, Theme::Background);
+		ImGui::BeginChild("Content", ImVec2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding);
+
+		if (!Panels.empty())
+		{
+			GuiPanel* Active = Panels[GActivePanel];
+
+			static int LastPanel = -1;
+			static float Enter = 1.0f;
+
+			if (LastPanel != GActivePanel)
+			{
+				LastPanel = GActivePanel;
+				Enter = 0.0f;
+			}
+
+			Enter = Anim::Approach(Enter, 1.0f, 16.0f);
+
+			const float Eased = Anim::EaseOutCubic(Enter);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + (1.0f - Eased) * 8.0f * GUiScale);
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * Eased);
+
+			ImGui::PushFont(GHeadingFont, 0.0f);
+			ImGui::TextUnformatted(Active->Name());
+			ImGui::PopFont();
+
+			ImGui::Dummy(ImVec2(0, 2.0f * GUiScale));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0, 4.0f * GUiScale));
+
+			Active->Render();
+
+			ImGui::PopStyleVar();
+		}
+
+		ImGui::EndChild();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 
 		ImGui::End();
 	}
@@ -453,6 +838,7 @@ namespace
 		ImGui::CreateContext();
 		ImGui::GetIO().IniFilename = nullptr;
 		ImGui::StyleColorsDark();
+		LoadFonts();
 		ApplyStyle();
 
 		ImGui_ImplWin32_Init(GWindow);

@@ -5,6 +5,8 @@
 
 #include <deque>
 
+struct ImFont;
+
 struct FGuiScopedLock
 {
 	SRWLOCK* Lock;
@@ -21,6 +23,10 @@ namespace GuiDetail
 	constexpr size_t MaxLogLines = 5000;
 
 	bool TakePendingLog(std::deque<std::string>& Out);
+
+	ImFont* GetMonoFont();
+	ImFont* GetHeadingFont();
+	float GetUiScale();
 
 	void StopConsoleMirror();
 

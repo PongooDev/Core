@@ -11,6 +11,7 @@ public:
 	DefineBitfieldUProperty(bOnlySpectator);
 	DefineUProperty(uint8, Ping);
 	DefineUProperty(FString, PlayerName);
+	DefineUProperty(FString, PlayerNamePrivate);
 	DefineBitfieldUProperty(bIsABot);
 	DefineUProperty(float, Score);
 	DefineUProperty(int32, PlayerId);
