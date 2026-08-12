@@ -496,7 +496,7 @@ void AFortGameModeAthena::SpawnFortSpawnActors(AFortGameModeAthena* This, FFortS
 
 void AFortGameModeAthena::UpdateSpawnActorListDuringSafeZone(EAthenaGamePhaseStep GamePhaseStep)
 {
-	if (GamePhaseStep != EAthenaGamePhaseStep::StormHolding)
+	if (GamePhaseStep != EAthenaGamePhaseStep::GetStormHolding())
 		return;
 
 	for (int32 i = 0; i < SpawnActorDataList.Num(); ++i)

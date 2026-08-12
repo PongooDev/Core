@@ -11,6 +11,7 @@ struct FCoreConfig {
 	bool bSkipSessionValidation = false;
 	bool bListenServer = false;
 	bool bDevSameTeam = false;
+	bool bDisableGui = false;
 
 	std::string Playlist = "2";
 	std::string MapToLoad = "";

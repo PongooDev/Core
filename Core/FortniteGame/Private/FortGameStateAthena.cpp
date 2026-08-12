@@ -266,38 +266,33 @@ float AFortGameStateAthena::GetServerWorldTimeSeconds() {
 }
 
 uint8 AFortGameStateAthena::GetGamePhaseStep(float& OutTimeRemaining) {
-	uint8 Step = (uint8)EAthenaGamePhaseStep::None;
+	uint8 Step = EAthenaGamePhaseStep::GetNone();
 	OutTimeRemaining = 0.0f;
 
 	const float Now = GetServerWorldTimeSeconds();
 
-	switch ((EAthenaGamePhase)GamePhase) {
-	case EAthenaGamePhase::Setup:
-	{
-		Step = (uint8)EAthenaGamePhaseStep::Setup;
-		break;
+	const uint8 Phase = GamePhase;
+
+	if (Phase == EAthenaGamePhase::GetSetup()) {
+		Step = EAthenaGamePhaseStep::GetSetup();
 	}
-	case EAthenaGamePhase::Warmup:
-	{
+	else if (Phase == EAthenaGamePhase::GetWarmup()) {
 		if (_HasWarmupCountdownStartTime() && WarmupCountdownStartTime < 0.0f) {
-			Step = (uint8)EAthenaGamePhaseStep::Setup;
-			break;
+			return EAthenaGamePhaseStep::GetSetup();
 		}
 
 		if (_HasWarmupCountdownEndTime() && WarmupCountdownEndTime > Now) {
 			OutTimeRemaining = (float)(int32)(WarmupCountdownEndTime - Now);
 			Step = OutTimeRemaining <= 10.0f
-				? (uint8)EAthenaGamePhaseStep::GetReady
-				: (uint8)EAthenaGamePhaseStep::Warmup;
+				? EAthenaGamePhaseStep::GetGetReady()
+				: EAthenaGamePhaseStep::GetWarmup();
 		}
 		else {
-			Step = (uint8)EAthenaGamePhaseStep::GetReady;
+			Step = EAthenaGamePhaseStep::GetGetReady();
 		}
-		break;
 	}
-	case EAthenaGamePhase::Aircraft:
-	{
-		Step = (uint8)EAthenaGamePhaseStep::BusFlying;
+	else if (Phase == EAthenaGamePhase::GetAircraft()) {
+		Step = EAthenaGamePhaseStep::GetBusFlying();
 
 		for (AFortAthenaAircraft* Aircraft : Aircrafts) {
 			if (!Aircraft || !Aircraft->_HasDropStartTime())
@@ -305,22 +300,18 @@ uint8 AFortGameStateAthena::GetGamePhaseStep(float& OutTimeRemaining) {
 
 			const float DropStartTime = Aircraft->DropStartTime;
 			if (DropStartTime > Now) {
-				Step = (uint8)EAthenaGamePhaseStep::BusLocked;
+				Step = EAthenaGamePhaseStep::GetBusLocked();
 				OutTimeRemaining = (std::max)((DropStartTime - Now) + 1.0f, OutTimeRemaining);
 			}
 		}
-		break;
 	}
-	case EAthenaGamePhase::SafeZones:
-	{
+	else if (Phase == EAthenaGamePhase::GetSafeZones()) {
 		if (_HasbIsInFinalCountdown() && bIsInFinalCountdown) {
-			Step = (uint8)EAthenaGamePhaseStep::FinalCountdown;
-			break;
+			return EAthenaGamePhaseStep::GetFinalCountdown();
 		}
 
 		if (_HasbIsInCountdown() && bIsInCountdown) {
-			Step = (uint8)EAthenaGamePhaseStep::Countdown;
-			break;
+			return EAthenaGamePhaseStep::GetCountdown();
 		}
 
 		if (SafeZoneIndicator) {
@@ -328,35 +319,29 @@ uint8 AFortGameStateAthena::GetGamePhaseStep(float& OutTimeRemaining) {
 			const float FinishShrinkTime = SafeZoneIndicator->SafeZoneFinishShrinkTime;
 
 			if (StartShrinkTime - Now > 0.0f) {
-				Step = (uint8)EAthenaGamePhaseStep::StormHolding;
+				Step = EAthenaGamePhaseStep::GetStormHolding();
 				OutTimeRemaining = StartShrinkTime - Now;
 			}
 			else if (FinishShrinkTime - Now > 0.0f) {
-				Step = (uint8)EAthenaGamePhaseStep::StormShrinking;
+				Step = EAthenaGamePhaseStep::GetStormShrinking();
 				OutTimeRemaining = FinishShrinkTime - Now;
 			}
 			else {
-				Step = (uint8)EAthenaGamePhaseStep::StormHolding;
+				Step = EAthenaGamePhaseStep::GetStormHolding();
 			}
 		}
 		else {
-			Step = (uint8)EAthenaGamePhaseStep::StormForming;
+			Step = EAthenaGamePhaseStep::GetStormForming();
 			if (_HasSafeZonesStartTime() && SafeZonesStartTime > Now) {
 				OutTimeRemaining = SafeZonesStartTime - Now;
 			}
 		}
-		break;
 	}
-	case EAthenaGamePhase::EndGame:
-	{
-		Step = (uint8)EAthenaGamePhaseStep::EndGame;
+	else if (Phase == EAthenaGamePhase::GetEndGame()) {
+		Step = EAthenaGamePhaseStep::GetEndGame();
 		if (_HasEndGameKickPlayerTime() && EndGameKickPlayerTime > Now) {
 			OutTimeRemaining = EndGameKickPlayerTime - Now;
 		}
-		break;
-	}
-	default:
-		break;
 	}
 
 	return Step;

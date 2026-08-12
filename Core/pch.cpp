@@ -5,6 +5,7 @@
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Core/Public/Logging/LogMacros.h"
 #include "Core/Public/Utils.h"
+#include "Gui/Public/Gui.h"
 #include "Engine/Source/Runtime/Engine/Classes/Kismet/KismetStringLibrary.h"
 
 void Log(const std::string& msg)
@@ -33,7 +34,10 @@ void Log(const std::string& msg)
 		fflush(LogFile);
 	}
 
-	std::cout << "Log" << LogType << ": " << msg << '\n';
+	Gui::PushLog("Log" + std::string(LogType) + ": " + msg);
+
+	if (!Gui::IsCapturingConsole())
+		std::cout << "Log" << LogType << ": " << msg << '\n';
 }
 
 uintptr_t GetVTableIndex(class UFunction* Func) {

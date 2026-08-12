@@ -13,7 +13,15 @@
     <Filter Include="CrashReporter">
       <UniqueIdentifier>{F66A0CEC-E214-5534-8B92-AB6F30C33DE9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CrashReporter\Private">
+    <Filter Include="Gui">
+      <UniqueIdentifier>{3A1C6E20-7B44-4C18-9E5A-11D2F0C4A701}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Private">
+      <UniqueIdentifier>{3A1C6E20-7B44-4C18-9E5A-11D2F0C4A702}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Gui\Public">
+      <UniqueIdentifier>{3A1C6E20-7B44-4C18-9E5A-11D2F0C4A703}</UniqueIdentifier>
+    </Filter>    <Filter Include="CrashReporter\Private">
       <UniqueIdentifier>{B8A321DA-A037-5D12-95DD-03A1BD787DFF}</UniqueIdentifier>
     </Filter>
     <Filter Include="CrashReporter\Public">
@@ -453,7 +461,18 @@
     <ClInclude Include="CrashReporter\Public\CrashReporter.h">
       <Filter>CrashReporter\Public</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\Abilities\GameplayAbility.h">
+    <ClInclude Include="Gui\Public\Gui.h">
+      <Filter>Gui\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\Public\CoreLogo.h">
+      <Filter>Gui\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\Public\GuiPanel.h">
+      <Filter>Gui\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\Public\GuiInternal.h">
+      <Filter>Gui\Public</Filter>
+    </ClInclude>    <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\Abilities\GameplayAbility.h">
       <Filter>Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\Abilities</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Public\Abilities\GameplayAbilityTargetTypes.h">
@@ -2348,6 +2367,24 @@
     <ClCompile Include="Core\Private\Finder.cpp">
       <Filter>Core\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\includes\imgui\imgui.cpp">
+      <Filter>includes\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\imgui\imgui_draw.cpp">
+      <Filter>includes\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\imgui\imgui_tables.cpp">
+      <Filter>includes\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\imgui\imgui_widgets.cpp">
+      <Filter>includes\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\imgui\imgui_impl_win32.cpp">
+      <Filter>includes\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\includes\imgui\imgui_impl_dx11.cpp">
+      <Filter>includes\imgui</Filter>
+    </ClCompile>
     <ClCompile Include="Core\Private\Utils.cpp">
       <Filter>Core\Private</Filter>
     </ClCompile>
@@ -2357,7 +2394,21 @@
     <ClCompile Include="CrashReporter\Private\CrashReporter.cpp">
       <Filter>CrashReporter\Private</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent.cpp">
+    <ClCompile Include="Gui\Private\Gui.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\CoreLogo.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\ConsoleMirror.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\ConsolePanel.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\StatusPanel.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>    <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent.cpp">
       <Filter>Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\GameplayAbility.cpp">

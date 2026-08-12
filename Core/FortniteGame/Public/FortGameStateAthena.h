@@ -23,30 +23,36 @@ class AFortAthenaMutator_AI;
 class UFortMutatorListComponent;
 class AFortSpecialActorReplicationInfo;
 
-enum class EAthenaGamePhase : uint8 {
-	None = 0,
-	Setup = 1,
-	Warmup = 2,
-	Aircraft = 3,
-	SafeZones = 4,
-	EndGame = 5,
-	Count = 6,
+class EAthenaGamePhase {
+public:
+	DefineUnrealEnum(EAthenaGamePhase);
+
+	DefineEnumProperty(None);
+	DefineEnumProperty(Setup);
+	DefineEnumProperty(Warmup);
+	DefineEnumProperty(Aircraft);
+	DefineEnumProperty(SafeZones);
+	DefineEnumProperty(EndGame);
+	DefineEnumProperty(Count);
 };
 
-enum class EAthenaGamePhaseStep : uint8 {
-	None = 0,
-	Setup = 1,
-	Warmup = 2,
-	GetReady = 3,
-	BusLocked = 4,
-	BusFlying = 5,
-	StormForming = 6,
-	StormHolding = 7,
-	StormShrinking = 8,
-	Countdown = 9,
-	FinalCountdown = 10,
-	EndGame = 11,
-	Count = 12,
+class EAthenaGamePhaseStep {
+public:
+	DefineUnrealEnum(EAthenaGamePhaseStep);
+
+	DefineEnumProperty(None);
+	DefineEnumProperty(Setup);
+	DefineEnumProperty(Warmup);
+	DefineEnumProperty(GetReady);
+	DefineEnumProperty(BusLocked);
+	DefineEnumProperty(BusFlying);
+	DefineEnumProperty(StormForming);
+	DefineEnumProperty(StormHolding);
+	DefineEnumProperty(StormShrinking);
+	DefineEnumProperty(Countdown);
+	DefineEnumProperty(FinalCountdown);
+	DefineEnumProperty(EndGame);
+	DefineEnumProperty(Count);
 };
 
 class EAirCraftBehavior {

@@ -563,4 +563,14 @@ public: \
             CachedStaticEnum = (UEnum*)FUObjectArray::FindObjectFast(#__Class);  \
         } \
         return CachedStaticEnum; \
+    } \
+    \
+    static std::string ToString(int64 Value) \
+    { \
+        return StaticEnum()->GetNameStringByValue(Value); \
+    } \
+    \
+    std::string ToString() const \
+    { \
+        return ToString(__EnumValue); \
     }

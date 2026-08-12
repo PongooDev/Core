@@ -6,6 +6,7 @@
 #include "Public/Configuration.h"
 #include "Public/Finder.h"
 #include "Public/Client.h"
+#include "Gui/Public/Gui.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Engine.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
@@ -55,8 +56,6 @@ DWORD Main(LPVOID)
 
     GCanUseEngineLog = true;
 
-    Utils::InitConsole(Config);
-
     Finder::FindGUObjectArray();
     Finder::FindGIsClient();
     Finder::FindGIsServer();
@@ -68,6 +67,10 @@ DWORD Main(LPVOID)
     CoreGlobals::Init();
 
     Version::SetupVersion();
+
+    Gui::Start();
+    Utils::InitConsole(Config);
+
     Log(std::format("ImageBase: 0x{:X}", ImageBase).c_str());
     Log("FullVersion: " + Version::VersionString);
     Log(std::format("Engine Version: {}", Version::Engine_Version));
@@ -75,9 +78,11 @@ DWORD Main(LPVOID)
         Log(std::format("Fortnite Build: {:.2f}", Version::Fortnite_Version));
         if (Config.bIsClient) {
             SetConsoleTitleA(std::format("CoreClient ({:.2f}) | Starting...", Version::Fortnite_Version).c_str());
+            Gui::SetTitle(std::format("CoreClient ({:.2f}) | Starting...", Version::Fortnite_Version));
         }
         else {
             SetConsoleTitleA(std::format("Core ({:.2f}) | Starting...", Version::Fortnite_Version).c_str());
+            Gui::SetTitle(std::format("Core ({:.2f}) | Starting...", Version::Fortnite_Version));
         }
     }
     Log(std::format("Fortnite CL: {}", Version::Fortnite_CL));
@@ -159,6 +164,8 @@ DWORD Main(LPVOID)
 
 void Unload()
 {
+    Gui::Shutdown();
+
     Log("Core is unloading...");
 
     MH_Uninitialize();

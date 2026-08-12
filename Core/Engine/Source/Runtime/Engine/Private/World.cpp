@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/World.h"
+#include "Gui/Public/Gui.h"
 
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Engine.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/NetDriver.h"
@@ -200,7 +201,9 @@ bool UWorld::Listen(FURL& InURL)
 		return false;
 	}
 
-	SetConsoleTitleA((std::format("Core ({:.2f}) | Listening: ", Version::Fortnite_Version).c_str() + GetName().ToString() + " | " + std::to_string(InURL.Port)).c_str());
+	const std::string ListenTitle = std::format("Core ({:.2f}) | Listening: ", Version::Fortnite_Version) + GetName().ToString() + " | " + std::to_string(InURL.Port);
+	SetConsoleTitleA(ListenTitle.c_str());
+	Gui::SetTitle(ListenTitle);
 	return true;
 }
 

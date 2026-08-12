@@ -135,7 +135,7 @@ void AFortAthenaMutator_Barrier::OnGamePhaseStepChanged(EAthenaGamePhaseStep Gam
 {
 	AFortGameStateAthena* GameState = (AFortGameStateAthena*)UGameplayStatics::GetGameState(this);
 
-	if (GamePhaseStep == EAthenaGamePhaseStep::BusLocked)
+	if (GamePhaseStep == EAthenaGamePhaseStep::GetBusLocked())
 	{
 		FVector Center{};
 		UFortKismetLibrary::GetSafeZoneLocation(GetWorld(), 3, &Center);

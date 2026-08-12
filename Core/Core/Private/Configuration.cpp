@@ -22,6 +22,7 @@ void ConfigurationManager::LoadConfig() {
 	NewConfig.bSkipSessionValidation = FParse::Param(CmdLine, TEXT("bSkipSessionValidation"));
 	NewConfig.bListenServer = FParse::Param(CmdLine, TEXT("bListenServer"));
 	NewConfig.bDevSameTeam = FParse::Param(CmdLine, TEXT("bDevSameTeam"));
+	NewConfig.bDisableGui = FParse::Param(CmdLine, TEXT("bDisableGui"));
 
 	const wchar_t* PlaylistParam = wcsstr(CmdLine, L"Playlist=");
 	if (PlaylistParam) {
@@ -58,6 +59,7 @@ void ConfigurationManager::LoadConfig() {
 	Log("bSkipSessionValidation: " + std::to_string(NewConfig.bSkipSessionValidation));
 	Log("bListenServer: " + std::to_string(NewConfig.bListenServer));
 	Log("bDevSameTeam: " + std::to_string(NewConfig.bDevSameTeam));
+	Log("bDisableGui: " + std::to_string(NewConfig.bDisableGui));
 	Log("Playlist: " + NewConfig.Playlist);
 	Log("MapToLoad: " + NewConfig.MapToLoad);
 

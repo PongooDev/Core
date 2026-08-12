@@ -2,6 +2,7 @@
 #include "../Public/Utils.h"
 
 #include "../Public/Patches.h"
+#include "Gui/Public/Gui.h"
 
 #include "Engine/Source/Runtime/CoreUObject/Public/UObject/UnrealType.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Engine.h"
@@ -61,13 +62,22 @@ void Utils::InitConsole(FCoreConfig& Config)
         AllocConsole();
         FILE* fptr;
         freopen_s(&fptr, "CONOUT$", "w+", stdout);
+
+        if (Gui::IsRunning()) {
+            if (HWND ConsoleWindow = GetConsoleWindow()) {
+                ShowWindow(ConsoleWindow, SW_HIDE);
+            }
+            Gui::CaptureConsoleOutput();
+        }
     }
 	if (Config.bIsClient) {
 		SetConsoleTitleA("CoreClient (Finding Build) | Starting...");
+		Gui::SetTitle("CoreClient (Finding Build) | Starting...");
 		Log("Welcome to CoreClient, Made with love by Pongo_x86 and The Community!");
-	} 
+	}
 	else {
 		SetConsoleTitleA("Core (Finding Build) | Starting...");
+		Gui::SetTitle("Core (Finding Build) | Starting...");
 		Log("Welcome to Core, Made with love by Pongo_x86 and The Community!");
 	}
 }
@@ -208,7 +218,7 @@ uint8 Utils::GetEnumValueFromName(const char* EnumName, const char* EnumMemberNa
 
 void Utils::Hook() {
 	MH_STATUS status = MH_Initialize();
-	if (status != MH_OK) {
+	if (status != MH_OK && status != MH_ERROR_ALREADY_INITIALIZED) {
 		Log(std::format("MH_Initialize failed with status: {}", MH_StatusToString(status)));
 		return;
 	}
