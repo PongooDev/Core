@@ -32,4 +32,7 @@ namespace GuiDetail
 
 	GuiPanel* CreateConsolePanel();
 	GuiPanel* CreateStatusPanel();
+	GuiPanel* CreateNetworkPanel();
+	GuiPanel* CreatePerformancePanel();
+	GuiPanel* CreateOffsetsPanel();
 }

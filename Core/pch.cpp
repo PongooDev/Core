@@ -22,7 +22,24 @@ void Log(const std::string& msg)
 
 	if (!LogFile)
 	{
-		fopen_s(&LogFile, bClient ? "Client_log.txt" : "Server_log.txt", "w");
+		wchar_t Path[MAX_PATH] = {};
+		const DWORD Length = GetModuleFileNameW(nullptr, Path, MAX_PATH);
+
+		if (Length > 0 && Length < MAX_PATH)
+		{
+			if (wchar_t* LastSlash = wcsrchr(Path, L'\\'))
+				*(LastSlash + 1) = L'\0';
+			else
+				Path[0] = L'\0';
+		}
+		else
+		{
+			Path[0] = L'\0';
+		}
+
+		wcsncat_s(Path, bClient ? L"Client_log.txt" : L"Server_log.txt", _TRUNCATE);
+
+		_wfopen_s(&LogFile, Path, L"w");
 		if (LogFile)
 			fprintf(LogFile, "Log%s: Log file initialized!\n", LogType);
 	}

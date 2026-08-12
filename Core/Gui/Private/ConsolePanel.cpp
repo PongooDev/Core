@@ -89,12 +89,17 @@ namespace
 	{
 	public:
 		const char* Name() const override { return "Console"; }
+		const char* Category() const override { return "SERVER"; }
 		void Render() override;
 
 	private:
 		void Drain();
 		void RebuildVisible();
 		void CopyVisibleToClipboard() const;
+		void SaveVisibleToFile();
+
+		std::string SaveResult;
+		ULONGLONG SaveResultAt = 0;
 
 		std::deque<FLogLine> Lines;
 
@@ -159,6 +164,46 @@ namespace
 		ImGui::SetClipboardText(Out.c_str());
 	}
 
+	void ConsolePanel::SaveVisibleToFile()
+	{
+		wchar_t Path[MAX_PATH] = {};
+		const DWORD Length = GetModuleFileNameW(nullptr, Path, MAX_PATH);
+
+		if (Length == 0 || Length >= MAX_PATH)
+		{
+			SaveResult = "could not resolve the output directory";
+			SaveResultAt = GetTickCount64();
+			return;
+		}
+
+		if (wchar_t* LastSlash = wcsrchr(Path, L'\\'))
+			*(LastSlash + 1) = L'\0';
+
+		SYSTEMTIME Time = {};
+		GetLocalTime(&Time);
+
+		const std::wstring FileName = std::format(L"Core_Console_{:04}{:02}{:02}_{:02}{:02}{:02}.txt",
+			Time.wYear, Time.wMonth, Time.wDay, Time.wHour, Time.wMinute, Time.wSecond);
+
+		wcsncat_s(Path, FileName.c_str(), _TRUNCATE);
+
+		FILE* File = nullptr;
+		if (_wfopen_s(&File, Path, L"w") != 0 || !File)
+		{
+			SaveResult = "could not open the file for writing";
+			SaveResultAt = GetTickCount64();
+			return;
+		}
+
+		for (int Index : Visible)
+			fprintf(File, "%s\n", Lines[Index].Text.c_str());
+
+		fclose(File);
+
+		SaveResult = std::format("saved {} lines", Visible.size());
+		SaveResultAt = GetTickCount64();
+	}
+
 	void ConsolePanel::Render()
 	{
 		Drain();
@@ -183,6 +228,9 @@ namespace
 		if (ImGui::Button("Copy"))
 			CopyVisibleToClipboard();
 		ImGui::SameLine();
+		if (ImGui::Button("Save"))
+			SaveVisibleToFile();
+		ImGui::SameLine();
 		ImGui::Checkbox("Auto-scroll", &bAutoScroll);
 		ImGui::SameLine();
 		if (ImGui::Checkbox("Problems only", &bErrorsOnly))
@@ -194,7 +242,9 @@ namespace
 		Filter.Draw("Filter", 200.0f);
 
 		ImGui::SameLine();
-		if (Filter.IsActive())
+		if (!SaveResult.empty() && GetTickCount64() - SaveResultAt < 4000)
+			ImGui::TextDisabled("%s", SaveResult.c_str());
+		else if (Filter.IsActive())
 			ImGui::TextDisabled("%d / %d lines", (int)Visible.size(), (int)Lines.size());
 		else
 			ImGui::TextDisabled("%d lines", (int)Lines.size());

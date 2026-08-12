@@ -134,6 +134,7 @@ namespace
 		}
 
 		const char* Name() const override { return "Status"; }
+		const char* Category() const override { return "SERVER"; }
 		void Render() override;
 
 	private:

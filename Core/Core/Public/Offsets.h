@@ -1,704 +1,590 @@
 #pragma once
 #include "pch.h"
 
-namespace ServerOffsets {
-	inline uintptr_t ProcessEvent = 0;
-	inline uintptr_t ProcessEventVFT = 0;
-
-	inline uintptr_t GUObjectArray = 0;
-	inline uintptr_t GWorld = 0;
-	inline uintptr_t GEngine = 0;
-
-	inline uintptr_t GIsClient = 0;
-	inline uintptr_t GIsServer = 0;
-
-	inline uintptr_t FMemory_Free = 0;
-	inline uintptr_t FMemory_Realloc = 0;
-
-	inline uintptr_t ChangeGameSessionId = 0;
-
-	inline uintptr_t StaticFindObject = 0;
-	inline uintptr_t StaticLoadObject = 0;
-	inline uintptr_t StaticConstructObject_Internal = 0;
-
-	inline uintptr_t TickFlush = 0;
-
-	inline uintptr_t InternalServerTryActivateAbilityVFT = 0x0;
-
-	inline uintptr_t GHandle = 0;
-
-	inline uintptr_t AbilitySpecDefaultConstructor = 0;
-	inline uintptr_t AbilitySpecClassConstructor = 0;
-	inline uintptr_t AbilitySpecCDOConstructor = 0;
-
-	inline uintptr_t ABuildingActor_OnDamageServer = 0;
-	inline uintptr_t ABuildingActor_PostUpdateVFT = 0;
-	inline uintptr_t ABuildingActor_ServerOnAttemptInteractVFT = 0;
-	inline uintptr_t ABuildingActor_HandleDamagedVFT = 0;
-
-	inline uintptr_t SpawnActor = 0;
-
-	inline uintptr_t FFrame__CurrentNativeFunction = 0;
-	inline uintptr_t FFrame__PropertyChainForCompiledIn = 0;
-	inline uintptr_t FFrame__Next = 0;
-
-	inline uintptr_t Step = 0;
-	inline uintptr_t StepExplicitProperty = 0;
-
-	inline uintptr_t ExecFunction = 0;
-
-	inline uintptr_t FName_AppendString = 0;
-	inline uintptr_t FName_ToStringOut = 0;
-	inline uintptr_t FName_Compare = 0;
-	inline uintptr_t FName_GetComparisonNameEntry = 0;
-	inline uintptr_t FName_Constructor1 = 0; // const char* Str
-
-	inline uintptr_t UObjectBase_AddObject = 0;
-	inline uintptr_t UObjectBase_AtomicallyClearFlags = 0;
-	inline uintptr_t UObjectBase_DeferredRegister = 0;
-	inline uintptr_t UObjectBase_EmitBaseReferences = 0;
-	inline uintptr_t UObjectBase_IsValidLowLevel = 0;
-	inline uintptr_t UObjectBase_IsValidLowLevelFast = 0;
-	inline uintptr_t UObjectBase_LowLevelRename = 0;
-	inline uintptr_t UObjectBase_Register = 0;
-	inline uintptr_t UObjectBase_Destructor = 0;
-
-	inline uintptr_t UObjectBaseUtility_AddToCluster = 0;
-	inline uintptr_t UObjectBaseUtility_CanBeInCluster = 0;
-	inline uintptr_t UObjectBaseUtility_GetFullName = 0;
-	inline uintptr_t UObjectBaseUtility_GetFullName_1 = 0;
-	inline uintptr_t UObjectBaseUtility_GetInterfaceAddress = 0;
-	inline uintptr_t UObjectBaseUtility_GetLinker = 0;
-	inline uintptr_t UObjectBaseUtility_GetLinkerIndex = 0;
-	inline uintptr_t UObjectBaseUtility_GetNativeInterfaceAddress = 0;
-	inline uintptr_t UObjectBaseUtility_IsDefaultSubobject = 0;
-
-	inline uintptr_t UObject_BeginDestroy = 0;
-	inline uintptr_t UObject_FinishDestroy = 0;
-	inline uintptr_t UObject_DefaultConstructor = 0;
-	inline uintptr_t UObject_GetDefaultSubobjects = 0;
-	inline uintptr_t UObject_GetDefaultSubobjectByName = 0;
-	inline uintptr_t UObject_PostInitProperties = 0;
-	inline uintptr_t UObject_PostLoadVFT = 0;
-	inline uintptr_t UObject_FindFunctionChecked = 0;
-	inline uintptr_t UObject_GetWorldVFT = 0;
-	inline uintptr_t UObject_NeedsLoadForClientVFT = 0;
-	inline uintptr_t UObject_CanCreateInCurrentContext = 0;
-
-	inline uintptr_t UField_GetOwnerClass = 0;
-	inline uintptr_t UField_GetOwnerStruct = 0;
-
-	inline uintptr_t UStruct_FindPropertyByName = 0;
-
-	inline uintptr_t UStruct__SuperStruct = 0;
-	inline uintptr_t UStruct__Children = 0;
-	inline uintptr_t UStruct__PropertiesSize = 0;
-	inline uintptr_t UStruct__MinAlignment = 0;
-
-	inline uintptr_t UClass_FindFunctionByName = 0;
-	inline uintptr_t UClass_GetSparseClassData = 0;
-
-	inline uintptr_t FName_GetPlainNameString1 = 0;
-	inline uintptr_t FName_GetPlainNameString2 = 0;
-
-	inline uintptr_t UProperty__Offset_Internal = 0;
-	inline uintptr_t UProperty__ElementSize = 0;
-	inline uintptr_t UProperty__PropertyFlags = 0;
-
-	inline uintptr_t UField__Next = 0;
-	inline uintptr_t UField__Name = 0;
-
-	inline uintptr_t UBoolProperty__FieldMask = 0;
-
-	inline uintptr_t UEngine_BroadcastNetworkFailure = 0;
-	inline uintptr_t UEngine_BroadcastNetworkLagStateChanged = 0;
-	inline uintptr_t UEngine_CancelAllPending = 0;
-	inline uintptr_t UEngine_CreateGameUserSettings = 0;
-	inline uintptr_t UEngine_GetFirstGamePlayer = 0;
-	inline uintptr_t UEngine_GetNetMode = 0;
-	inline uintptr_t UEngine_GetMaxTickRate = 0;
-	inline uintptr_t UEngine_GetMaxTickRateVFT = 0;
-	inline uintptr_t UEngine_CreateNetDriver = 0;
-	inline uintptr_t UEngine_LoadMap = 0;
-	inline uintptr_t UEngine_LoadMapVFT = 0;
-	inline uintptr_t UEngine_CreateNamedNetDriver = 0;
-	inline uintptr_t UEngine_GetWorldContextFromWorldChecked = 0;
-	inline uintptr_t UEngine_FindNamedNetDriver = 0;
-	inline uintptr_t UEngine_DestroyNamedNetDriver = 0;
-	inline uintptr_t UEngine_GetWorldContextFromWorld = 0;
-	inline uintptr_t UEngine_CreateNewWorldContext = 0;
-	inline uintptr_t UEngine_CreateNetDriver_Local = 0;
-
-	inline uintptr_t UWorld_AddController = 0;
-	inline uintptr_t UWorld_AddLevel = 0;
-	inline uintptr_t UWorld_AddNetworkActor = 0;
-	inline uintptr_t UWorld_AddStreamingLevel = 0;
-	inline uintptr_t UWorld_AddToWorld = 0;
-	inline uintptr_t UWorld_AllowLevelLoadRequests = 0;
-	inline uintptr_t UWorld_AreActorsInitialized = 0;
-	inline uintptr_t UWorld_AreAlwaysLoadedLevelsLoaded = 0;
-	inline uintptr_t UWorld_BeginPlay = 0;
-	inline uintptr_t UWorld_CommitMapChange = 0;
-	inline uintptr_t UWorld_ConditionallyCreateDefaultLevelCollections = 0;
-	inline uintptr_t UWorld_ContainsActor = 0;
-	inline uintptr_t UWorld_ContainsLevel = 0;
-	inline uintptr_t UWorld_CreateAISystem = 0;
-	inline uintptr_t UWorld_GetActiveLevelCollection = 0;
-	inline uintptr_t UWorld_GetActorCount = 0;
-	inline uintptr_t UWorld_GetAddressURL = 0;
-	inline uintptr_t UWorld_GetDefaultGravityZ = 0;
-	inline uintptr_t UWorld_GetFirstLocalPlayerFromController = 0;
-	inline uintptr_t UWorld_GetFirstPlayerController = 0;
-	inline uintptr_t UWorld_GetGameViewport = 0;
-	inline uintptr_t UWorld_GetGravityZ = 0;
-	inline uintptr_t UWorld_GetMapName = 0;
-	inline uintptr_t UWorld_GetTimerManager = 0;
-	inline uintptr_t UWorld_GetWorldSettings = 0;
-	inline uintptr_t UWorld_K2_GetWorldSettings = 0;
-	inline uintptr_t UWorld_HasBegunPlay = 0;
-	inline uintptr_t UWorld_InternalGetNetMode = 0;
-	inline uintptr_t UWorld_IsGameWorld = 0;
-	inline uintptr_t UWorld_IsInSeamlessTravel = 0;
-	inline uintptr_t UWorld_IsServer = 0;
-	inline uintptr_t UWorld_MarkObjectsPendingKill = 0;
-	inline uintptr_t UWorld_RemoveActor = 0;
-	inline uintptr_t UWorld_RemoveController = 0;
-	inline uintptr_t UWorld_RemoveNetworkActor = 0;
-	inline uintptr_t UWorld_SeamlessTravel = 0;
-	inline uintptr_t UWorld_ServerTravel = 0;
-	inline uintptr_t UWorld_SetGameMode = 0;
-	inline uintptr_t UWorld_SetGameState = 0;
-	inline uintptr_t UWorld_SetNavigationSystem = 0;
-	inline uintptr_t UWorld_WelcomePlayer = 0;
-	inline uintptr_t UWorld_UpdateStreamingLevelShouldBeConsidered = 0;
-	inline uintptr_t UWorld_FindCollectionByType = 0;
-	inline uintptr_t UWorld__NextSwitchCountdown = 0;
-	inline uintptr_t UWorld_ListenPatch = 0;
-	inline uintptr_t UWorld_RemovePIEPrefix = 0;
-
-	inline uintptr_t FGuid_ToString = 0;
-
-	inline uintptr_t UGameInstance_StartGameInstance = 0;
-	inline uintptr_t UGameInstance_Shutdown = 0;
-	inline uintptr_t UGameInstance_GetFirstLocalPlayerController = 0;
-	inline uintptr_t UGameInstance_ClientTravelToSession = 0;
-	inline uintptr_t UGameInstance_CleanupGameViewport = 0;
-
-	inline uintptr_t AActor_ActorHasTag = 0;
-	inline uintptr_t AActor_CallPreReplication = 0;
-	inline uintptr_t AActor_CheckStillInWorld = 0;
-	inline uintptr_t AActor_ClearCrossLevelReferences = 0;
-	inline uintptr_t AActor_CopyRemoteRoleFrom = 0;
-	inline uintptr_t AActor_Destroy = 0;
-	inline uintptr_t AActor_DisableInput = 0;
-	inline uintptr_t AActor_EnableInput = 0;
-	inline uintptr_t AActor_ExchangeNetRoles = 0;
-	inline uintptr_t AActor_FindOrAddNetworkObjectInfo = 0;
-	inline uintptr_t AActor_InternalGetNetMode = 0;
-	inline uintptr_t AActor_IsPendingKillPending = 0;
-	inline uintptr_t AActor_HasNetOwner = 0;
-	inline uintptr_t AActor_HasLocalNetOwner = 0;
-	inline uintptr_t AActor_SetNetDormancy = 0;
-	inline uintptr_t AActor_BeginPlay = 0;
-	inline uintptr_t AActor_BeginPlayVFT = 0;
-	inline uintptr_t AActor_ResetVFT = 0;
-
-	inline uintptr_t AGameSession_ApproveLogin = 0;
-	inline uintptr_t AGameSession_AtCapacity = 0;
-	inline uintptr_t AGameSession_GetSessionJoinability = 0;
-	inline uintptr_t AGameSession_KickPlayer = 0;
-	inline uintptr_t AGameSession_KickPlayerVFT = 0;
-	inline uintptr_t AGameSession_ReturnToMainMenuHost = 0;
-	inline uintptr_t AGameSession_UnregisterPlayer = 0;
-	inline uintptr_t AGameSession_UpdateSessionJoinability = 0;
-	inline uintptr_t AGameSession_InitOptions = 0;
-	inline uintptr_t AGameSession_RegisterPlayer = 0;
-	inline uintptr_t AGameSession__NextPlayerID = 0;
-	inline uintptr_t AGameSession_ProcessAutoLogin = 0;
-	inline uintptr_t AGameSession_OnAutoLoginComplete = 0;
-	inline uintptr_t AGameSession_UnregisterPlayer_1 = 0;
-	inline uintptr_t AGameSession_UnregisterPlayers = 0;
-	inline uintptr_t AGameSession_GetPlayerControllerFromNetId = 0;
-
-	inline uintptr_t AGameModeBase_InitGame = 0;
-	inline uintptr_t AGameModeBase_InitGameVFT = 0;
-	inline uintptr_t AGameModeBase_InitGameState = 0;
-	inline uintptr_t AGameModeBase_InitGameStateVFT = 0;
-	inline uintptr_t AGameModeBase_CanServerTravel = 0;
-	inline uintptr_t AGameModeBase_SpawnDefaultPawnFor = 0;
-	inline uintptr_t AGameModeBase_SpawnDefaultPawnAtTransform = 0;
-	inline uintptr_t AGameModeBase_RestartPlayer = 0;
-	inline uintptr_t AGameModeBase_FinishRestartPlayer = 0;
-	inline uintptr_t AGameModeBase_FinishRestartPlayerVFT = 0;
-	inline uintptr_t AGameModeBase_HandleStartingNewPlayer = 0;
-	inline uintptr_t AGameModeBase_SpawnPlayerController = 0;
-	inline uintptr_t AGameModeBase_SpawnPlayerControllerVFT = 0;
-	inline uintptr_t AGameModeBase_GetGameSessionClass = 0;
-	inline uintptr_t AGameModeBase_GetGameSessionClassVFT = 0;
-	inline uintptr_t AGameModeBase_ProcessServerTravelVFT = 0;
-
-	inline uintptr_t UKismetStringLibrary_Conv_StringToName = 0;
-
-	inline uintptr_t AGameMode_AddInactivePlayer = 0;
-	inline uintptr_t AGameMode_AddInactivePlayerVFT = 0;
-	inline uintptr_t AGameMode_Broadcast = 0;
-	inline uintptr_t AGameMode_BroadcastLocalized = 0;
-	inline uintptr_t AGameMode_EndMatch = 0;
-	inline uintptr_t AGameMode_FindInactivePlayer = 0;
-	inline uintptr_t AGameMode_GetNetworkNumber = 0;
-	inline uintptr_t AGameMode_HandleMatchHasEndedVFT = 0;
-	inline uintptr_t AGameMode_HandleMatchHasStartedVFT = 0;
-	inline uintptr_t AGameMode_HandleMatchIsWaitingToStart = 0;
-	inline uintptr_t AGameMode_HandleSeamlessTravelPlayer = 0;
-	inline uintptr_t AGameMode_HandleStartingNewPlayer = 0;
-	inline uintptr_t AGameMode_InitSeamlessTravelPlayer = 0;
-	inline uintptr_t AGameMode_IsHandlingReplays = 0;
-	inline uintptr_t AGameMode_OnMatchStateSet = 0;
-	inline uintptr_t AGameMode_PlayerCanRestart = 0;
-	inline uintptr_t AGameMode_PostSeamlessTravel = 0;
-	inline uintptr_t AGameMode_ReadyToStartMatch = 0;
-	inline uintptr_t AGameMode_RestartGame = 0;
-	inline uintptr_t AGameMode_Say = 0;
-	inline uintptr_t AGameMode_SendPlayer = 0;
-	inline uintptr_t AGameMode_SetMatchState = 0;
-	inline uintptr_t AGameMode_SetSeamlessTravelViewTarget = 0;
-	inline uintptr_t AGameMode_StartMatch = 0;
-	inline uintptr_t AGameMode_StartPlay = 0;
-	inline uintptr_t AGameMode_OverridePlayerState = 0;
-	inline uintptr_t AGameMode_PostLogin = 0;
-	inline uintptr_t AGameMode_Logout = 0;
-	inline uintptr_t AGameMode_CanServerTravel = 0;
-	inline uintptr_t AGameMode_InitGame = 0;
-
-	inline uintptr_t APlayerController_HasClientLoadedCurrentWorld = 0;
-	inline uintptr_t APlayerController_ServerAcknowledgePossession = 0;
-
-	inline uintptr_t UGameMapsSettings_GetGameModeForName = 0;
-
-	inline uintptr_t ULevelStreaming_PostLoad = 0;
-	inline uintptr_t ULevelStreaming_DetermineTargetState = 0;
-	inline uintptr_t ULevelStreaming_OnLevelAdded = 0;
-	inline uintptr_t ULevelStreaming_IsDesiredLevelLoaded = 0;
-	inline uintptr_t ULevelStreaming_SetLevelLODIndex = 0;
-	inline uintptr_t ULevelStreaming_SetPriority = 0;
-	inline uintptr_t ULevelStreaming_SetWorldAsset = 0;
-	inline uintptr_t ULevelStreaming_GetWorldAssetPackageName = 0;
-	inline uintptr_t ULevelStreaming_GetWorldAssetPackageFName = 0;
-	inline uintptr_t ULevelStreaming_RenameForPIE = 0;
-	inline uintptr_t ULevelStreaming_ShouldBeVisible = 0;
-	inline uintptr_t ULevelStreaming_IsStreamingStatePending = 0;
-	inline uintptr_t ULevelStreaming_CreateInstance = 0;
-	inline uintptr_t ULevelStreaming_RequestLevel = 0;
-	inline uintptr_t ULevelStreaming_SetLoadedLevel = 0;
-	inline uintptr_t ULevelStreaming_DiscardPendingUnloadLevel = 0;
-
-	inline uintptr_t ULevel_SortActorList = 0;
-	inline uintptr_t ULevel_InitializeNetworkActors = 0;
-	inline uintptr_t ULevel_ClearActorsSeamlessTraveledFlag = 0;
-	inline uintptr_t ULevel_SetWorldSettings = 0;
-	inline uintptr_t ULevel_IsNetActor = 0;
-	inline uintptr_t ULevel_PostInitProperties = 0;
-	inline uintptr_t ULevel_BeginDestroy = 0;
-	inline uintptr_t ULevel_FinishDestroy = 0;
-	inline uintptr_t ULevel_PostLoad = 0;
-	inline uintptr_t ULevel_CreateCluster = 0;
-	inline uintptr_t ULevel_ClearLevelComponents = 0;
-	inline uintptr_t ULevel_UpdateLevelComponents = 0;
-	inline uintptr_t ULevel_IncrementalUpdateComponents = 0;
-	inline uintptr_t ULevel_IncrementalUnregisterComponents = 0;
-	inline uintptr_t UActorComponent_RegisterComponentWithWorld = 0;
-	inline uintptr_t ULevel_RouteActorInitialize = 0;
-	inline uintptr_t ULevel_ApplyWorldOffset = 0;
-	inline uintptr_t ULevel_RegisterActorForAutoReceiveInput = 0;
-	inline uintptr_t ULevel_PushPendingAutoReceiveInput = 0;
-
-	inline uintptr_t FURL_IsInternal = 0;
-	inline uintptr_t FURL_IsLocalInternal = 0;
-	inline uintptr_t FURL_HasOption = 0;
-	inline uintptr_t FURL_GetOption = 0;
-	inline uintptr_t FURL_AddOption = 0;
-	inline uintptr_t FURL_RemoveOption = 0;
-	inline uintptr_t FURL_ToString = 0;
-	inline uintptr_t FURL_GetHostPortString = 0;
-
-	inline uintptr_t FWorldContext_SetCurrentWorld = 0;
-	inline uintptr_t FWorldContext__ThisCurrentWorld = 0;
-
-	inline uintptr_t UNetDriver_InitListen = 0;
-	inline uintptr_t UNetDriver_InitListenVFT = 0;
-	inline uintptr_t UNetDriver_SetWorld = 0;
-	inline uintptr_t UNetDriver_SetWorldVFT = 0;
-	inline uintptr_t UNetDriver_TickFlush = 0;
-	inline uintptr_t UNetDriver_IsServerVFT = 0;
-	inline uintptr_t UNetDriver_IsLevelInitializedForActorVFT = 0;
-
-	inline uintptr_t FParse_Param = 0;
-
-	inline uintptr_t AFortGameMode_OnInitWorldRecordComplete = 0;
-	inline uintptr_t AFortGameMode_OnEndOfDay = 0;
-	inline uintptr_t AFortGameMode_SetCurrentPlaylistNameVFT = 0;
-	inline uintptr_t AFortGameMode_InitGame = 0;
-	inline uintptr_t AFortGameMode_RestartPlayer = 0;
-	inline uintptr_t AFortGameMode_FinishRestartPlayer = 0;
-	inline uintptr_t AFortGameMode_SpawnDefaultPawnFor = 0;
-	inline uintptr_t AFortGameMode_SetCurrentPlaylistIdVFT = 0;
-	inline uintptr_t AFortGameMode_FinishWorldInitializationVFT = 0;
-	inline uintptr_t AFortGameMode_PickTeam = 0;
-	inline uintptr_t AFortGameMode_PickTeamVFT = 0;
-	inline uintptr_t AFortGameMode_ProcessServerTravelPatch1 = 0;
-	inline uintptr_t AFortGameMode_InitializeTeams = 0;
-	inline uintptr_t AFortGameMode_InitializeTeamsVFT = 0;
-	inline uintptr_t AFortGameMode_PlacePlayerOnTeamVFT = 0;
-
-	inline uintptr_t AFortWorldManager_HandleWorldQueryComplete = 0;
-
-	inline uintptr_t AFortGameModeZone_CheckForAllPlayersIn = 0;
-	inline uintptr_t AFortGameModeZone_RemoveKnownPlayer = 0;
-	inline uintptr_t AFortGameModeZone_UpdateSessionForMatchmaking = 0;
-	inline uintptr_t AFortGameModeZone_NotifyPendingConnectionLost = 0;
-	inline uintptr_t AFortGameModeZone_OnZoneEnd = 0;
-	inline uintptr_t AFortGameModeZone_DoLogoutAnalytics = 0;
-	inline uintptr_t AFortGameModeZone_HandleMatchHasStarted = 0;
-	inline uintptr_t AFortGameModeZone_HandleMatchHasEnded = 0;
-	inline uintptr_t AFortGameModeZone_DoInitialRestartAnalytics = 0;
-	inline uintptr_t AFortGameModeZone_InitGame = 0;
-	inline uintptr_t AFortGameModeZone_InitGameState = 0;
-	inline uintptr_t AFortGameModeZone_ChoosePlayerStart = 0;
-	inline uintptr_t AFortGameModeZone_CreateAIDirector = 0;
-	inline uintptr_t AFortGameModeZone_CreateAIDirectorVFT = 0;
-	inline uintptr_t AFortGameModeZone_CreateAIGoalManager = 0;
-	inline uintptr_t AFortGameModeZone_CreateAIGoalManagerVFT = 0;
-
-	inline uintptr_t AFortGameModeAthena_SetCurrentPlaylistId = 0;
-	inline uintptr_t AFortGameModeAthena_SetTimeOfDayManagerGameplayOverride = 0;
-	inline uintptr_t AFortGameModeAthena_OnPlaylistDataLoaded = 0;
-	inline uintptr_t AFortGameModeAthena_ApplyPlaylistDataTables = 0;
-	inline uintptr_t AFortGameModeAthena_OnDedicatedServerRestarting = 0;
-	inline uintptr_t AFortGameModeAthena_SpawnInitialSafeZone = 0;
-	inline uintptr_t AFortGameModeAthena_AttemptChangeTeam = 0;
-	inline uintptr_t AFortGameModeAthena_PickTeam = 0;
-	inline uintptr_t AFortGameModeAthena_HandleMatchHasStarted = 0;
-	inline uintptr_t AFortGameModeAthena_FinishRestartPlayer = 0;
-	inline uintptr_t AFortGameModeAthena_StartMatchAbandonProcess = 0;
-	inline uintptr_t AFortGameModeAthena_OnMatchAbandonTimeout = 0;
-	inline uintptr_t AFortGameModeAthena_CheckWinConditionLastManStanding = 0;
-	inline uintptr_t AFortGameModeAthena_GrantVictoryToAllRemainingTeams = 0;
-	inline uintptr_t AFortGameModeAthena_GrantVictoryForNumTeamsAndEndGame = 0;
-	inline uintptr_t AFortGameModeAthena_GrantLossToAllRemainingTeams = 0;
-	inline uintptr_t AFortGameModeAthena_GrantLossToAllTeams = 0;
-	inline uintptr_t AFortGameModeAthena_GrantLosses = 0;
-	inline uintptr_t AFortGameModeAthena_ChoosePlayerStart_Creative = 0;
-	inline uintptr_t AFortGameModeAthena_StartWarmupPhase = 0;
-	inline uintptr_t AFortGameModeAthena_UpdateWarmupPhase = 0;
-	inline uintptr_t AFortGameModeAthena_StartAircraftPhase = 0;
-	inline uintptr_t AFortGameModeAthena_StartSafeZonesPhase = 0;
-	inline uintptr_t AFortGameModeAthena_IsSafeZoneAllowed = 0;
-	inline uintptr_t AFortGameModeAthena_StartEndGamePhase = 0;
-	inline uintptr_t AFortGameModeAthena_StartEndGamePhaseTeam = 0;
-	inline uintptr_t AFortGameModeAthena_CreateAIDirector = 0;
-	inline uintptr_t AFortGameModeAthena_PostReloadConfig = 0;
-	inline uintptr_t AFortGameModeAthena_ReadyToStartMatch = 0;
-	inline uintptr_t AFortGameModeAthena_InitGame = 0;
-	inline uintptr_t AFortGameModeAthena_InitGameState = 0;
-	inline uintptr_t AFortGameModeAthena_SpawnDefaultPawnFor = 0;
-	inline uintptr_t AFortGameModeAthena_RestartPlayer = 0;
-	inline uintptr_t AFortGameModeAthena_FinishWorldInitialization = 0;
-	inline uintptr_t AFortGameModeAthena_AddToAlivePlayers = 0;
-	inline uintptr_t AFortGameModeAthena_RemoveFromAlivePlayers = 0;
-	inline uintptr_t AFortGameModeAthena_PlacePlayerOnTeam = 0;
-	inline uintptr_t AFortGameModeAthena_OnGivenMatchAssignmentVFT = 0;
-	inline uintptr_t AFortGameModeAthena_SpawnFortSpawnActors = 0;
-
-	inline uintptr_t AFortGameStateAthena_OnRep_CurrentPlaylistInfo = 0;
-	inline uintptr_t AFortGameStateAthena_OnPlaylistDataLoadCompleted = 0;
-	inline uintptr_t AFortGameStateAthena_UpdatePlaylistDependentData = 0;
-	inline uintptr_t AFortGameStateAthena_LoadCurrentPlaylistData = 0;
-
-	inline uintptr_t UFortPlaylistManager_InitializePlaylists = 0;
-
-	inline uintptr_t UReplicationDriver_ServerReplicateActors = 0;
-	inline uintptr_t UReplicationDriver_ServerReplicateActorsVFT = 0;
-
-	inline uintptr_t UFortReplicationGraph_Enabled = 0;
-
-	inline uintptr_t UAbilitySystemComponent_ClientActivateAbilityFailed = 0;
-	inline uintptr_t UAbilitySystemComponent_InternalTryActivateAbility = 0;
-	inline uintptr_t UAbilitySystemComponent_GiveAbility = 0;
-	inline uintptr_t UAbilitySystemComponent_GiveAbilityAndActivateOnce = 0;
-	inline uintptr_t UAbilitySystemComponent_FindAbilitySpecFromHandle = 0;
-
-	inline uintptr_t ULevelStreamingDynamic_LoadLevelInstance = 0;
-	inline uintptr_t ULevelStreamingDynamic_LoadLevelInstanceBySoftObjectPtr = 0;
-
-	inline uintptr_t ABuildingFoundation_SelectAndSetupMyBuildingLevel = 0;
-	inline uintptr_t ABuildingFoundation_StreamInMyBuilding = 0;
-
-	inline uintptr_t UFortKismetLibrary_CanPlaceBuildableClassInStructuralGrid = 0;
-	inline uintptr_t UFortKismetLibrary_GetWeaponStatsRow = 0;
-
-	inline uintptr_t FRotator_Quaternion = 0;
-
-	inline uintptr_t ABuildingSMActor_ReplaceBuildingActor = 0;
-	inline uintptr_t ABuildingSMActor_ReplaceBuildingActorVFT = 0;
-	inline uintptr_t ABuildingSMActor_PostUpdate = 0;
-	inline uintptr_t ABuildingSMActor_SetEditingPlayer = 0;
-	inline uintptr_t ABuildingSMActor_SetEditingPlayerVFT = 0;
-	inline uintptr_t ABuildingSMActor_PostLoad = 0;
-
-	inline uintptr_t AFortPickup_FinishedTargetSpline = 0;
-	inline uintptr_t AFortPickup_ForceFinishedTargetSpline = 0;
-	inline uintptr_t AFortPickup_SetPickupTarget = 0;
-	inline uintptr_t AFortPickup_UpdateSpecialActorStat = 0;
-	inline uintptr_t AFortPickup_GivePickupTo = 0;
-	inline uintptr_t AFortPickup_GivePickupToVFT = 0;
-	inline uintptr_t AFortPickup_SetupForMovementCompToss = 0;
-	inline uintptr_t AFortPickup_SetPickupItems = 0;
-	inline uintptr_t AFortPickup_SetPickupItemsVFT = 0;
-
-	inline uintptr_t AFortPlayerPawn_ForceFinishIncomingPickups = 0;
-	inline uintptr_t AFortPlayerPawn_ForceFinishIncomingPickupsVFT = 0;
-	inline uintptr_t AFortPlayerPawn_OnRep_ZiplineState = 0;
-
-	inline uintptr_t AFortQuickBars_GetFocusedQuickBar = 0;
-
-	inline uintptr_t ABuildingContainer_SpawnLootVFT = 0;
-	inline uintptr_t ABuildingContainer_ServerOnAttemptInteract = 0;
-
-	inline uintptr_t AFortInventory_Destroyed = 0;
-	inline uintptr_t AFortInventory_DumpInventoryToLog = 0;
-	inline uintptr_t AFortInventory_GetInventoryCapacity = 0;
-	inline uintptr_t AFortInventory_GetOverflowFromAddingItem = 0;
-	inline uintptr_t AFortInventory_GetOverflowFromAddingItemInNewStack = 0;
-	inline uintptr_t AFortInventory_GetInventoryUsed = 0;
-	inline uintptr_t AFortInventory_GetOverflowFromAddingItemInExistingStack = 0;
-	inline uintptr_t AFortInventory_InitializeExistingItem = 0;
-	inline uintptr_t AFortInventory_GetMaxStackSize = 0;
-
-	inline uintptr_t UKismetSystemLibrary_GetEngineVersion = 0;
-	inline uintptr_t UKismetSystemLibrary_ExecuteConsoleCommand = 0;
-
-	inline uintptr_t UPlayer_GetPlayerController = 0;
-	inline uintptr_t UPlayer_SwitchController = 0;
-
-	inline uintptr_t UNetConnection_IsNetReady = 0;
-	inline uintptr_t UNetConnection_IsNetReadyVFT = 0;
-	inline uintptr_t UNetConnection_GetUChildConnectionVFT = 0;
-	inline uintptr_t UNetConnection_FindActorChannelRef = 0;
-
-	inline uintptr_t UNetDriver__ReplicationFrame = 0;
-	inline uintptr_t UNetDriver_GetNetMode = 0;
-	inline uintptr_t UNetDriver__NetworkObjects = 0;
-	inline uintptr_t UNetDriver_IsAdaptiveNetUpdateFrequencyEnabled = 0;
-	inline uintptr_t UNetDriver__NetTag = 0;
-	inline uintptr_t UNetDriver__DestroyedStartupOrDormantActors = 0;
-	inline uintptr_t UNetDriver_IsLevelInitializedForActor = 0;
-	inline uintptr_t UNetDriver__DebugRelevantActors = 0;
-	inline uintptr_t UNetDriver__LastPrioritizedActors = 0;
-	inline uintptr_t UNetDriver__LastRelevantActors = 0;
-	inline uintptr_t UNetDriver__LastSentActors = 0;
-	inline uintptr_t UNetDriver__LastNonRelevantActors = 0;
-	inline uintptr_t UNetDriver__GuidCache = 0;
-	inline uintptr_t UNetDriver_TickDispatch = 0;
-	inline uintptr_t UNetDriver__SendCycles = 0;
-	inline uintptr_t UNetDriver__RecvCycles = 0;
-	inline uintptr_t UNetDriver__LastTickDispatchRealtime = 0;
-	inline uintptr_t UNetDriver__bIsStandbyCheckingEnabled = 0;
-	inline uintptr_t UNetDriver__bHasStandbyCheatTriggered = 0;
-	inline uintptr_t UNetDriver__JoinInProgressStandbyWaitTime = 0;
-	inline uintptr_t UNetDriver__StandbyRxCheatTime = 0;
-	inline uintptr_t UNetDriver__StandbyTxCheatTime = 0;
-	inline uintptr_t UNetDriver__BadPingThreshold = 0;
-	inline uintptr_t UNetDriver__PercentMissingForRxStandby = 0;
-	inline uintptr_t UNetDriver__PercentMissingForTxStandby = 0;
-	inline uintptr_t UNetDriver__PercentForBadPing = 0;
-
-	inline uintptr_t APlayerController_GetViewTarget = 0;
-	inline uintptr_t APlayerController_SendClientAdjustment = 0;
-	inline uintptr_t APlayerController_SendClientAdjustmentVFT = 0;
-
-	inline uintptr_t FNetworkObjectList_Remove = 0;
-	inline uintptr_t FNetworkObjectList_ClearRecentlyDormantConnection = 0;
-	inline uintptr_t FNetworkObjectList_Add = 0;
-
-	inline uintptr_t UNetConnection__ActorChannels = 0;
-	inline uintptr_t UNetConnection__TimeSensitive = 0;
-	inline uintptr_t UNetConnection__TickCount = 0;
-	inline uintptr_t UNetConnection__State = 0;
-	inline uintptr_t UNetConnection__DestroyedStartupOrDormantActors = 0;
-	inline uintptr_t UNetConnection__ClientWorldPackageName = 0;
-	inline uintptr_t UNetConnection__ClientVisibleLevelNames = 0;
-	inline uintptr_t UNetConnection_CreateChannel = 0;
-	inline uintptr_t UNetConnection_SendChallengeControlMessage = 0;
-	inline uintptr_t UNetConnection_CleanUp = 0;
-	inline uintptr_t UNetConnection_CleanUpVFT = 0;
-	inline uintptr_t UNetConnection__LastRecvAckTime = 0;
-
-	inline uintptr_t UActorChannel__LastUpdateTime = 0;
-	inline uintptr_t UActorChannel__RelevantTime = 0;
-	inline uintptr_t UActorChannel_Close = 0;
-	inline uintptr_t UActorChannel_StartBecomingDormant = 0;
-	inline uintptr_t UActorChannel_SetChannelActorForDestroy = 0;
-	inline uintptr_t UActorChannel_SetChannelActor = 0;
-	inline uintptr_t UActorChannel_ReplicateActor = 0;
-
-	inline uintptr_t FNetViewer_Constructor = 0;
-
-	inline uintptr_t AActor_GetNetPriority = 0;
-	inline uintptr_t AActor_GetNetPriorityVFT = 0;
-	inline uintptr_t AActor_IsRelevancyOwnerFor = 0;
-	inline uintptr_t AActor_IsRelevancyOwnerForVFT = 0;
-	inline uintptr_t AActor_IsNetRelevantFor = 0;
-	inline uintptr_t AActor_IsNetRelevantForVFT = 0;
-	inline uintptr_t AActor_GetWorld = 0;
-	inline uintptr_t AActor__CreationTime = 0;
-	inline uintptr_t AActor_PreInitializeComponents = 0;
-	inline uintptr_t AActor_PreInitializeComponentsVFT = 0;
-	inline uintptr_t AActor_TickVFT = 0;
-	inline uintptr_t AActor_PostInitializeComponentsVFT = 0;
-
-	inline uintptr_t AFortPoiVolume_OverlapsPawn = 0;
-
-	inline uintptr_t FDebug_AssertFailed = 0;
-
-	inline uintptr_t UWorld__TimeSeconds = 0;
-
-	inline uintptr_t FOutBunch_Constructor = 0;
-
-	inline uintptr_t FNetGUIDCache_SupportsObject = 0;
-
-	inline uintptr_t UObject_GetArchetypeFromRequiredInfo = 0;
-
-	inline uintptr_t UChannel__NumInRec = 0;
-	inline uintptr_t UChannel__NumOutRec = 0;
-	inline uintptr_t UChannel_SendBunch = 0;
-	inline uintptr_t UChannel_SendBunchVFT = 0;
-	inline uintptr_t UChannel_Close = 0;
-	inline uintptr_t UChannel_CloseVFT = 0;
-	inline uintptr_t UChannel_StartBecomingDormantVFT = 0;
-
-	inline uintptr_t AFortGameSession_ValidatePlayer = 0;
-	inline uintptr_t AFortGameSession_CreateServerGame = 0;
-
-	inline uintptr_t UPackageMap_WriteObject = 0;
-
-	inline uintptr_t CollectGarbage = 0;
-	inline uintptr_t CollectGarbageInternal = 0;
-
-	inline uintptr_t AFortPlayerControllerAthena_ClientRestart = 0;
-	inline uintptr_t AFortPlayerControllerAthena_SpawnQuickBars = 0;
-	inline uintptr_t AFortPlayerControllerAthena_SetupQuickBars = 0;
-
-	inline uintptr_t AFortGameState_ApplyHomebaseEffectsOnPlayerSetup = 0;
-	inline uintptr_t AFortGameState_ApplyHomebaseEffectsOnPlayerSetupVFT = 0;
-
-	inline uintptr_t UMcpProfileGroup_SendRequestNow = 0;
-
-	inline uintptr_t AFortPlayerPawn_ServerChoosePart = 0;
-
-	inline uintptr_t AFortPlayerState_InitializeHero = 0;
-	inline uintptr_t AFortPlayerState_RefreshCharacterCustomization = 0;
-	inline uintptr_t AFortPlayerState_ApplyCharacterCustomization = 0;
-
-	inline uintptr_t FString_Append = 0;
-	inline uintptr_t FString_AppendInt = 0;
-	inline uintptr_t FString_ToBool = 0;
-
-	inline uintptr_t AFortPlayerController_OnReadyToStartMatch = 0;
-	inline uintptr_t AFortPlayerController_OnReadyToStartMatchVFT = 0;
-	inline uintptr_t AFortPlayerController_SpawnQuickBarsVFT = 0;
-	inline uintptr_t AFortPlayerController_SetupQuickBarsVFT = 0;
-	inline uintptr_t AFortPlayerController_RemoveInventoryItem = 0;
-	inline uintptr_t AFortPlayerController_RemoveInventoryItemVFT = 0;
-	inline uintptr_t AFortPlayerController_CanAffordToPlaceBuildableClass = 0;
-	inline uintptr_t AFortPlayerController_CanAffordToPlaceBuildableClassVFT = 0;
-	inline uintptr_t AFortPlayerController_PayBuildableClassPlacementCost = 0;
-	inline uintptr_t AFortPlayerController_PayBuildableClassPlacementCostVFT = 0;
-	inline uintptr_t AFortPlayerController_PayBuildingRepairCost = 0;
-	inline uintptr_t AFortPlayerController_GetPlayerViewPoint = 0;
-
-	inline uintptr_t AFortPlayerControllerZone_OnReadyToStartMatch = 0;
-	inline uintptr_t AFortPlayerControllerZone_ClientOnPawnDied = 0;
-
-	inline uintptr_t AFortGameStateZone_ApplyHomebaseEffectsOnPlayerSetup = 0;
-
-	inline uintptr_t AActor_GetNetOwnerVFT = 0;
-
-	inline uintptr_t UFortWorldItemDefinition_ServerExecuteVFT = 0;
-
-	inline uintptr_t UFortWeaponItemDefinition_GetMaxDurability = 0;
-	inline uintptr_t UFortWeaponItemDefinition_GetMaxDurabilityVFT = 0;
-
-	inline uintptr_t UFortWorldItem_SetOwningInventory = 0;
-	inline uintptr_t UFortWorldItem_SetOwningInventoryVFT = 0;
-	inline uintptr_t UFortWorldItem_SetLoadedAmmoVFT = 0;
-	inline uintptr_t UFortWorldItem_SetPhantomReserveAmmoVFT = 0;
-	inline uintptr_t UFortWorldItem_SetInInventoryOverflowVFT = 0;
-	inline uintptr_t UFortWorldItem_SetDurabilityVFT = 0;
-
-	inline uintptr_t UFortControllerComponent_Aircraft_EnterAircraft = 0;
-
-	inline uintptr_t AController_InitPlayerState = 0;
-	inline uintptr_t AController_InitPlayerStateVFT = 0;
-	inline uintptr_t AController_GetPlayerViewPointVFT = 0;
-	inline uintptr_t AController_Reset = 0;
-
-	inline uintptr_t UFortAnalytics_SetGameSessionID = 0;
-	inline uintptr_t UFortAnalytics_SetGameStateClassName = 0;
-
-	inline uintptr_t AFortGameSessionDedicated_FinalizeCreation = 0;
-	inline uintptr_t AFortGameSessionDedicated_FinalizeCreationPatch1 = 0;
-	inline uintptr_t AFortGameSessionDedicated_FinalizeCreationVFT = 0;
-	inline uintptr_t AFortGameSessionDedicated_OnUpdateComplete = 0;
-	inline uintptr_t AFortGameSessionDedicated_OnAllPlayersUnregistered = 0;
-	inline uintptr_t AFortGameSessionDedicated_OnServerConfigurationRequest = 0;
-	inline uintptr_t AFortGameSessionDedicated_OnServerConfigurationRequestVFT = 0;
-
-	inline uintptr_t FFortBaseWeaponStats_GetDurability = 0;
-
-	inline uintptr_t UNavigationSystem_CreateNavigationSystem = 0;
-
-	inline uintptr_t FDedicatedServerUrlContext_Constructor = 0;
-
-	inline uintptr_t UFortQuestManager_SendCustomStatEvent = 0;
-	inline uintptr_t UFortQuestManager_QueueStatEvent = 0;
-	inline uintptr_t UFortQuestManager_SendStatEvent = 0;
-	inline uintptr_t UFortQuestManager_ProcessPendingStatEvents = 0;
-
-	inline uintptr_t BeginLoad = 0;
-	inline uintptr_t EndLoad = 0;
-
-	inline uintptr_t UGameplayAbility_CanActivateAbility = 0;
-	inline uintptr_t UGameplayAbility_CanActivateAbilityVFT = 0;
-
-	inline uintptr_t UFortGameInstance_ServerTravel = 0;
-	
-	inline uintptr_t FMsg_Logf = 0;
-
-	inline uintptr_t UFortAssetManager_Get = 0;
-
-	inline uintptr_t UDemoNetDriver_TickFlushInternal = 0;
-
-	inline uintptr_t AFortAthenaMapInfo_PickSupplyDropLocation = 0;
-
-	inline uintptr_t AFortDecoTool_ShouldAllowServerSpawnDecoVFT = 0;
-	inline uintptr_t AFortDecoTool_SpawnDecoVFT = 0;
-
-	inline uintptr_t AFortMission_CreateEncounterSequence = 0;
-
-	inline uintptr_t ABuildingTrap_FinishTrigger = 0;
-
-	inline uintptr_t FSpecialActorInitData_Constructor = 0;
-	inline uintptr_t FSpecialActorInitData_Destructor = 0;
-
-	inline uintptr_t AFortSpecialActorReplicationInfo_AddActorToReplicationList = 0;
-
-	inline uintptr_t AFortAIDirector_StartEncounterWithoutObjective = 0;
-
-	inline uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems = 0;
-
-	static uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld = 0;
-
-	static uintptr_t AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier = 0;
-
-	static uintptr_t ABuildingItemCollectorActor_GrantOutputVFT = 0;
+#define CORE_OFFSET_LIST(X) \
+	X(ProcessEvent) \
+	X(ProcessEventVFT) \
+	X(GUObjectArray) \
+	X(GWorld) \
+	X(GEngine) \
+	X(GIsClient) \
+	X(GIsServer) \
+	X(FMemory_Free) \
+	X(FMemory_Realloc) \
+	X(ChangeGameSessionId) \
+	X(StaticFindObject) \
+	X(StaticLoadObject) \
+	X(StaticConstructObject_Internal) \
+	X(TickFlush) \
+	X(InternalServerTryActivateAbilityVFT) \
+	X(GHandle) \
+	X(AbilitySpecDefaultConstructor) \
+	X(AbilitySpecClassConstructor) \
+	X(AbilitySpecCDOConstructor) \
+	X(ABuildingActor_OnDamageServer) \
+	X(ABuildingActor_PostUpdateVFT) \
+	X(ABuildingActor_ServerOnAttemptInteractVFT) \
+	X(ABuildingActor_HandleDamagedVFT) \
+	X(SpawnActor) \
+	X(FFrame__CurrentNativeFunction) \
+	X(FFrame__PropertyChainForCompiledIn) \
+	X(FFrame__Next) \
+	X(Step) \
+	X(StepExplicitProperty) \
+	X(ExecFunction) \
+	X(FName_AppendString) \
+	X(FName_ToStringOut) \
+	X(FName_Compare) \
+	X(FName_GetComparisonNameEntry) \
+	X(FName_Constructor1) /* const char* Str */ \
+	X(UObjectBase_AddObject) \
+	X(UObjectBase_AtomicallyClearFlags) \
+	X(UObjectBase_DeferredRegister) \
+	X(UObjectBase_EmitBaseReferences) \
+	X(UObjectBase_IsValidLowLevel) \
+	X(UObjectBase_IsValidLowLevelFast) \
+	X(UObjectBase_LowLevelRename) \
+	X(UObjectBase_Register) \
+	X(UObjectBase_Destructor) \
+	X(UObjectBaseUtility_AddToCluster) \
+	X(UObjectBaseUtility_CanBeInCluster) \
+	X(UObjectBaseUtility_GetFullName) \
+	X(UObjectBaseUtility_GetFullName_1) \
+	X(UObjectBaseUtility_GetInterfaceAddress) \
+	X(UObjectBaseUtility_GetLinker) \
+	X(UObjectBaseUtility_GetLinkerIndex) \
+	X(UObjectBaseUtility_GetNativeInterfaceAddress) \
+	X(UObjectBaseUtility_IsDefaultSubobject) \
+	X(UObject_BeginDestroy) \
+	X(UObject_FinishDestroy) \
+	X(UObject_DefaultConstructor) \
+	X(UObject_GetDefaultSubobjects) \
+	X(UObject_GetDefaultSubobjectByName) \
+	X(UObject_PostInitProperties) \
+	X(UObject_PostLoadVFT) \
+	X(UObject_FindFunctionChecked) \
+	X(UObject_GetWorldVFT) \
+	X(UObject_NeedsLoadForClientVFT) \
+	X(UObject_CanCreateInCurrentContext) \
+	X(UField_GetOwnerClass) \
+	X(UField_GetOwnerStruct) \
+	X(UStruct_FindPropertyByName) \
+	X(UStruct__SuperStruct) \
+	X(UStruct__Children) \
+	X(UStruct__PropertiesSize) \
+	X(UStruct__MinAlignment) \
+	X(UClass_FindFunctionByName) \
+	X(UClass_GetSparseClassData) \
+	X(FName_GetPlainNameString1) \
+	X(FName_GetPlainNameString2) \
+	X(UProperty__Offset_Internal) \
+	X(UProperty__ElementSize) \
+	X(UProperty__PropertyFlags) \
+	X(UField__Next) \
+	X(UField__Name) \
+	X(UBoolProperty__FieldMask) \
+	X(UEngine_BroadcastNetworkFailure) \
+	X(UEngine_BroadcastNetworkLagStateChanged) \
+	X(UEngine_CancelAllPending) \
+	X(UEngine_CreateGameUserSettings) \
+	X(UEngine_GetFirstGamePlayer) \
+	X(UEngine_GetNetMode) \
+	X(UEngine_GetMaxTickRate) \
+	X(UEngine_GetMaxTickRateVFT) \
+	X(UEngine_CreateNetDriver) \
+	X(UEngine_LoadMap) \
+	X(UEngine_LoadMapVFT) \
+	X(UEngine_CreateNamedNetDriver) \
+	X(UEngine_GetWorldContextFromWorldChecked) \
+	X(UEngine_FindNamedNetDriver) \
+	X(UEngine_DestroyNamedNetDriver) \
+	X(UEngine_GetWorldContextFromWorld) \
+	X(UEngine_CreateNewWorldContext) \
+	X(UEngine_CreateNetDriver_Local) \
+	X(UWorld_AddController) \
+	X(UWorld_AddLevel) \
+	X(UWorld_AddNetworkActor) \
+	X(UWorld_AddStreamingLevel) \
+	X(UWorld_AddToWorld) \
+	X(UWorld_AllowLevelLoadRequests) \
+	X(UWorld_AreActorsInitialized) \
+	X(UWorld_AreAlwaysLoadedLevelsLoaded) \
+	X(UWorld_BeginPlay) \
+	X(UWorld_CommitMapChange) \
+	X(UWorld_ConditionallyCreateDefaultLevelCollections) \
+	X(UWorld_ContainsActor) \
+	X(UWorld_ContainsLevel) \
+	X(UWorld_CreateAISystem) \
+	X(UWorld_GetActiveLevelCollection) \
+	X(UWorld_GetActorCount) \
+	X(UWorld_GetAddressURL) \
+	X(UWorld_GetDefaultGravityZ) \
+	X(UWorld_GetFirstLocalPlayerFromController) \
+	X(UWorld_GetFirstPlayerController) \
+	X(UWorld_GetGameViewport) \
+	X(UWorld_GetGravityZ) \
+	X(UWorld_GetMapName) \
+	X(UWorld_GetTimerManager) \
+	X(UWorld_GetWorldSettings) \
+	X(UWorld_K2_GetWorldSettings) \
+	X(UWorld_HasBegunPlay) \
+	X(UWorld_InternalGetNetMode) \
+	X(UWorld_IsGameWorld) \
+	X(UWorld_IsInSeamlessTravel) \
+	X(UWorld_IsServer) \
+	X(UWorld_MarkObjectsPendingKill) \
+	X(UWorld_RemoveActor) \
+	X(UWorld_RemoveController) \
+	X(UWorld_RemoveNetworkActor) \
+	X(UWorld_SeamlessTravel) \
+	X(UWorld_ServerTravel) \
+	X(UWorld_SetGameMode) \
+	X(UWorld_SetGameState) \
+	X(UWorld_SetNavigationSystem) \
+	X(UWorld_WelcomePlayer) \
+	X(UWorld_UpdateStreamingLevelShouldBeConsidered) \
+	X(UWorld_FindCollectionByType) \
+	X(UWorld__NextSwitchCountdown) \
+	X(UWorld_ListenPatch) \
+	X(UWorld_RemovePIEPrefix) \
+	X(FGuid_ToString) \
+	X(UGameInstance_StartGameInstance) \
+	X(UGameInstance_Shutdown) \
+	X(UGameInstance_GetFirstLocalPlayerController) \
+	X(UGameInstance_ClientTravelToSession) \
+	X(UGameInstance_CleanupGameViewport) \
+	X(AActor_ActorHasTag) \
+	X(AActor_CallPreReplication) \
+	X(AActor_CheckStillInWorld) \
+	X(AActor_ClearCrossLevelReferences) \
+	X(AActor_CopyRemoteRoleFrom) \
+	X(AActor_Destroy) \
+	X(AActor_DisableInput) \
+	X(AActor_EnableInput) \
+	X(AActor_ExchangeNetRoles) \
+	X(AActor_FindOrAddNetworkObjectInfo) \
+	X(AActor_InternalGetNetMode) \
+	X(AActor_IsPendingKillPending) \
+	X(AActor_HasNetOwner) \
+	X(AActor_HasLocalNetOwner) \
+	X(AActor_SetNetDormancy) \
+	X(AActor_BeginPlay) \
+	X(AActor_BeginPlayVFT) \
+	X(AActor_ResetVFT) \
+	X(AGameSession_ApproveLogin) \
+	X(AGameSession_AtCapacity) \
+	X(AGameSession_GetSessionJoinability) \
+	X(AGameSession_KickPlayer) \
+	X(AGameSession_KickPlayerVFT) \
+	X(AGameSession_ReturnToMainMenuHost) \
+	X(AGameSession_UnregisterPlayer) \
+	X(AGameSession_UpdateSessionJoinability) \
+	X(AGameSession_InitOptions) \
+	X(AGameSession_RegisterPlayer) \
+	X(AGameSession__NextPlayerID) \
+	X(AGameSession_ProcessAutoLogin) \
+	X(AGameSession_OnAutoLoginComplete) \
+	X(AGameSession_UnregisterPlayer_1) \
+	X(AGameSession_UnregisterPlayers) \
+	X(AGameSession_GetPlayerControllerFromNetId) \
+	X(AGameModeBase_InitGame) \
+	X(AGameModeBase_InitGameVFT) \
+	X(AGameModeBase_InitGameState) \
+	X(AGameModeBase_InitGameStateVFT) \
+	X(AGameModeBase_CanServerTravel) \
+	X(AGameModeBase_SpawnDefaultPawnFor) \
+	X(AGameModeBase_SpawnDefaultPawnAtTransform) \
+	X(AGameModeBase_RestartPlayer) \
+	X(AGameModeBase_FinishRestartPlayer) \
+	X(AGameModeBase_FinishRestartPlayerVFT) \
+	X(AGameModeBase_HandleStartingNewPlayer) \
+	X(AGameModeBase_SpawnPlayerController) \
+	X(AGameModeBase_SpawnPlayerControllerVFT) \
+	X(AGameModeBase_GetGameSessionClass) \
+	X(AGameModeBase_GetGameSessionClassVFT) \
+	X(AGameModeBase_ProcessServerTravelVFT) \
+	X(UKismetStringLibrary_Conv_StringToName) \
+	X(AGameMode_AddInactivePlayer) \
+	X(AGameMode_AddInactivePlayerVFT) \
+	X(AGameMode_Broadcast) \
+	X(AGameMode_BroadcastLocalized) \
+	X(AGameMode_EndMatch) \
+	X(AGameMode_FindInactivePlayer) \
+	X(AGameMode_GetNetworkNumber) \
+	X(AGameMode_HandleMatchHasEndedVFT) \
+	X(AGameMode_HandleMatchHasStartedVFT) \
+	X(AGameMode_HandleMatchIsWaitingToStart) \
+	X(AGameMode_HandleSeamlessTravelPlayer) \
+	X(AGameMode_HandleStartingNewPlayer) \
+	X(AGameMode_InitSeamlessTravelPlayer) \
+	X(AGameMode_IsHandlingReplays) \
+	X(AGameMode_OnMatchStateSet) \
+	X(AGameMode_PlayerCanRestart) \
+	X(AGameMode_PostSeamlessTravel) \
+	X(AGameMode_ReadyToStartMatch) \
+	X(AGameMode_RestartGame) \
+	X(AGameMode_Say) \
+	X(AGameMode_SendPlayer) \
+	X(AGameMode_SetMatchState) \
+	X(AGameMode_SetSeamlessTravelViewTarget) \
+	X(AGameMode_StartMatch) \
+	X(AGameMode_StartPlay) \
+	X(AGameMode_OverridePlayerState) \
+	X(AGameMode_PostLogin) \
+	X(AGameMode_Logout) \
+	X(AGameMode_CanServerTravel) \
+	X(AGameMode_InitGame) \
+	X(APlayerController_HasClientLoadedCurrentWorld) \
+	X(APlayerController_ServerAcknowledgePossession) \
+	X(UGameMapsSettings_GetGameModeForName) \
+	X(ULevelStreaming_PostLoad) \
+	X(ULevelStreaming_DetermineTargetState) \
+	X(ULevelStreaming_OnLevelAdded) \
+	X(ULevelStreaming_IsDesiredLevelLoaded) \
+	X(ULevelStreaming_SetLevelLODIndex) \
+	X(ULevelStreaming_SetPriority) \
+	X(ULevelStreaming_SetWorldAsset) \
+	X(ULevelStreaming_GetWorldAssetPackageName) \
+	X(ULevelStreaming_GetWorldAssetPackageFName) \
+	X(ULevelStreaming_RenameForPIE) \
+	X(ULevelStreaming_ShouldBeVisible) \
+	X(ULevelStreaming_IsStreamingStatePending) \
+	X(ULevelStreaming_CreateInstance) \
+	X(ULevelStreaming_RequestLevel) \
+	X(ULevelStreaming_SetLoadedLevel) \
+	X(ULevelStreaming_DiscardPendingUnloadLevel) \
+	X(ULevel_SortActorList) \
+	X(ULevel_InitializeNetworkActors) \
+	X(ULevel_ClearActorsSeamlessTraveledFlag) \
+	X(ULevel_SetWorldSettings) \
+	X(ULevel_IsNetActor) \
+	X(ULevel_PostInitProperties) \
+	X(ULevel_BeginDestroy) \
+	X(ULevel_FinishDestroy) \
+	X(ULevel_PostLoad) \
+	X(ULevel_CreateCluster) \
+	X(ULevel_ClearLevelComponents) \
+	X(ULevel_UpdateLevelComponents) \
+	X(ULevel_IncrementalUpdateComponents) \
+	X(ULevel_IncrementalUnregisterComponents) \
+	X(UActorComponent_RegisterComponentWithWorld) \
+	X(ULevel_RouteActorInitialize) \
+	X(ULevel_ApplyWorldOffset) \
+	X(ULevel_RegisterActorForAutoReceiveInput) \
+	X(ULevel_PushPendingAutoReceiveInput) \
+	X(FURL_IsInternal) \
+	X(FURL_IsLocalInternal) \
+	X(FURL_HasOption) \
+	X(FURL_GetOption) \
+	X(FURL_AddOption) \
+	X(FURL_RemoveOption) \
+	X(FURL_ToString) \
+	X(FURL_GetHostPortString) \
+	X(FWorldContext_SetCurrentWorld) \
+	X(FWorldContext__ThisCurrentWorld) \
+	X(UNetDriver_InitListen) \
+	X(UNetDriver_InitListenVFT) \
+	X(UNetDriver_SetWorld) \
+	X(UNetDriver_SetWorldVFT) \
+	X(UNetDriver_TickFlush) \
+	X(UNetDriver_IsServerVFT) \
+	X(UNetDriver_IsLevelInitializedForActorVFT) \
+	X(FParse_Param) \
+	X(AFortGameMode_OnInitWorldRecordComplete) \
+	X(AFortGameMode_OnEndOfDay) \
+	X(AFortGameMode_SetCurrentPlaylistNameVFT) \
+	X(AFortGameMode_InitGame) \
+	X(AFortGameMode_RestartPlayer) \
+	X(AFortGameMode_FinishRestartPlayer) \
+	X(AFortGameMode_SpawnDefaultPawnFor) \
+	X(AFortGameMode_SetCurrentPlaylistIdVFT) \
+	X(AFortGameMode_FinishWorldInitializationVFT) \
+	X(AFortGameMode_PickTeam) \
+	X(AFortGameMode_PickTeamVFT) \
+	X(AFortGameMode_ProcessServerTravelPatch1) \
+	X(AFortGameMode_InitializeTeams) \
+	X(AFortGameMode_InitializeTeamsVFT) \
+	X(AFortGameMode_PlacePlayerOnTeamVFT) \
+	X(AFortWorldManager_HandleWorldQueryComplete) \
+	X(AFortGameModeZone_CheckForAllPlayersIn) \
+	X(AFortGameModeZone_RemoveKnownPlayer) \
+	X(AFortGameModeZone_UpdateSessionForMatchmaking) \
+	X(AFortGameModeZone_NotifyPendingConnectionLost) \
+	X(AFortGameModeZone_OnZoneEnd) \
+	X(AFortGameModeZone_DoLogoutAnalytics) \
+	X(AFortGameModeZone_HandleMatchHasStarted) \
+	X(AFortGameModeZone_HandleMatchHasEnded) \
+	X(AFortGameModeZone_DoInitialRestartAnalytics) \
+	X(AFortGameModeZone_InitGame) \
+	X(AFortGameModeZone_InitGameState) \
+	X(AFortGameModeZone_ChoosePlayerStart) \
+	X(AFortGameModeZone_CreateAIDirector) \
+	X(AFortGameModeZone_CreateAIDirectorVFT) \
+	X(AFortGameModeZone_CreateAIGoalManager) \
+	X(AFortGameModeZone_CreateAIGoalManagerVFT) \
+	X(AFortGameModeAthena_SetCurrentPlaylistId) \
+	X(AFortGameModeAthena_SetTimeOfDayManagerGameplayOverride) \
+	X(AFortGameModeAthena_OnPlaylistDataLoaded) \
+	X(AFortGameModeAthena_ApplyPlaylistDataTables) \
+	X(AFortGameModeAthena_OnDedicatedServerRestarting) \
+	X(AFortGameModeAthena_SpawnInitialSafeZone) \
+	X(AFortGameModeAthena_AttemptChangeTeam) \
+	X(AFortGameModeAthena_PickTeam) \
+	X(AFortGameModeAthena_HandleMatchHasStarted) \
+	X(AFortGameModeAthena_FinishRestartPlayer) \
+	X(AFortGameModeAthena_StartMatchAbandonProcess) \
+	X(AFortGameModeAthena_OnMatchAbandonTimeout) \
+	X(AFortGameModeAthena_CheckWinConditionLastManStanding) \
+	X(AFortGameModeAthena_GrantVictoryToAllRemainingTeams) \
+	X(AFortGameModeAthena_GrantVictoryForNumTeamsAndEndGame) \
+	X(AFortGameModeAthena_GrantLossToAllRemainingTeams) \
+	X(AFortGameModeAthena_GrantLossToAllTeams) \
+	X(AFortGameModeAthena_GrantLosses) \
+	X(AFortGameModeAthena_ChoosePlayerStart_Creative) \
+	X(AFortGameModeAthena_StartWarmupPhase) \
+	X(AFortGameModeAthena_UpdateWarmupPhase) \
+	X(AFortGameModeAthena_StartAircraftPhase) \
+	X(AFortGameModeAthena_StartSafeZonesPhase) \
+	X(AFortGameModeAthena_IsSafeZoneAllowed) \
+	X(AFortGameModeAthena_StartEndGamePhase) \
+	X(AFortGameModeAthena_StartEndGamePhaseTeam) \
+	X(AFortGameModeAthena_CreateAIDirector) \
+	X(AFortGameModeAthena_PostReloadConfig) \
+	X(AFortGameModeAthena_ReadyToStartMatch) \
+	X(AFortGameModeAthena_InitGame) \
+	X(AFortGameModeAthena_InitGameState) \
+	X(AFortGameModeAthena_SpawnDefaultPawnFor) \
+	X(AFortGameModeAthena_RestartPlayer) \
+	X(AFortGameModeAthena_FinishWorldInitialization) \
+	X(AFortGameModeAthena_AddToAlivePlayers) \
+	X(AFortGameModeAthena_RemoveFromAlivePlayers) \
+	X(AFortGameModeAthena_PlacePlayerOnTeam) \
+	X(AFortGameModeAthena_OnGivenMatchAssignmentVFT) \
+	X(AFortGameModeAthena_SpawnFortSpawnActors) \
+	X(AFortGameStateAthena_OnRep_CurrentPlaylistInfo) \
+	X(AFortGameStateAthena_OnPlaylistDataLoadCompleted) \
+	X(AFortGameStateAthena_UpdatePlaylistDependentData) \
+	X(AFortGameStateAthena_LoadCurrentPlaylistData) \
+	X(UFortPlaylistManager_InitializePlaylists) \
+	X(UReplicationDriver_ServerReplicateActors) \
+	X(UReplicationDriver_ServerReplicateActorsVFT) \
+	X(UFortReplicationGraph_Enabled) \
+	X(UAbilitySystemComponent_ClientActivateAbilityFailed) \
+	X(UAbilitySystemComponent_InternalTryActivateAbility) \
+	X(UAbilitySystemComponent_GiveAbility) \
+	X(UAbilitySystemComponent_GiveAbilityAndActivateOnce) \
+	X(UAbilitySystemComponent_FindAbilitySpecFromHandle) \
+	X(ULevelStreamingDynamic_LoadLevelInstance) \
+	X(ULevelStreamingDynamic_LoadLevelInstanceBySoftObjectPtr) \
+	X(ABuildingFoundation_SelectAndSetupMyBuildingLevel) \
+	X(ABuildingFoundation_StreamInMyBuilding) \
+	X(UFortKismetLibrary_CanPlaceBuildableClassInStructuralGrid) \
+	X(UFortKismetLibrary_GetWeaponStatsRow) \
+	X(FRotator_Quaternion) \
+	X(ABuildingSMActor_ReplaceBuildingActor) \
+	X(ABuildingSMActor_ReplaceBuildingActorVFT) \
+	X(ABuildingSMActor_PostUpdate) \
+	X(ABuildingSMActor_SetEditingPlayer) \
+	X(ABuildingSMActor_SetEditingPlayerVFT) \
+	X(ABuildingSMActor_PostLoad) \
+	X(AFortPickup_FinishedTargetSpline) \
+	X(AFortPickup_ForceFinishedTargetSpline) \
+	X(AFortPickup_SetPickupTarget) \
+	X(AFortPickup_UpdateSpecialActorStat) \
+	X(AFortPickup_GivePickupTo) \
+	X(AFortPickup_GivePickupToVFT) \
+	X(AFortPickup_SetupForMovementCompToss) \
+	X(AFortPickup_SetPickupItems) \
+	X(AFortPickup_SetPickupItemsVFT) \
+	X(AFortPlayerPawn_ForceFinishIncomingPickups) \
+	X(AFortPlayerPawn_ForceFinishIncomingPickupsVFT) \
+	X(AFortPlayerPawn_OnRep_ZiplineState) \
+	X(AFortQuickBars_GetFocusedQuickBar) \
+	X(ABuildingContainer_SpawnLootVFT) \
+	X(ABuildingContainer_ServerOnAttemptInteract) \
+	X(AFortInventory_Destroyed) \
+	X(AFortInventory_DumpInventoryToLog) \
+	X(AFortInventory_GetInventoryCapacity) \
+	X(AFortInventory_GetOverflowFromAddingItem) \
+	X(AFortInventory_GetOverflowFromAddingItemInNewStack) \
+	X(AFortInventory_GetInventoryUsed) \
+	X(AFortInventory_GetOverflowFromAddingItemInExistingStack) \
+	X(AFortInventory_InitializeExistingItem) \
+	X(AFortInventory_GetMaxStackSize) \
+	X(UKismetSystemLibrary_GetEngineVersion) \
+	X(UKismetSystemLibrary_ExecuteConsoleCommand) \
+	X(UPlayer_GetPlayerController) \
+	X(UPlayer_SwitchController) \
+	X(UNetConnection_IsNetReady) \
+	X(UNetConnection_IsNetReadyVFT) \
+	X(UNetConnection_GetUChildConnectionVFT) \
+	X(UNetConnection_FindActorChannelRef) \
+	X(UNetDriver__ReplicationFrame) \
+	X(UNetDriver_GetNetMode) \
+	X(UNetDriver__NetworkObjects) \
+	X(UNetDriver_IsAdaptiveNetUpdateFrequencyEnabled) \
+	X(UNetDriver__NetTag) \
+	X(UNetDriver__DestroyedStartupOrDormantActors) \
+	X(UNetDriver_IsLevelInitializedForActor) \
+	X(UNetDriver__DebugRelevantActors) \
+	X(UNetDriver__LastPrioritizedActors) \
+	X(UNetDriver__LastRelevantActors) \
+	X(UNetDriver__LastSentActors) \
+	X(UNetDriver__LastNonRelevantActors) \
+	X(UNetDriver__GuidCache) \
+	X(UNetDriver_TickDispatch) \
+	X(UNetDriver__SendCycles) \
+	X(UNetDriver__RecvCycles) \
+	X(UNetDriver__LastTickDispatchRealtime) \
+	X(UNetDriver__bIsStandbyCheckingEnabled) \
+	X(UNetDriver__bHasStandbyCheatTriggered) \
+	X(UNetDriver__JoinInProgressStandbyWaitTime) \
+	X(UNetDriver__StandbyRxCheatTime) \
+	X(UNetDriver__StandbyTxCheatTime) \
+	X(UNetDriver__BadPingThreshold) \
+	X(UNetDriver__PercentMissingForRxStandby) \
+	X(UNetDriver__PercentMissingForTxStandby) \
+	X(UNetDriver__PercentForBadPing) \
+	X(APlayerController_GetViewTarget) \
+	X(APlayerController_SendClientAdjustment) \
+	X(APlayerController_SendClientAdjustmentVFT) \
+	X(FNetworkObjectList_Remove) \
+	X(FNetworkObjectList_ClearRecentlyDormantConnection) \
+	X(FNetworkObjectList_Add) \
+	X(UNetConnection__ActorChannels) \
+	X(UNetConnection__TimeSensitive) \
+	X(UNetConnection__TickCount) \
+	X(UNetConnection__State) \
+	X(UNetConnection__DestroyedStartupOrDormantActors) \
+	X(UNetConnection__ClientWorldPackageName) \
+	X(UNetConnection__ClientVisibleLevelNames) \
+	X(UNetConnection_CreateChannel) \
+	X(UNetConnection_SendChallengeControlMessage) \
+	X(UNetConnection_CleanUp) \
+	X(UNetConnection_CleanUpVFT) \
+	X(UNetConnection__LastRecvAckTime) \
+	X(UActorChannel__LastUpdateTime) \
+	X(UActorChannel__RelevantTime) \
+	X(UActorChannel_Close) \
+	X(UActorChannel_StartBecomingDormant) \
+	X(UActorChannel_SetChannelActorForDestroy) \
+	X(UActorChannel_SetChannelActor) \
+	X(UActorChannel_ReplicateActor) \
+	X(FNetViewer_Constructor) \
+	X(AActor_GetNetPriority) \
+	X(AActor_GetNetPriorityVFT) \
+	X(AActor_IsRelevancyOwnerFor) \
+	X(AActor_IsRelevancyOwnerForVFT) \
+	X(AActor_IsNetRelevantFor) \
+	X(AActor_IsNetRelevantForVFT) \
+	X(AActor_GetWorld) \
+	X(AActor__CreationTime) \
+	X(AActor_PreInitializeComponents) \
+	X(AActor_PreInitializeComponentsVFT) \
+	X(AActor_TickVFT) \
+	X(AActor_PostInitializeComponentsVFT) \
+	X(AFortPoiVolume_OverlapsPawn) \
+	X(FDebug_AssertFailed) \
+	X(UWorld__TimeSeconds) \
+	X(FOutBunch_Constructor) \
+	X(FNetGUIDCache_SupportsObject) \
+	X(UObject_GetArchetypeFromRequiredInfo) \
+	X(UChannel__NumInRec) \
+	X(UChannel__NumOutRec) \
+	X(UChannel_SendBunch) \
+	X(UChannel_SendBunchVFT) \
+	X(UChannel_Close) \
+	X(UChannel_CloseVFT) \
+	X(UChannel_StartBecomingDormantVFT) \
+	X(AFortGameSession_ValidatePlayer) \
+	X(AFortGameSession_CreateServerGame) \
+	X(UPackageMap_WriteObject) \
+	X(CollectGarbage) \
+	X(CollectGarbageInternal) \
+	X(AFortPlayerControllerAthena_ClientRestart) \
+	X(AFortPlayerControllerAthena_SpawnQuickBars) \
+	X(AFortPlayerControllerAthena_SetupQuickBars) \
+	X(AFortGameState_ApplyHomebaseEffectsOnPlayerSetup) \
+	X(AFortGameState_ApplyHomebaseEffectsOnPlayerSetupVFT) \
+	X(UMcpProfileGroup_SendRequestNow) \
+	X(AFortPlayerPawn_ServerChoosePart) \
+	X(AFortPlayerState_InitializeHero) \
+	X(AFortPlayerState_RefreshCharacterCustomization) \
+	X(AFortPlayerState_ApplyCharacterCustomization) \
+	X(FString_Append) \
+	X(FString_AppendInt) \
+	X(FString_ToBool) \
+	X(AFortPlayerController_OnReadyToStartMatch) \
+	X(AFortPlayerController_OnReadyToStartMatchVFT) \
+	X(AFortPlayerController_SpawnQuickBarsVFT) \
+	X(AFortPlayerController_SetupQuickBarsVFT) \
+	X(AFortPlayerController_RemoveInventoryItem) \
+	X(AFortPlayerController_RemoveInventoryItemVFT) \
+	X(AFortPlayerController_CanAffordToPlaceBuildableClass) \
+	X(AFortPlayerController_CanAffordToPlaceBuildableClassVFT) \
+	X(AFortPlayerController_PayBuildableClassPlacementCost) \
+	X(AFortPlayerController_PayBuildableClassPlacementCostVFT) \
+	X(AFortPlayerController_PayBuildingRepairCost) \
+	X(AFortPlayerController_GetPlayerViewPoint) \
+	X(AFortPlayerControllerZone_OnReadyToStartMatch) \
+	X(AFortPlayerControllerZone_ClientOnPawnDied) \
+	X(AFortGameStateZone_ApplyHomebaseEffectsOnPlayerSetup) \
+	X(AActor_GetNetOwnerVFT) \
+	X(UFortWorldItemDefinition_ServerExecuteVFT) \
+	X(UFortWeaponItemDefinition_GetMaxDurability) \
+	X(UFortWeaponItemDefinition_GetMaxDurabilityVFT) \
+	X(UFortWorldItem_SetOwningInventory) \
+	X(UFortWorldItem_SetOwningInventoryVFT) \
+	X(UFortWorldItem_SetLoadedAmmoVFT) \
+	X(UFortWorldItem_SetPhantomReserveAmmoVFT) \
+	X(UFortWorldItem_SetInInventoryOverflowVFT) \
+	X(UFortWorldItem_SetDurabilityVFT) \
+	X(UFortControllerComponent_Aircraft_EnterAircraft) \
+	X(AController_InitPlayerState) \
+	X(AController_InitPlayerStateVFT) \
+	X(AController_GetPlayerViewPointVFT) \
+	X(AController_Reset) \
+	X(UFortAnalytics_SetGameSessionID) \
+	X(UFortAnalytics_SetGameStateClassName) \
+	X(AFortGameSessionDedicated_FinalizeCreation) \
+	X(AFortGameSessionDedicated_FinalizeCreationPatch1) \
+	X(AFortGameSessionDedicated_FinalizeCreationVFT) \
+	X(AFortGameSessionDedicated_OnUpdateComplete) \
+	X(AFortGameSessionDedicated_OnAllPlayersUnregistered) \
+	X(AFortGameSessionDedicated_OnServerConfigurationRequest) \
+	X(AFortGameSessionDedicated_OnServerConfigurationRequestVFT) \
+	X(FFortBaseWeaponStats_GetDurability) \
+	X(UNavigationSystem_CreateNavigationSystem) \
+	X(FDedicatedServerUrlContext_Constructor) \
+	X(UFortQuestManager_SendCustomStatEvent) \
+	X(UFortQuestManager_QueueStatEvent) \
+	X(UFortQuestManager_SendStatEvent) \
+	X(UFortQuestManager_ProcessPendingStatEvents) \
+	X(BeginLoad) \
+	X(EndLoad) \
+	X(UGameplayAbility_CanActivateAbility) \
+	X(UGameplayAbility_CanActivateAbilityVFT) \
+	X(UFortGameInstance_ServerTravel) \
+	X(FMsg_Logf) \
+	X(UFortAssetManager_Get) \
+	X(UDemoNetDriver_TickFlushInternal) \
+	X(AFortAthenaMapInfo_PickSupplyDropLocation) \
+	X(AFortDecoTool_ShouldAllowServerSpawnDecoVFT) \
+	X(AFortDecoTool_SpawnDecoVFT) \
+	X(AFortMission_CreateEncounterSequence) \
+	X(ABuildingTrap_FinishTrigger) \
+	X(FSpecialActorInitData_Constructor) \
+	X(FSpecialActorInitData_Destructor) \
+	X(AFortSpecialActorReplicationInfo_AddActorToReplicationList) \
+	X(AFortAIDirector_StartEncounterWithoutObjective) \
+	X(AFortAthenaMutator_ItemDropOnDeath_SpawnItems) \
+	X(AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorld) \
+	X(AFortAthenaMutator_ItemDropOnDeath_SpawnItems_K2_SpawnPickupInWorldWithLootTier) \
+	X(ABuildingItemCollectorActor_GrantOutputVFT)
+
+namespace ServerOffsets
+{
+#define CORE_DECLARE_OFFSET(Name) inline uintptr_t Name = 0;
+	CORE_OFFSET_LIST(CORE_DECLARE_OFFSET)
+#undef CORE_DECLARE_OFFSET
 }

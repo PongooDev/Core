@@ -824,6 +824,9 @@
     <ClCompile Include="Gui\Private\ConsoleMirror.cpp" />
     <ClCompile Include="Gui\Private\ConsolePanel.cpp" />
     <ClCompile Include="Gui\Private\StatusPanel.cpp" />
+    <ClCompile Include="Gui\Private\NetworkPanel.cpp" />
+    <ClCompile Include="Gui\Private\PerformancePanel.cpp" />
+    <ClCompile Include="Gui\Private\OffsetsPanel.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemComponent.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\AbilitySystemLog.cpp" />
     <ClCompile Include="Engine\Plugins\Runtime\GameplayAbilities\Source\GameplayAbilities\Private\GameplayAbility.cpp" />

@@ -2394,6 +2394,15 @@
     <ClCompile Include="CrashReporter\Private\CrashReporter.cpp">
       <Filter>CrashReporter\Private</Filter>
     </ClCompile>
+    <ClCompile Include="Gui\Private\NetworkPanel.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\PerformancePanel.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\Private\OffsetsPanel.cpp">
+      <Filter>Gui\Private</Filter>
+    </ClCompile>
     <ClCompile Include="Gui\Private\Gui.cpp">
       <Filter>Gui\Private</Filter>
     </ClCompile>

@@ -551,6 +551,52 @@ namespace
 
 namespace
 {
+	bool& CategoryOpenRef(const char* Category)
+	{
+		static ImGuiStorage Storage;
+		return *Storage.GetBoolRef(ImGui::GetID(Category), true);
+	}
+
+	bool NavCategory(const char* Label, bool bOpen)
+	{
+		const float Height = 24.0f * GUiScale;
+		const float Indent = 15.0f * GUiScale;
+
+		const ImVec2 Pos = ImGui::GetCursorScreenPos();
+		const ImVec2 Size = ImVec2(ImGui::GetContentRegionAvail().x, Height);
+
+		const bool bClicked = ImGui::InvisibleButton(Label, Size);
+		const bool bHovered = ImGui::IsItemHovered();
+
+		float& Turn = Anim::StateFor(ImGui::GetItemID(), bOpen ? 1.0f : 0.0f);
+		Turn = Anim::Approach(Turn, bOpen ? 1.0f : 0.0f, 16.0f);
+
+		ImDrawList* Draw = ImGui::GetWindowDrawList();
+
+		const float Angle = Turn * 1.5707963f;
+		const float Cos = cosf(Angle);
+		const float Sin = sinf(Angle);
+		const float Arm = 3.4f * GUiScale;
+		const ImVec2 Centre = ImVec2(Pos.x + Indent * 0.45f, Pos.y + Height * 0.5f);
+
+		auto Rotate = [&](float X, float Y)
+		{
+			return ImVec2(Centre.x + X * Cos - Y * Sin, Centre.y + X * Sin + Y * Cos);
+		};
+
+		const ImU32 ArrowColor = ImGui::GetColorU32(bHovered ? Theme::Text : Theme::TextDim);
+		Draw->AddTriangleFilled(
+			Rotate(-Arm * 0.6f, -Arm), Rotate(-Arm * 0.6f, Arm), Rotate(Arm * 0.9f, 0.0f), ArrowColor);
+
+		const ImVec2 TextSize = ImGui::CalcTextSize(Label);
+		Draw->AddText(
+			ImVec2(Pos.x + Indent, Pos.y + (Height - TextSize.y) * 0.5f),
+			ImGui::GetColorU32(bHovered ? Theme::Text : ImVec4(0.40f, 0.44f, 0.49f, 1.0f)),
+			Label);
+
+		return bClicked;
+	}
+
 	bool NavItem(const char* Label, bool bSelected, float& OutTop, float& OutBottom)
 	{
 		const float Height = 36.0f * GUiScale;
@@ -629,9 +675,43 @@ namespace
 		bool bHaveSelection = false;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 3.0f * GUiScale));
+
+		const char* LastCategory = nullptr;
+		bool bCategoryOpen = true;
+		int CategoryIndex = -1;
+
+		static bool bCategoriesInitialised = false;
+
 		for (int i = 0; i < (int)Panels.size(); i++)
 		{
 			const bool bSelected = (i == GActivePanel);
+
+			const char* Category = Panels[i]->Category();
+			if (Category && (!LastCategory || strcmp(Category, LastCategory) != 0))
+			{
+				++CategoryIndex;
+
+				ImGui::Dummy(ImVec2(0, (i == 0 ? 0.0f : 8.0f) * GUiScale));
+
+				bool& bOpen = CategoryOpenRef(Category);
+
+				if (!bCategoriesInitialised)
+					bOpen = (CategoryIndex == 0);
+
+				if (NavCategory(Category, bOpen))
+					bOpen = !bOpen;
+
+				bCategoryOpen = bOpen;
+				ImGui::Dummy(ImVec2(0, 2.0f * GUiScale));
+			}
+			else if (!Category)
+			{
+				bCategoryOpen = true;
+			}
+			LastCategory = Category;
+
+			if (!bCategoryOpen)
+				continue;
 
 			float Top = 0.0f;
 			float Bottom = 0.0f;
@@ -651,6 +731,8 @@ namespace
 			}
 		}
 		ImGui::PopStyleVar();
+
+		bCategoriesInitialised = true;
 
 		NavDraw->ChannelsSetCurrent(0);
 
@@ -742,10 +824,20 @@ namespace
 		if (GActivePanel >= (int)Panels.size())
 			GActivePanel = 0;
 
-		for (int i = 0; i < (int)Panels.size() && i < 9; i++)
+		if (!Panels.empty())
 		{
-			if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | (ImGuiKey)(ImGuiKey_1 + i)))
-				GActivePanel = i;
+			const int Count = (int)Panels.size();
+
+			if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Tab))
+				GActivePanel = (GActivePanel - 1 + Count) % Count;
+			else if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_Tab))
+				GActivePanel = (GActivePanel + 1) % Count;
+
+			for (int i = 0; i < Count && i < 9; i++)
+			{
+				if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | (ImGuiKey)(ImGuiKey_1 + i)))
+					GActivePanel = i;
+			}
 		}
 
 		RenderSidebar(Panels);
@@ -921,6 +1013,9 @@ void Gui::Start()
 
 	RegisterPanel(GuiDetail::CreateConsolePanel());
 	RegisterPanel(GuiDetail::CreateStatusPanel());
+	RegisterPanel(GuiDetail::CreateNetworkPanel());
+	RegisterPanel(GuiDetail::CreatePerformancePanel());
+	RegisterPanel(GuiDetail::CreateOffsetsPanel());
 
 	GGuiRunning = true;
 	GGuiState = 0;
