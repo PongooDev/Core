@@ -171,6 +171,7 @@ Before submitting code:
 - **Ploosh** — crash reporter and finder work
 - **Milxnor** — finder work
 - **MrWallio** — This README and general Core contributions
+- **Podge** — The Core Logo.
 - [Core contributors](https://github.com/PongooDev/Core/graphs/contributors)
 
 For more help, join the [Core Discord](https://discord.gg/auzEaKs7AS).
